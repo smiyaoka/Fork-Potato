@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>Level Screen</title>
+    <link type="text/css" rel="stylesheet" href="css/level.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+	
+</head> 
+
+<body> 
+    
+    <div id="divQuizWindow">
+        
+        <div id="divAnswerButtons">
+            <div class="classQuizAnswer" id="divQuizAnswer1"></div>
+            <div class="classQuizAnswer" id="divQuizAnswer2"></div>
+            <div class="classQuizAnswer" id="divQuizAnswer3"></div>
+            <div class="classQuizAnswer" id="divQuizAnswer4"></div>
+        </div>
+        <div id="divTempClear" style="height: 50px; background-color: orange">
+            Clear
+        </div>
+        
+    </div>
+    
+    
+</body>
+
+</html>
+
+<script>
+    function clickQuizButton(number) {
+        if (number == correctAnswer) {
+            markCorrectQuizButton(number);
+        } else {
+            eliminateQuizButton(number);
+        }
+    }
+    
+    function markCorrectQuizButton(number) {
+        $("#divQuizAnswer" + number).addClass("classQuizAnswerCorrect");
+    }
+    
+    function eliminateQuizButton(number) {
+        $("#divQuizAnswer" + number).addClass("classQuizAnswerEliminated");
+    }
+    
+    function nextQuestion() {
+        for(var i = 1; i <= 4; i++) {
+            $("#divQuizAnswer" + i).removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        }
+        /*        
+        $("#divQuizAnswer1").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        $("#divQuizAnswer2").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        $("#divQuizAnswer3").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        $("#divQuizAnswer4").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        */
+    }
+    
+</script>
+
+<script> 
+    var correctAnswer = 4; 
+    
+    for(let i = 1; i <= 4; i++) {
+        $("#divQuizAnswer" + i).click(function(){clickQuizButton(i);});
+    }
+    
+    /*
+    $("#divQuizAnswer1").click(function(){clickQuizButton(1);});
+    $("#divQuizAnswer2").click(function(){clickQuizButton(2);});
+    $("#divQuizAnswer3").click(function(){clickQuizButton(3);});
+    $("#divQuizAnswer4").click(function(){clickQuizButton(4);});
+    */
+    
+    $("#divTempClear").click(function(){nextQuestion();});
+    
+</script>

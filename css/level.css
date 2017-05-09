@@ -1,0 +1,13 @@
+.classQuizAnswer {
+    background-color: aqua; 
+    height: 100px;
+    border: 1px solid black; 
+}
+
+.classQuizAnswerEliminated {
+    background-color: grey; 
+}
+
+.classQuizAnswerCorrect {
+    background-color: green; 
+}

@@ -9,13 +9,31 @@
 </head> 
 
 <body> 
-    <div id="divTriviaQuestion">
+    <div id="divTriviaQuestion" style="display: none;">
         
     </div>
     
-    <div id="divLevelArt"> </div>
+    <div id="divDialogue">
     
-    <div id="divAnswerButtons">
+    </div>
+    
+    <div id="divLevelArt"> 
+    
+    </div>
+    
+    <div id="divCombatButtons">
+        <div class="classCombatButtonRow">
+            <div class="classCombatButton" id="divCombatButton1"></div>
+            <div class="classCombatButton" id="divCombatButton2"></div>
+        </div>
+        <div class="classCombatButtonRow">
+            <div class="classCombatButton" id="divCombatButton3"></div>
+            <div class="classCombatButton" id="divCombatButton4"></div>
+            <div class="classCombatButton" id="divCombatButton5"></div>
+        </div>
+    </div>
+    
+    <div id="divAnswerButtons" style="display: none;">
         <div class="classQuizAnswer" id="divQuizAnswer1">
         </div>
         <div class="classQuizAnswer classQuizAnswerRightSide" id="divQuizAnswer2"></div>
@@ -25,6 +43,26 @@
 </body>
 
 </html>
+
+<script>
+    function swapGameMode() {
+        if (onTrivia) {
+            $("#divDialogue").css("display", "block");
+            $("#divDialogue").css("display", "block");
+            $("#divTriviaQuestion").css("display", "none");
+            $("#divAnswerButtons").css("display", "none");
+        } else {
+            $("#divDialogue").css("display", "none");
+            $("#divDialogue").css("display", "none");
+            $("#divTriviaQuestion").css("display", "block");
+            $("#divAnswerButtons").css("display", "block");
+        }                
+        onTrivia = !onTrivia; 
+    }
+    
+    $("#divLevelArt").click(function(){swapGameMode();});
+    
+</script>
 
 <script>
     function clickQuizButton(number) {
@@ -52,6 +90,7 @@
 </script>
 
 <script> 
+    var onTrivia = false; 
     var correctAnswer = 4; 
     
     for(let i = 1; i <= 4; i++) {

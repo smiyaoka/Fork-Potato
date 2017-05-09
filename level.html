@@ -34,11 +34,10 @@
     </div>
     
     <div id="divAnswerButtons" style="display: none;">
-        <div class="classQuizAnswer" id="divQuizAnswer1">
-        </div>
-        <div class="classQuizAnswer classQuizAnswerRightSide" id="divQuizAnswer2"></div>
+        <div class="classQuizAnswer" id="divQuizAnswer1"></div>
+        <div class="classQuizAnswer" id="divQuizAnswer2"></div>
         <div class="classQuizAnswer" id="divQuizAnswer3"></div>
-        <div class="classQuizAnswer classQuizAnswerRightSide" id="divQuizAnswer4"></div>
+        <div class="classQuizAnswer" id="divQuizAnswer4"></div>
     </div>
 </body>
 
@@ -48,14 +47,14 @@
     function swapGameMode() {
         if (onTrivia) {
             $("#divDialogue").css("display", "block");
-            $("#divDialogue").css("display", "block");
+            $("#divCombatButtons").css("display", "block");
             $("#divTriviaQuestion").css("display", "none");
             $("#divAnswerButtons").css("display", "none");
         } else {
             $("#divDialogue").css("display", "none");
-            $("#divDialogue").css("display", "none");
+            $("#divCombatButtons").css("display", "none");
             $("#divTriviaQuestion").css("display", "block");
-            $("#divAnswerButtons").css("display", "block");
+            $("#divAnswerButtons").css("display", "flex");
         }                
         onTrivia = !onTrivia; 
     }

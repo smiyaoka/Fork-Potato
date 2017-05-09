@@ -67,10 +67,6 @@ body {
     width: 50%; 
 }
 
-#divCombatButtonRow2 {
-    display: flex; 
-}
-
 #divCombatButton3, #divCombatButton5 {
     width: 33%; 
 }
@@ -85,11 +81,12 @@ body {
     box-sizing: border-box; 
     height: 50%;
     width: 50%;
-    float: left; 
 }
 
-.classQuizAnswerRightSide {
-    float: right; 
+#divAnswerButtons {
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
 }
 
 .classQuizAnswerEliminated {

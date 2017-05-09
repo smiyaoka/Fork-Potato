@@ -1,0 +1,28 @@
+body{
+    text-align: center;
+    color: azure;
+    background-color: coral;
+}
+
+form{
+    background-color: goldenrod;
+}
+
+p{
+    font-family: sans-serif;
+}
+
+#submit1{
+    background-color: lightgreen;
+    border-color: aliceblue;
+    border-radius: 50px;
+    display: inline-block;
+    outline: 0;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"> <!-- changed language because of lorem ipsum -->
+<head>
+	<meta charset="utf-8">
+	<title>Database example</title>
+	<link type="text/css" rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="data.js"></script>
+    
+</head> 
+
+<body>
+			<h2>Try me out!</h2>
+			<p>
+				Register a name!
+                <br>
+                Then retrieve it!
+			</p>
+				<br>
+            <form>
+				<label for="InitialInput">initialInput</label>
+				<br>
+				<div id="name-div">				
+					<input id="initialInput" type="text" name="initialInput">
+				</div>
+				<!--<br>
+                <label for="selPosition">Position</label>
+                <br>
+                <select id="selPosition" name="position" onchange="">
+					<option value>&nbsp;</option>
+					<option value="Potato">Potato</option>
+					<option value="Tomato">Tomato</option>
+					<option value="Carrot">Carrot</option>
+					<option value="Egg">Egg</option>
+				</select>
+				<br>-->
+				<br>
+				<input type="submit" onClick="submitClick()" value="+" id="submitButton">							
+			</form>
+    
+    <p id="textEntered"></p>
+    
+    
+	<footer> <!-- footer containing separate content from the main content -->
+	<div id="footer_body">
+		<p> Copyright © 2017 Nick Milton</p>
+	</div>
+	</footer>
+	
+</body>
+
+</html>

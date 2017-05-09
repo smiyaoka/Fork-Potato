@@ -40,22 +40,46 @@
 </html>
 
 <script>
-    function swapGameMode() {
-        if (onTrivia) {
-            $("#divDialogue").css("display", "block");
-            $("#divCombatButtons").css("display", "flex");
-            $("#divQuestion").css("display", "none");
-            $("#divAnswerButtons").css("display", "none");
-        } else {
-            $("#divDialogue").css("display", "none");
+    function swapButtons() {
+        if ($("#divCombatButtons").css("display") == "flex") {
             $("#divCombatButtons").css("display", "none");
-            $("#divQuestion").css("display", "block");
             $("#divAnswerButtons").css("display", "flex");
+        } else {
+            $("#divCombatButtons").css("display", "flex");
+            $("#divAnswerButtons").css("display", "none");
         }                
-        onTrivia = !onTrivia; 
     }
     
-    $("#divLevelArt").click(function(){swapGameMode();});
+    function toggleQuestion() {
+        /*
+        if ($("#divDialogue").css("display") == "block") {
+            $("#divDialogue").css("display", "none");
+        } 
+        */
+        if ($("#divQuestion").css("display") == "block") {
+            $("#divQuestion").css("display", "none"); 
+        } else {
+            $("#divQuestion").css("display", "block"); 
+        }
+    }
+    
+    function toggleDialogue() {
+        /*
+        if ($("#divQuestion").css("display") == "block") {
+            $("#divQuestion").css("display", "none");
+        } 
+        */
+        if ($("#divDialogue").css("display") == "block") {
+            $("#divDialogue").css("display", "none"); 
+        } else {
+            $("#divDialogue").css("display", "block"); 
+        }
+    }
+    
+    $("#divLevelArt").click(function(){
+        swapButtons();
+        toggleDialogue(); 
+    });
     
 </script>
 
@@ -85,7 +109,6 @@
 </script>
 
 <script> 
-    var onTrivia = false; 
     var correctAnswer = 4; 
     
     for(let i = 1; i <= 4; i++) {

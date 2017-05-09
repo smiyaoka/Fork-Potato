@@ -50,12 +50,6 @@
         for(var i = 1; i <= 4; i++) {
             $("#divQuizAnswer" + i).removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
         }
-        /*        
-        $("#divQuizAnswer1").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
-        $("#divQuizAnswer2").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
-        $("#divQuizAnswer3").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
-        $("#divQuizAnswer4").removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
-        */
     }
     
 </script>
@@ -66,13 +60,6 @@
     for(let i = 1; i <= 4; i++) {
         $("#divQuizAnswer" + i).click(function(){clickQuizButton(i);});
     }
-    
-    /*
-    $("#divQuizAnswer1").click(function(){clickQuizButton(1);});
-    $("#divQuizAnswer2").click(function(){clickQuizButton(2);});
-    $("#divQuizAnswer3").click(function(){clickQuizButton(3);});
-    $("#divQuizAnswer4").click(function(){clickQuizButton(4);});
-    */
     
     $("#divTempClear").click(function(){nextQuestion();});
     

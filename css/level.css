@@ -18,7 +18,7 @@ body {
     margin-top: 20vh; 
 }
 
-#divDialogue {
+#divTriviaQuestion {
     background-color: cadetblue; 
     border: 1px solid black; 
     box-sizing: border-box; 

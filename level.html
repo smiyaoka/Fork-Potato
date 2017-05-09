@@ -9,7 +9,7 @@
 </head> 
 
 <body> 
-    <div id="divTriviaQuestion" style="display: none;">
+    <div id="divQuestion" style="display: none;">
         
     </div>
     
@@ -22,22 +22,18 @@
     </div>
     
     <div id="divCombatButtons">
-        <div class="classCombatButtonRow">
-            <div class="classCombatButton" id="divCombatButton1"></div>
-            <div class="classCombatButton" id="divCombatButton2"></div>
-        </div>
-        <div class="classCombatButtonRow">
-            <div class="classCombatButton" id="divCombatButton3"></div>
-            <div class="classCombatButton" id="divCombatButton4"></div>
-            <div class="classCombatButton" id="divCombatButton5"></div>
-        </div>
+        <div class="classCombatButton" id="divCombatButton1"></div>
+        <div class="classCombatButton" id="divCombatButton2"></div>
+        <div class="classCombatButton" id="divCombatButton3"></div>
+        <div class="classCombatButton" id="divCombatButton4"></div>
+        <div class="classCombatButton" id="divCombatButton5"></div>
     </div>
     
     <div id="divAnswerButtons" style="display: none;">
-        <div class="classQuizAnswer" id="divQuizAnswer1"></div>
-        <div class="classQuizAnswer" id="divQuizAnswer2"></div>
-        <div class="classQuizAnswer" id="divQuizAnswer3"></div>
-        <div class="classQuizAnswer" id="divQuizAnswer4"></div>
+        <div class="classAnswer" id="divAnswer1"></div>
+        <div class="classAnswer" id="divAnswer2"></div>
+        <div class="classAnswer" id="divAnswer3"></div>
+        <div class="classAnswer" id="divAnswer4"></div>
     </div>
 </body>
 
@@ -47,13 +43,13 @@
     function swapGameMode() {
         if (onTrivia) {
             $("#divDialogue").css("display", "block");
-            $("#divCombatButtons").css("display", "block");
-            $("#divTriviaQuestion").css("display", "none");
+            $("#divCombatButtons").css("display", "flex");
+            $("#divQuestion").css("display", "none");
             $("#divAnswerButtons").css("display", "none");
         } else {
             $("#divDialogue").css("display", "none");
             $("#divCombatButtons").css("display", "none");
-            $("#divTriviaQuestion").css("display", "block");
+            $("#divQuestion").css("display", "block");
             $("#divAnswerButtons").css("display", "flex");
         }                
         onTrivia = !onTrivia; 
@@ -64,25 +60,25 @@
 </script>
 
 <script>
-    function clickQuizButton(number) {
+    function clickButton(number) {
         if (number == correctAnswer) {
-            markCorrectQuizButton(number);
+            markCorrectButton(number);
         } else {
-            eliminateQuizButton(number);
+            eliminateButton(number);
         }
     }
     
-    function markCorrectQuizButton(number) {
-        $("#divQuizAnswer" + number).addClass("classQuizAnswerCorrect");
+    function markCorrectButton(number) {
+        $("#divAnswer" + number).addClass("classAnswerCorrect");
     }
     
-    function eliminateQuizButton(number) {
-        $("#divQuizAnswer" + number).addClass("classQuizAnswerEliminated");
+    function eliminateButton(number) {
+        $("#divAnswer" + number).addClass("classAnswerEliminated");
     }
     
     function nextQuestion() {
         for(var i = 1; i <= 4; i++) {
-            $("#divQuizAnswer" + i).removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+            $("#divAnswer" + i).removeClass("classAnswerCorrect classAnswerEliminated");
         }
     }
     
@@ -93,7 +89,7 @@
     var correctAnswer = 4; 
     
     for(let i = 1; i <= 4; i++) {
-        $("#divQuizAnswer" + i).click(function(){clickQuizButton(i);});
+        $("#divAnswer" + i).click(function(){clickButton(i);});
     }
     
     $("#divTempClear").click(function(){nextQuestion();});

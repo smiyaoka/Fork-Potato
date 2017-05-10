@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+  <body>
+    <button onclick="saveData()">Save Data</button>
+    <button onclick="printData()">Print Data</button>
+    <button onclick="printData2()">Print Data2</button>
+
+    <script src="https://cdn.firebase.com/js/client/2.3.1/firebase.js"></script>
+    <script>
+      var ref = new Firebase("https://test--firebase.firebaseio.com/web/saving-data/fireblog");
+      var usersRef = ref.child("users");
+      function saveData(){
+        usersRef.set({
+          alanisawesome: {
+            date_of_birth: "June 23, 1912",
+            full_name: "Alan Turing"
+          },
+          gracehop: {
+            date_of_birth: "December 9, 1906",
+            full_name: "Grace Hopper"
+          }
+        });
+      }
+      function printData(){
+        usersRef.on("value", function(snapshot) {
+          console.log(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+      }
+      function printData2(){
+        ref.child("users/gracehop/date_of_birth").on("value", function(snapshot) {
+          window.alert(snapshot.val()); // "December 9, 1906"
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+      }
+    </script>
+  </body>
+</html>

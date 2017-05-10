@@ -172,11 +172,14 @@ $("#divLevelArea").click(function(){
 // Side-Scrolling
 var playerChar;
 var myBackground;
+var enemyChar; 
 
 function startGame() {
     playerChar = new component(80, 80, "images/placeholder/char.gif", 30, 190, "image");
     background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
-	
+    
+    enemyChar = new component(80, 80, "images/placeholder/char.gif", 300, 190, "image");
+    
     gameArea.start();
     
 }
@@ -185,7 +188,6 @@ function startGame() {
 var gameArea = {
     canvas : $("#divLevelArea").children("canvas")[0],
     start : function() {
-        alert(this.canvas); 
         this.canvas = $("#divLevelArea").children("canvas")[0];
         this.canvas.width = 480; 
         this.canvas.height = 300; 
@@ -200,36 +202,6 @@ var gameArea = {
         clearInterval(this.interval);
     }
 }
-
-/*
-function gameArea() {
-    this.canvas = $("#divLevelArea").children("canvas")[0];
-    this.context = this.canvas.getContext("2d");
-    this.frameNo = 0;
-    this.interval = setInterval(updateGameArea, 10);
-    
-}
-*/
-
-/*
-var myGameArea = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 300;
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 10);
-        },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    },
-    stop : function() {
-        clearInterval(this.interval);
-    }
-}
-*/
 
 function component(width, height, color, x, y, type) {
     this.type = type;
@@ -269,16 +241,34 @@ function component(width, height, color, x, y, type) {
                 this.x = 0;
             }
         }
-    }    
+    }
+    this.collided = function(obj) {
+        if (enemyChar == null) {
+            return false; 
+        }
+        var myRight = this.x + (this.width); 
+        var otherLeft = obj.x; 
+        return myRight > otherLeft;
+    }
+    
 }
 
 function updateGameArea() {
+    if (playerChar.collided(enemyChar)) {
+        enemyChar = null; 
+    }
+    
     gameArea.clear();
     background.speedX = -1;
     background.newPos();    
     background.update();
-    playerChar.newPos();    
+    playerChar.newPos();  
     playerChar.update();
+    if (enemyChar != null) {
+        enemyChar.speedX = -1; 
+        enemyChar.newPos();  
+        enemyChar.update();
+    }
 }
 
 

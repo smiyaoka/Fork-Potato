@@ -1,4 +1,4 @@
-// UI Functions (and debug code) 
+// UI Functions
 function swapButtons() {
     if ($("#divCombatButtons").css("display") == "flex") {
         $("#divCombatButtons").css("display", "none");
@@ -91,6 +91,23 @@ function gameOver() {
 function clickItem(number) {
     if(blockInput) 
         return; 
+    if(!items[number])
+        return; 
+    hurtEnemy(itemDamage[items[number]]); 
+    items[number] = null; 
+    $("#divCombatButton" + number).empty();
+}
+
+function addItem(item) {
+    var searching = true; 
+    for (var i = 3; i <= 5 && searching; i++) {
+        if (!items[i]) {
+            items[i] = item; 
+            $("#divCombatButton" + i).html(item);
+            searching = false; 
+            console.log(i + " " + items[i]);
+        }
+    }
 }
 
 // Trivia Functions 
@@ -136,6 +153,15 @@ function resetAnswerButtons() {
     }
 }    
 
+// Debug Functions and Script
+function addRandomItem() {
+    // IGNORE
+}
+$("#divLevelArt").click(function(){
+    addItem("PLACEHOLDER");
+});
+
+
 // UI Debug Script 
 /*
 $("#divLevelArt").click(function(){
@@ -151,6 +177,9 @@ var playerHP = 2;
 var enemyHP = 5; 
 var enemyPower = 1; 
 var remainingEnemies = 1; 
+var items = []; 
+var itemDamage = []; 
+itemDamage["PLACEHOLDER"] = 2; 
 
 $("#divCombatButton1").click(function(){clickEat();});
 $("#divCombatButton2").click(function(){clickSkill();});

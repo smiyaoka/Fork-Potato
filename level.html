@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>Level Screen</title>
+    <link type="text/css" rel="stylesheet" href="css/level.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+	
+</head> 
+
+<body> 
+    <div id="divQuestion" style="display: none;">
+        
+    </div>
+    
+    <div id="divDialogue" style="display: none;">
+    
+    </div>
+    
+    <div id="divLevelArt"> 
+    
+    </div>
+    
+    <div id="divCombatButtons">
+        <div class="classCombatButton" id="divCombatButton1"></div>
+        <div class="classCombatButton" id="divCombatButton2"></div>
+        <div class="classCombatButton" id="divCombatButton3"></div>
+        <div class="classCombatButton" id="divCombatButton4"></div>
+        <div class="classCombatButton" id="divCombatButton5"></div>
+    </div>
+    
+    <div id="divAnswerButtons" style="display: none;">
+        <div class="classAnswer" id="divAnswer1"></div>
+        <div class="classAnswer" id="divAnswer2"></div>
+        <div class="classAnswer" id="divAnswer3"></div>
+        <div class="classAnswer" id="divAnswer4"></div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function swapButtons() {
+        if ($("#divCombatButtons").css("display") == "flex") {
+            $("#divCombatButtons").css("display", "none");
+            $("#divAnswerButtons").css("display", "flex");
+        } else {
+            $("#divCombatButtons").css("display", "flex");
+            $("#divAnswerButtons").css("display", "none");
+        }                
+    }
+    
+    function toggleQuestion() {
+        /*
+        if ($("#divDialogue").css("display") == "block") {
+            $("#divDialogue").css("display", "none");
+        } 
+        */
+        if ($("#divQuestion").css("display") == "block") {
+            $("#divQuestion").css("display", "none"); 
+        } else {
+            $("#divQuestion").css("display", "block"); 
+        }
+    }
+    
+    function toggleDialogue() {
+        /*
+        if ($("#divQuestion").css("display") == "block") {
+            $("#divQuestion").css("display", "none");
+        } 
+        */
+        if ($("#divDialogue").css("display") == "block") {
+            $("#divDialogue").css("display", "none"); 
+        } else {
+            $("#divDialogue").css("display", "block"); 
+        }
+    }
+    
+    $("#divLevelArt").click(function(){
+        swapButtons();
+        toggleDialogue(); 
+    });
+    
+</script>
+
+<script>
+    function clickButton(number) {
+        if (number == correctAnswer) {
+            markCorrectButton(number);
+        } else {
+            eliminateButton(number);
+        }
+    }
+    
+    function markCorrectButton(number) {
+        $("#divAnswer" + number).addClass("classAnswerCorrect");
+    }
+    
+    function eliminateButton(number) {
+        $("#divAnswer" + number).addClass("classAnswerEliminated");
+    }
+    
+    function nextQuestion() {
+        for(var i = 1; i <= 4; i++) {
+            $("#divAnswer" + i).removeClass("classAnswerCorrect classAnswerEliminated");
+        }
+    }
+    
+</script>
+
+<script> 
+    var correctAnswer = 4; 
+    
+    for(let i = 1; i <= 4; i++) {
+        $("#divAnswer" + i).click(function(){clickButton(i);});
+    }
+    
+    $("#divTempClear").click(function(){nextQuestion();});
+    
+</script>

@@ -39,7 +39,7 @@ function toggleDialogue() {
 function clickEat() {
     if (blockInput) 
         return;     
-    var eatRange = 50; 
+    var eatRange = 80; 
     var farEnd = eatRange + playerChar.x + playerChar.width; 
     var target = null;
     enemies.forEach(function(part, index, arr){
@@ -57,11 +57,41 @@ function clickEat() {
     }
 }
 
+var skillCooldown = false; 
+var skillCooldownTime = 5000; 
+var skillTimer; 
 function clickSkill() {
     if (blockInput) 
-        return;     
+        return;
+    if (skillCooldown) 
+        return; 
+    
     var skillDamage = 3; 
-    hurtEnemy(skillDamage);    
+    var skillRange = 350; 
+    var farEnd = skillRange + playerChar.x + playerChar.width; 
+    enemies.forEach(function(part, index, arr){
+        if (arr[index].x < farEnd) {
+            hurtEnemy(arr[index], skillDamage); 
+        }
+    });    
+    skillCooldown = true;     
+    hurtEnemy(skillDamage);
+    skillCooldownTime = 5000; 
+    skillTimer = setInterval(skillUpdate, 100);     
+}
+
+function skillUpdate() {
+    if (freeze) 
+        return; 
+    skillCooldownTime -= 100; 
+    console.log(skillCooldownTime/1000); 
+    if(skillCooldownTime <= 0) {
+        $("#divCombatButton2").html("Eat<br>Does one damage.");
+        skillCooldown = false; 
+        clearInterval(skillTimer); 
+    } else {
+        $("#divCombatButton2").html(skillCooldownTime/1000);
+    }
 }
 
 function clickItem(number) {
@@ -69,7 +99,10 @@ function clickItem(number) {
         return; 
     if(!items[number])
         return; 
-    hurtEnemy(itemDamage[items[number]]); 
+    playerChar.hp += 3; 
+    if (playerChar.hp > playerMaxHP) 
+        playerChar.hp = playerMaxHP; 
+    //hurtEnemy(itemDamage[items[number]]); 
     items[number] = null; 
     $("#divCombatButton" + number).empty();
 }
@@ -81,7 +114,6 @@ function addItem(item) {
             items[i] = item; 
             $("#divCombatButton" + i).html(item);
             searching = false; 
-            console.log(i + " " + items[i]);
         }
     }
 }
@@ -91,9 +123,9 @@ function hurtEnemy(target, damage) {
 }
 
 function hurtPlayer() {
-    playerHP -= enemyPower; 
-    console.log("playerHP: " + playerHP); //DEBUG
-    if (playerHP <= 0) {
+    playerChar.hp -= enemyPower; 
+    refresh();
+    if (playerChar.hp <= 0) {
         gameOver();
     }
 }
@@ -112,11 +144,15 @@ function startTrivia() {
 function levelComplete() {
     blockInput = true; 
     console.log("LEVEL COMPLETE"); // DEBUG
+    toggleDialogue();
+    $("#divDialogue").html("Level Complete");
 }
 
 function gameOver() {
     blockInput = true; 
     console.log("GAME OVER"); // DEBUG
+    toggleDialogue();
+    $("#divDialogue").html("Game Over");
 }
 
 // Trivia Functions 
@@ -147,7 +183,7 @@ function nextQuestion() {
         remainingQuestions--; 
         resetAnswerButtons();
     } else if (remainingBosses > 0) {
-        addItem("PLACEHOLDER ITEM");
+        addItem("PLACEHOLDER ITEM<br>Heals up to 3 hp");
         bossChar = null; 
         freeze = false; 
         swapButtons();
@@ -196,7 +232,7 @@ var bossChar;
 var bossStop = 350; 
 
 function startGame() {
-    playerChar = new component(80, 80, "images/placeholder/char.gif", 30, 190, "image");
+    playerChar = new component(80, 80, "images/placeholder/player.gif", 30, 190, "image", playerMaxHP);
     background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
     background.speedX = -1;
             
@@ -228,7 +264,11 @@ var gameArea = {
 }
 
 function component(width, height, color, x, y, type, initialHP) {
+    this.boss = false; 
     this.hp = (initialHP == null) ? 1 : initialHP; 
+    if (initialHP == 0) {
+        this.boss = true; 
+    }
     this.type = type;
     if (type == "image" || type == "background") {
         this.image = new Image();
@@ -247,6 +287,10 @@ function component(width, height, color, x, y, type, initialHP) {
                 this.x, 
                 this.y,
                 this.width, this.height);
+            if (!this.boss) {
+                ctx.font="20px Georgia";
+                ctx.fillText(this.hp,this.x,this.y - 10);
+            }
         if (type == "background") {
             ctx.drawImage(this.image, 
                 this.x + this.width, 
@@ -280,18 +324,12 @@ function component(width, height, color, x, y, type, initialHP) {
 function updateGameArea() {
     if (freeze) 
         return;     
-    gameArea.clear();
-    
-    background.newPos();    
-    background.update();
-    
+    background.newPos();            
     playerChar.newPos();  
-    playerChar.update();
-    
+        
     enemies.forEach(function(part, index, arr){
-        arr[index].speedX = -1; 
+        arr[index].speedX = -2; 
         arr[index].newPos();
-        arr[index].update();        
         if (playerChar.collided(arr[index])) {
             hurtEnemy(arr[index], 100);
         }
@@ -300,13 +338,25 @@ function updateGameArea() {
     killEnemies();
     
     if (bossChar != null) {
-        bossChar.speedX = -1; 
+        bossChar.speedX = -2; 
         bossChar.newPos();
-        bossChar.update();
         if (bossChar.x <= bossStop) {
             startTrivia();
             freeze = true; 
         }
+    }    
+    refresh();
+}
+
+function refresh() {
+    gameArea.clear();
+    background.update();
+    playerChar.update();
+    enemies.forEach(function(part, index, arr){
+        arr[index].update();        
+    });
+    if (bossChar != null) {
+        bossChar.update();
     }
 }
 
@@ -315,7 +365,7 @@ function killEnemies() {
         if (arr[index].hp <= 0) {
             arr.splice(index, 1); 
             spawnEnemy();
-            while(arr[index].hp <= 0) {
+            while(arr[index] != null && arr[index].hp <= 0) {
                 arr.splice(index, 1); 
                 spawnEnemy();
             }
@@ -327,11 +377,15 @@ var freeze = false;
 
 function spawnEnemy() {
     if (remainingEnemies > 0) {
-        enemies.push(new component(80, 80, "images/placeholder/char.gif", 480, 190, "image"));
+        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "image", enemyMaxHP));
         remainingEnemies --; 
     } else if (bossChar == null) {
+        if (remainingBosses == 1) {
+            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "image", 0); 
+        } else {
+            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "image", 0); 
+        }        
         remainingBosses--; 
-        bossChar = new component(80, 80, "images/placeholder/char.gif", 480, 190, "image"); 
     }
 }
 
@@ -343,7 +397,8 @@ $("#divLevelArea").ready(startGame);
 // Combat Script
 var blockInput = false; 
 
-var playerHP = 2; // needs tuning 
+var playerMaxHP = 10; 
+var enemyMaxHP = 3; 
 var enemyPower = 1; // remove later 
 var remainingEnemies = 3; // defined earlier 
 var items = []; // this is meh - change to object later 

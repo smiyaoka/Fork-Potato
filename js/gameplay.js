@@ -1,3 +1,6 @@
+//connect to firebase.
+ var ref = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
+
 // UI Functions
 function swapButtons() {
     if ($("#divCombatButtons").css("display") == "flex") {
@@ -175,11 +178,43 @@ function clickAnswer(number) {
 function nextQuestion() {
     blockInput = false;
     if (remainingQuestions > 0) {
-        $("#divQuestion").html("PLACEHOLDER QUESTION");
-        $("#divAnswer1").html("PLACEHOLDER ANSWER 1");
-        $("#divAnswer2").html("PLACEHOLDER ANSWER 2");
-        $("#divAnswer3").html("PLACEHOLDER ANSWER 3");
-        $("#divAnswer4").html("PLACEHOLDER ANSWER 4");
+		
+		//getting questions and answers from firebase 
+		//question
+		ref.child("question1/question").on("value", function(snapshot) {
+			$("#divQuestion").html(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+		
+        //answer1(correct answer)
+		ref.child("question1/answer1").on("value", function(snapshot) {
+			$("#divAnswer1").html(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+		
+		//answer2
+		ref.child("question1/answer2").on("value", function(snapshot) {
+			$("#divAnswer2").html(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+		
+		//answer3
+		ref.child("question1/answer3").on("value", function(snapshot) {
+			$("#divAnswer3").html(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+		
+		//answer4
+		ref.child("question1/answer4").on("value", function(snapshot) {
+			$("#divAnswer4").html(snapshot.val());
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+		
         remainingQuestions--; 
         resetAnswerButtons();
     } else if (remainingBosses > 0) {
@@ -414,7 +449,7 @@ for(let i = 3; i <= 5; i++) {
 
 
 // Trivia Script 
-var correctAnswer = 4; 
+var correctAnswer = 1; 
 var nextQuestionDelay = 3000; 
 var triviaDamage = 1; 
 var remainingQuestions = 2; 

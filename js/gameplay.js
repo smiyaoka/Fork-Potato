@@ -39,8 +39,22 @@ function toggleDialogue() {
 function clickEat() {
     if (blockInput) 
         return;     
-    var eatDamage = 1; 
-    hurtEnemy(eatDamage);
+    var eatRange = 50; 
+    var farEnd = eatRange + playerChar.x + playerChar.width; 
+    var target = null;
+    enemies.forEach(function(part, index, arr){
+        if (arr[index].x < farEnd) {
+            if (target == null) {
+                target = arr[index];
+            } else if(arr[index].x < target.x) {
+                target = arr[index];
+            }
+        }
+    });
+    if (target != null) {
+        var eatDamage = 1; 
+        hurtEnemy(target, eatDamage);
+    }
 }
 
 function clickSkill() {
@@ -72,18 +86,8 @@ function addItem(item) {
     }
 }
 
-function hurtEnemy(damage) {
-    enemyHP -= damage; 
-    console.log ("enemyHP: " + enemyHP); // DEBUG
-    if (enemyHP <= 0) {
-        if (remainingEnemies > 0) {
-            remainingEnemies--; 
-            console.log("remainingEnemies: " + remainingEnemies);
-            enemyHP = 5; // PLACEHOLDER, should be nextHP
-        } else {
-            startTrivia();
-        }
-    }
+function hurtEnemy(target, damage) {
+    target.hp -= damage; 
 }
 
 function hurtPlayer() {
@@ -136,10 +140,10 @@ function nextQuestion() {
     blockInput = false;
     if (remainingQuestions > 0) {
         $("#divQuestion").html("PLACEHOLDER QUESTION");
-        $("#divAnswer1").html("PLACEHOLDER QUESTION 1");
-        $("#divAnswer2").html("PLACEHOLDER QUESTION 2");
-        $("#divAnswer3").html("PLACEHOLDER QUESTION 3");
-        $("#divAnswer4").html("PLACEHOLDER QUESTION 4");
+        $("#divAnswer1").html("PLACEHOLDER ANSWER 1");
+        $("#divAnswer2").html("PLACEHOLDER ANSWER 2");
+        $("#divAnswer3").html("PLACEHOLDER ANSWER 3");
+        $("#divAnswer4").html("PLACEHOLDER ANSWER 4");
         remainingQuestions--; 
         resetAnswerButtons();
     } else if (remainingBosses > 0) {
@@ -173,7 +177,7 @@ function addRandomItem() {
     // IGNORE
 }
 $("#divLevelArea").click(function(){
-    spawnEnemy();
+    //spawnEnemy();
 });
 
 // UI Debug Script 
@@ -270,8 +274,7 @@ function component(width, height, color, x, y, type, initialHP) {
         var myRight = this.x + (this.width); 
         var otherLeft = obj.x; 
         return myRight > otherLeft;
-    }
-    
+    }    
 }
 
 function updateGameArea() {
@@ -290,16 +293,11 @@ function updateGameArea() {
         arr[index].newPos();
         arr[index].update();        
         if (playerChar.collided(arr[index])) {
-            arr[index].hp = 0; 
-            arr.splice(index, 1); 
-            spawnEnemy();            
-            if (arr[index] != null && !playerChar.collided(arr[index])) {
-                arr[index].speedX = -1; 
-                arr[index].newPos();
-                arr[index].update();
-            }
+            hurtEnemy(arr[index], 100);
         }
     });
+    
+    killEnemies();
     
     if (bossChar != null) {
         bossChar.speedX = -1; 
@@ -310,7 +308,19 @@ function updateGameArea() {
             freeze = true; 
         }
     }
-    
+}
+
+function killEnemies() {
+    enemies.forEach(function(part, index, arr){
+        if (arr[index].hp <= 0) {
+            arr.splice(index, 1); 
+            spawnEnemy();
+            while(arr[index].hp <= 0) {
+                arr.splice(index, 1); 
+                spawnEnemy();
+            }
+        }
+    });
 }
 
 var freeze = false; 

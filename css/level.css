@@ -1,7 +1,52 @@
+html {
+    width: 100vw; 
+    height: 100vh; 
+}
+
+body {
+    padding: 0; 
+    margin: 0; 
+    width: 100vw; 
+    height: 100vh; 
+}
+
+#divLevelArt {
+    background-color: darksalmon; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 47vh; 
+    margin-top: 20vh; 
+}
+
+#divTriviaQuestion {
+    background-color: cadetblue; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    position: fixed; 
+    height: 20vh; 
+    width: 100vw; 
+    top: 0; 
+}
+
+#divAnswerButtons {
+    position: fixed;
+    bottom: 0; 
+    width: 100%; 
+    height: 33vh; 
+}
+
 .classQuizAnswer {
     background-color: aqua; 
-    height: 100px;
     border: 1px solid black; 
+    box-sizing: border-box; 
+    display: block; 
+    height: 50%;
+    width: 50%;
+    float: left; 
+}
+
+.classQuizAnswerRightSide {
+    float: right; 
 }
 
 .classQuizAnswerEliminated {

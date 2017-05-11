@@ -50,6 +50,28 @@ function clickSkill() {
     hurtEnemy(skillDamage);    
 }
 
+function clickItem(number) {
+    if(blockInput) 
+        return; 
+    if(!items[number])
+        return; 
+    hurtEnemy(itemDamage[items[number]]); 
+    items[number] = null; 
+    $("#divCombatButton" + number).empty();
+}
+
+function addItem(item) {
+    var searching = true; 
+    for (var i = 3; i <= 5 && searching; i++) {
+        if (!items[i]) {
+            items[i] = item; 
+            $("#divCombatButton" + i).html(item);
+            searching = false; 
+            console.log(i + " " + items[i]);
+        }
+    }
+}
+
 function hurtEnemy(damage) {
     enemyHP -= damage; 
     console.log ("enemyHP: " + enemyHP); // DEBUG
@@ -75,6 +97,11 @@ function hurtPlayer() {
 function startTrivia() {
     swapButtons();
     toggleQuestion();
+    if (remainingBosses > 0) {
+        remainingQuestions = 1; 
+    } else {
+        remainingQuestions = 3; 
+    }    
     nextQuestion();
 }
 
@@ -86,28 +113,6 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     console.log("GAME OVER"); // DEBUG
-}
-
-function clickItem(number) {
-    if(blockInput) 
-        return; 
-    if(!items[number])
-        return; 
-    hurtEnemy(itemDamage[items[number]]); 
-    items[number] = null; 
-    $("#divCombatButton" + number).empty();
-}
-
-function addItem(item) {
-    var searching = true; 
-    for (var i = 3; i <= 5 && searching; i++) {
-        if (!items[i]) {
-            items[i] = item; 
-            $("#divCombatButton" + i).html(item);
-            searching = false; 
-            console.log(i + " " + items[i]);
-        }
-    }
 }
 
 // Trivia Functions 
@@ -128,12 +133,22 @@ function clickAnswer(number) {
 }
 
 function nextQuestion() {
-    console.log("RQ " + remainingQuestions); 
+    blockInput = false;
     if (remainingQuestions > 0) {
+        $("#divQuestion").html("PLACEHOLDER QUESTION");
+        $("#divAnswer1").html("PLACEHOLDER QUESTION 1");
+        $("#divAnswer2").html("PLACEHOLDER QUESTION 2");
+        $("#divAnswer3").html("PLACEHOLDER QUESTION 3");
+        $("#divAnswer4").html("PLACEHOLDER QUESTION 4");
         remainingQuestions--; 
-        blockInput = false; 
         resetAnswerButtons();
-        // PLACEHOLDER, load next question
+    } else if (remainingBosses > 0) {
+        addItem("PLACEHOLDER ITEM");
+        bossChar = null; 
+        freeze = false; 
+        swapButtons();
+        toggleQuestion();
+        startCombat();
     } else {
         levelComplete();
     }
@@ -158,7 +173,6 @@ function addRandomItem() {
     // IGNORE
 }
 $("#divLevelArea").click(function(){
-    addItem("PLACEHOLDER");
     spawnEnemy();
 });
 
@@ -173,18 +187,22 @@ $("#divLevelArea").click(function(){
 // Side-Scrolling
 var playerChar;
 var myBackground;
-var enemyChar; 
 var enemies = []; 
+var bossChar; 
+var bossStop = 350; 
 
 function startGame() {
     playerChar = new component(80, 80, "images/placeholder/char.gif", 30, 190, "image");
     background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
     background.speedX = -1;
-    
+            
+    startCombat();
+    gameArea.start();    
+}
+
+function startCombat() {
+    remainingEnemies = 3; 
     spawnEnemy();
-    
-    gameArea.start();
-    
 }
 
 var gameArea = {
@@ -282,6 +300,17 @@ function updateGameArea() {
             }
         }
     });
+    
+    if (bossChar != null) {
+        bossChar.speedX = -1; 
+        bossChar.newPos();
+        bossChar.update();
+        if (bossChar.x <= bossStop) {
+            startTrivia();
+            freeze = true; 
+        }
+    }
+    
 }
 
 var freeze = false; 
@@ -290,9 +319,10 @@ function spawnEnemy() {
     if (remainingEnemies > 0) {
         enemies.push(new component(80, 80, "images/placeholder/char.gif", 480, 190, "image"));
         remainingEnemies --; 
-    } else {
-        freeze = true; 
-    }        
+    } else if (bossChar == null) {
+        remainingBosses--; 
+        bossChar = new component(80, 80, "images/placeholder/char.gif", 480, 190, "image"); 
+    }
 }
 
 $("#divLevelArea").ready(startGame);
@@ -303,13 +333,13 @@ $("#divLevelArea").ready(startGame);
 // Combat Script
 var blockInput = false; 
 
-var playerHP = 2; 
-var enemyHP = 5; 
-var enemyPower = 1; 
-var remainingEnemies = 10; 
-var items = []; 
-var itemDamage = []; 
-itemDamage["PLACEHOLDER"] = 2; 
+var playerHP = 2; // needs tuning 
+var enemyPower = 1; // remove later 
+var remainingEnemies = 3; // defined earlier 
+var items = []; // this is meh - change to object later 
+var itemDamage = []; // this is meh - change to object later 
+itemDamage["PLACEHOLDER"] = 2; // 
+var remainingBosses = 2; // needs to be defined when level data loads 
 
 $("#divCombatButton1").click(function(){clickEat();});
 $("#divCombatButton2").click(function(){clickSkill();});

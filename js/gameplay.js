@@ -159,6 +159,7 @@ function addRandomItem() {
 }
 $("#divLevelArea").click(function(){
     addItem("PLACEHOLDER");
+    spawnEnemy();
 });
 
 // UI Debug Script 
@@ -173,17 +174,18 @@ $("#divLevelArea").click(function(){
 var playerChar;
 var myBackground;
 var enemyChar; 
+var enemies = []; 
 
 function startGame() {
     playerChar = new component(80, 80, "images/placeholder/char.gif", 30, 190, "image");
     background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
+    background.speedX = -1;
     
-    enemyChar = new component(80, 80, "images/placeholder/char.gif", 300, 190, "image");
+    spawnEnemy();
     
     gameArea.start();
     
 }
-
 
 var gameArea = {
     canvas : $("#divLevelArea").children("canvas")[0],
@@ -203,7 +205,8 @@ var gameArea = {
     }
 }
 
-function component(width, height, color, x, y, type) {
+function component(width, height, color, x, y, type, initialHP) {
+    this.hp = (initialHP == null) ? 1 : initialHP; 
     this.type = type;
     if (type == "image" || type == "background") {
         this.image = new Image();
@@ -243,7 +246,7 @@ function component(width, height, color, x, y, type) {
         }
     }
     this.collided = function(obj) {
-        if (enemyChar == null) {
+        if (obj == null) {
             return false; 
         }
         var myRight = this.x + (this.width); 
@@ -254,23 +257,43 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-    if (playerChar.collided(enemyChar)) {
-        enemyChar = null; 
-    }
-    
+    if (freeze) 
+        return;     
     gameArea.clear();
-    background.speedX = -1;
+    
     background.newPos();    
     background.update();
+    
     playerChar.newPos();  
     playerChar.update();
-    if (enemyChar != null) {
-        enemyChar.speedX = -1; 
-        enemyChar.newPos();  
-        enemyChar.update();
-    }
+    
+    enemies.forEach(function(part, index, arr){
+        arr[index].speedX = -1; 
+        arr[index].newPos();
+        arr[index].update();        
+        if (playerChar.collided(arr[index])) {
+            arr[index].hp = 0; 
+            arr.splice(index, 1); 
+            spawnEnemy();            
+            if (arr[index] != null && !playerChar.collided(arr[index])) {
+                arr[index].speedX = -1; 
+                arr[index].newPos();
+                arr[index].update();
+            }
+        }
+    });
 }
 
+var freeze = false; 
+
+function spawnEnemy() {
+    if (remainingEnemies > 0) {
+        enemies.push(new component(80, 80, "images/placeholder/char.gif", 480, 190, "image"));
+        remainingEnemies --; 
+    } else {
+        freeze = true; 
+    }        
+}
 
 $("#divLevelArea").ready(startGame);
 
@@ -283,7 +306,7 @@ var blockInput = false;
 var playerHP = 2; 
 var enemyHP = 5; 
 var enemyPower = 1; 
-var remainingEnemies = 1; 
+var remainingEnemies = 10; 
 var items = []; 
 var itemDamage = []; 
 itemDamage["PLACEHOLDER"] = 2; 

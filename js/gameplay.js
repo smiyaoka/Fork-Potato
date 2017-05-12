@@ -65,6 +65,148 @@ function gameOver() {
 
 // COMBAT FUNCTIONS
 
+// The player character's component. 
+var playerChar;
+
+// The background image's component. 
+var myBackground;
+
+// The array of enemy components. 
+var enemies = []; 
+
+// The boss character's component. 
+var bossChar; 
+
+// Starts the level. 
+function startGame() {
+    // Set up the player and background components. 
+    playerChar = new component(80, 80, "images/placeholder/player1.gif", 
+                               30, 190, "combat", 0, playerMaxHP);
+    background = new component(800, 310, "images/placeholder/1.png", 
+                               0, 0, "background");
+    background.speedX = -1;
+    // Start the combat phase. 
+    startCombat();
+    // Start the canvas. 
+    gameArea.start();    
+}
+
+// The number of enemies in each combat phase of the level. 
+var enemiesPerCombat = 3; 
+
+// Starts the combat phase.  
+function startCombat() {
+    // Set the number of enemies. 
+    remainingEnemies = enemiesPerCombat; 
+    // Spawn one enemy. 
+    spawnEnemy();
+}
+
+// The area where the game characters are drawn. 
+var gameArea = {
+    canvas : $("#divLevelArea").children("canvas")[0],
+    // Called to set up the canvas. 
+    start : function() {
+        this.canvas = $("#divLevelArea").children("canvas")[0];
+        this.canvas.width = 480; 
+        this.canvas.height = 300; 
+        this.context = this.canvas.getContext("2d");
+        this.frameNo = 0;
+        // Update the game area every 10 milliseconds. 
+        this.interval = setInterval(updateGameArea, 10);
+    },
+    // Clears the canvas. 
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    // Stops the canvas entirely. 
+    stop : function() {
+        clearInterval(this.interval);
+    }
+}
+
+// Each component represents a character or sprite in the canvas. 
+// @param width The width of the component. 
+// @param height The height of the component. 
+// @param img The image for the component. . 
+// @param x The initial x position of the component. 
+// @param y The initial y position of the component. 
+// @param type The type of the component as a string. 
+// @param speedX The initial horizontal velocity of the component. 
+// @param initialHP The initial hp of the component. 
+function component(width, height, img, x, y, type, speedX, initialHP) {
+    // The initial hp. Set it to 1 if a value is not provided. 
+    this.hp = (initialHP == null) ? 1 : initialHP; 
+    // Set the component's type. 
+    this.type = type;
+    
+    // Set the image. 
+    this.image = new Image();
+    this.image.src = img; 
+    
+    // Set the width and height. 
+    this.width = width;
+    this.height = height;
+    
+    // speedX is the horizontal velocity. 
+    // If a speedX is not provided, set it to 0. 
+    this.speedX = (speedX == null) ? 0 : speedX; 
+    // speedY is the vertical velocity. 
+    this.speedY = 0;
+    
+    // Set the initial position. 
+    this.x = x;
+    this.y = y;    
+    
+    // Called to refresh the component. 
+    this.update = function() {
+        ctx = gameArea.context;
+        // Draw the image. 
+        ctx.drawImage(this.image, 
+            this.x, 
+            this.y,
+            this.width, this.height); 
+        // If it's a combat character, draw an hp marker. 
+        if (type == "combat") {
+            ctx.font="20px Georgia";
+            ctx.fillText(this.hp,this.x,this.y - 10);
+        } else if (type == "background") {
+            // If it's a background, draw the image again. 
+            ctx.drawImage(this.image, 
+                this.x + this.width, 
+                this.y,
+                this.width, this.height);
+        }
+    }
+    // Called to re-calculate the component's position. 
+    this.newPos = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        // If the component is a background, make it repeat. 
+        if (this.type == "background") {
+            if (this.x == -(this.width)) {
+                this.x = 0;
+            }
+        }
+    }
+    // Returns whether this component has collided with another component. 
+    // @param obj A component. 
+    // @return true if the components collided, else false. 
+    this.collided = function(obj) {
+        // Return false if the component is null. 
+        if (obj == null) {
+            return false; 
+        }
+        // Returns whether the other component's left has passed this
+        // component's right. 
+        var myRight = this.x + (this.width); 
+        var otherLeft = obj.x; 
+        return myRight > otherLeft;
+    }
+    // Stores this enemy's auto attack loop. 
+    this.autoAttackLoop; 
+}
+
 // Deals damage to a specific enemy. 
 // @param target The enemy. 
 // @param damage The damage to be dealt. 
@@ -173,9 +315,10 @@ function skillUpdate() {
         clearInterval(skillTimer); 
     } else {
         // Otherwise, display the cooldown time in the button. 
-        $("#divCombatButton2").html(skillCooldownInterval/1000);
+        $("#divCombatButton2").html(skillCooldownTime/1000);
     }
 }
+
 
 // The amount of hp healed when the player uses an item. 
 var itemHealing = 3; 
@@ -216,38 +359,56 @@ function addItem(item) {
 
 // TRIVIA FUNCTIONS 
 
+// The number of questions asked by each miniboss. 
+var miniBossQuestions = 1; 
 
+// The number of questions asked by the last boss in a level. 
+var bossQuestions = 3; 
+
+// Starts each trivia portion of the level. 
 function startTrivia() {
+    // Load the trivia windows and buttons. 
     swapButtons();
     toggleQuestion();
+    // Set the number of questions. 
     if (remainingBosses > 0) {
-        remainingQuestions = 1; 
+        // The boss is a miniboss. 
+        remainingQuestions = miniBossQuestions; 
     } else {
-        remainingQuestions = 3; 
-    }    
+        // The boss is the last boss in a level. 
+        remainingQuestions = bossQuestions; 
+    }
+    // Load the next question. 
     nextQuestion();
 }
 
-
-
+// Called when the player clicks on a question button. 
+// @param number The number of the question button. 
 function clickAnswer(number) {    
     if (blockInput) 
         return;     
-    if($("#divAnswer" + number).hasClass("classAnswerEliminated") || $("#divAnswer" + number).hasClass("classAnswerCorrect"))
+    // Check if the answer has already been selected. 
+    if($("#divAnswer" + number).hasClass("classAnswerEliminated") 
+       || $("#divAnswer" + number).hasClass("classAnswerCorrect"))
         return; 
-    
+    // If the answer is correct...
     if (number == correctAnswer) {
-        markCorrectButton(number);        
+        // Mark the answer as correct. 
+        markCorrectButton(number); 
+        // Set the timer for the next question. 
         blockInput = true; 
         setTimeout(nextQuestion, nextQuestionDelay);         
     } else {
+        // Otherwise, mark the answer as wrong and damage the player.
         eliminateButton(number);
         hurtPlayer(triviaDamage);
     }
 }
 
+// Loads the next question. 
 function nextQuestion() {
     blockInput = false;
+    // If there are remaining questions, load it. 
     if (remainingQuestions > 0) {
 		
 		//getting questions and answers from firebase 
@@ -289,157 +450,47 @@ function nextQuestion() {
         remainingQuestions--; 
         resetAnswerButtons();
     } else if (remainingBosses > 0) {
+        // Otherwise... 
+        // If it was just a miniboss...
+        // Give the player an item. 
         addItem("PLACEHOLDER ITEM<br>Heals up to 3 hp");
+        // Delete the boss character. 
         bossChar = null; 
+        // Return to combat gameplay. 
         freeze = false; 
         swapButtons();
         toggleQuestion();
         startCombat();
     } else {
+        // Otherwise, that was the last boss, so the level is over.  
         levelComplete();
     }
 }
 
+// Visibly marks an answer button as the correct answer. 
 function markCorrectButton(number) {
     $("#divAnswer" + number).addClass("classAnswerCorrect");
 }
 
+// Visibly marks an answer button as an incorrect answer. 
 function eliminateButton(number) {
     $("#divAnswer" + number).addClass("classAnswerEliminated");
 }
 
+// Remove all right and wrong style classes from all answer buttons. 
 function resetAnswerButtons() {
     for(var i = 1; i <= 4; i++) {
-        $("#divAnswer" + i).removeClass("classAnswerCorrect classAnswerEliminated");
+        $("#divAnswer" + i).removeClass(
+            "classAnswerCorrect classAnswerEliminated");
     }
 }    
 
-// Debug Functions and Script
-function addRandomItem() {
-    // IGNORE
-}
-$("#divLevelArea").click(function(){
-    //spawnEnemy();
-});
 
-// UI Debug Script 
-/*
-$("#divLevelArea").click(function(){
-    swapButtons();
-    toggleDialogue(); 
-});
-*/
 
-// Side-Scrolling
-var playerChar;
-var myBackground;
-var enemies = []; 
-var bossChar; 
-var bossStop = 350; 
 
-function startGame() {
-    playerChar = new component(80, 80, "images/placeholder/player1.gif", 30, 190, "image", playerMaxHP);
-    background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
-    background.speedX = -1;
-            
-    startCombat();
-    gameArea.start();    
-}
 
-function startCombat() {
-    remainingEnemies = 3; 
-    spawnEnemy();
-}
 
-var gameArea = {
-    canvas : $("#divLevelArea").children("canvas")[0],
-    start : function() {
-        this.canvas = $("#divLevelArea").children("canvas")[0];
-        this.canvas.width = 480; 
-        this.canvas.height = 300; 
-        this.context = this.canvas.getContext("2d");
-        this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 10);
-    },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    },
-    stop : function() {
-        clearInterval(this.interval);
-    }
-}
 
-function component(width, height, color, x, y, type, initialHP, speedX) {
-    this.boss = false; 
-    this.hp = (initialHP == null) ? 1 : initialHP; 
-    if (initialHP == 0) {
-        this.boss = true; 
-    }
-    this.type = type;
-    if (type == "image" || type == "background") {
-        this.image = new Image();
-        this.image.src = color;
-    }
-    this.width = width;
-    this.height = height;
-    this.speedX = (speedX == null) ? 0 : speedX; 
-    this.speedY = 0;    
-    this.x = x;
-    this.y = y;    
-    this.update = function() {
-        ctx = gameArea.context;
-        if (type == "image" || type == "background") {
-            ctx.drawImage(this.image, 
-                this.x, 
-                this.y,
-                this.width, this.height);
-            if (!this.boss) {
-                ctx.font="20px Georgia";
-                ctx.fillText(this.hp,this.x,this.y - 10);
-            }
-        if (type == "background") {
-            ctx.drawImage(this.image, 
-                this.x + this.width, 
-                this.y,
-                this.width, this.height);
-        }
-        } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
-    }
-    this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.type == "background") {
-            if (this.x == -(this.width)) {
-                this.x = 0;
-            }
-        }
-    }
-    this.collided = function(obj) {
-        if (obj == null) {
-            return false; 
-        }
-        var myRight = this.x + (this.width); 
-        var otherLeft = obj.x; 
-        return myRight > otherLeft;
-    }
-    this.autoAttackLoop; 
-}
-
-function skillUpdate() {
-    if (freeze) 
-        return; 
-    skillCooldownInterval -= 100; 
-    if(skillCooldownInterval <= 0) {
-        $("#divCombatButton2").html("Skill<br>Does 3 damage to range.");
-        skillOnCooldown = false; 
-        clearInterval(skillTimer); 
-    } else {
-        $("#divCombatButton2").html(skillCooldownInterval/1000);
-    }
-}
 
 function autoAttackUpdate(enemy) {
     if (freeze) 
@@ -447,6 +498,9 @@ function autoAttackUpdate(enemy) {
     hurtEnemy(enemy, autoAttackDamage); 
     hurtPlayer(enemyPower);
 }
+
+// The x position at which a boss or miniboss stops moving. 
+var bossStop = 350; 
 
 var autoAttackInterval = 800; 
 var autoAttackDamage = 1; 
@@ -530,13 +584,13 @@ var freeze = false;
 
 function spawnEnemy() {
     if (remainingEnemies > 0) {
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "image", enemyMaxHP, enemySpeedX));
+        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "combat", enemySpeedX,enemyMaxHP));
         remainingEnemies --; 
     } else if (bossChar == null) {
         if (remainingBosses == 1) {
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "image", 0, enemySpeedX); 
+            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "boss", enemySpeedX); 
         } else {
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "image", 0, enemySpeedX); 
+            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "boss", enemySpeedX); 
         }        
         remainingBosses--; 
     }

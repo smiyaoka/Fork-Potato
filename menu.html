@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>Home Screen</title>
+    <link type="text/css" rel="stylesheet" href="css/base.css"> 
+    
+</head> 
+
+<body> 
+    <div id="headerContainer">
+        <a href="#accountScreen"><button type="button" id="createBtn">Create Account</button></a>
+        <a href="#loginScreen"><button type="button" onclick="#loginScreen" id="loginBtn">Login</button></a>
+        
+        <div id="loginScreen">LOGIN<a href="#" class="cancel">&times;</a> </div> <div id="cover" > </div>
+        
+        <div id="accountScreen">CREATE ACCOUNT<a href="#" class="cancel">&times;</a> </div> <div id="cover" > </div>
+        
+    <div id="runningContainer">
+    </div>
+        
+        
+        <div id="menuContainer">
+        <div class="menuBtn" id="btnNewGame">
+            <a href="level.html"><button type="button" id="menuNewGame">New Game</button></a>
+            
+        </div>
+        <div class="menuBtn" id="btnBottom">
+            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Affilitrated Sites</button></a>
+            <button type="button" id="menuQuit">Quit</button>
+        </div>
+    </div>
+        
+</div>
+       
+        
+<script>
+function openNav() {
+    document.getElementById("myNav").style.height = "100%";
+}
+
+function closeNav() {
+    document.getElementById("myNav").style.height = "0%";
+}
+</script>
+    
+</body>
+
+</html>

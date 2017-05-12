@@ -125,8 +125,8 @@ function hurtEnemy(target, damage) {
     target.hp -= damage; 
 }
 
-function hurtPlayer() {
-    playerChar.hp -= enemyPower; 
+function hurtPlayer(damage) {
+    playerChar.hp -= damage; 
     refresh();
     if (playerChar.hp <= 0) {
         gameOver();
@@ -153,6 +153,7 @@ function levelComplete() {
 
 function gameOver() {
     blockInput = true; 
+    freeze = true; 
     console.log("GAME OVER"); // DEBUG
     toggleDialogue();
     $("#divDialogue").html("Game Over");
@@ -298,7 +299,7 @@ var gameArea = {
     }
 }
 
-function component(width, height, color, x, y, type, initialHP) {
+function component(width, height, color, x, y, type, initialHP, speedX) {
     this.boss = false; 
     this.hp = (initialHP == null) ? 1 : initialHP; 
     if (initialHP == 0) {
@@ -311,7 +312,7 @@ function component(width, height, color, x, y, type, initialHP) {
     }
     this.width = width;
     this.height = height;
-    this.speedX = 0;
+    this.speedX = (speedX == null) ? 0 : speedX; 
     this.speedY = 0;    
     this.x = x;
     this.y = y;    
@@ -353,9 +354,33 @@ function component(width, height, color, x, y, type, initialHP) {
         var myRight = this.x + (this.width); 
         var otherLeft = obj.x; 
         return myRight > otherLeft;
-    }    
+    }
+    this.autoAttackLoop; 
 }
 
+function skillUpdate() {
+    if (freeze) 
+        return; 
+    skillCooldownTime -= 100; 
+    console.log(skillCooldownTime/1000); 
+    if(skillCooldownTime <= 0) {
+        $("#divCombatButton2").html("Skill<br>Does 3 damage to range.");
+        skillCooldown = false; 
+        clearInterval(skillTimer); 
+    } else {
+        $("#divCombatButton2").html(skillCooldownTime/1000);
+    }
+}
+
+function autoAttackUpdate(enemy) {
+    if (freeze) 
+        return; 
+    hurtEnemy(enemy, autoAttackDamage); 
+    hurtPlayer(enemyPower);
+}
+
+var autoAttackInterval = 800; 
+var autoAttackDamage = 1; 
 function updateGameArea() {
     if (freeze) 
         return;     
@@ -363,17 +388,21 @@ function updateGameArea() {
     playerChar.newPos();  
         
     enemies.forEach(function(part, index, arr){
-        arr[index].speedX = -1; 
         arr[index].newPos();
         if (playerChar.collided(arr[index])) {
-            hurtEnemy(arr[index], 100);
+            if (arr[index].autoAttackLoop == null) {
+                arr[index].speedX = 0; 
+                autoAttackUpdate(arr[index]);
+                arr[index].autoAttackLoop = setInterval(function(){
+                    autoAttackUpdate(arr[index]);
+                }, autoAttackInterval); 
+            }
         }
     });
     
     killEnemies();
     
     if (bossChar != null) {
-        bossChar.speedX = -1; 
         bossChar.newPos();
         if (bossChar.x <= bossStop) {
             startTrivia();
@@ -392,7 +421,7 @@ function animate() {
 	imageNumber++
 	if(imageNumber == 5){
 		imageNumber = 1;
-		}
+    }
 	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
 }
 
@@ -417,6 +446,7 @@ function refresh() {
 function killEnemies() {
     enemies.forEach(function(part, index, arr){
         if (arr[index].hp <= 0) {
+            clearInterval(arr[index].autoAttackLoop); 
             arr.splice(index, 1); 
             spawnEnemy();
             while(arr[index] != null && arr[index].hp <= 0) {
@@ -431,13 +461,13 @@ var freeze = false;
 
 function spawnEnemy() {
     if (remainingEnemies > 0) {
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "image", enemyMaxHP));
+        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "image", enemyMaxHP, enemySpeedX));
         remainingEnemies --; 
     } else if (bossChar == null) {
         if (remainingBosses == 1) {
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "image", 0); 
+            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "image", 0, enemySpeedX); 
         } else {
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "image", 0); 
+            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "image", 0, enemySpeedX); 
         }        
         remainingBosses--; 
     }
@@ -453,6 +483,7 @@ var blockInput = false;
 
 var playerMaxHP = 10; 
 var enemyMaxHP = 3; 
+var enemySpeedX = -1; 
 var enemyPower = 1; // remove later 
 var remainingEnemies = 3; // defined earlier 
 var items = []; // this is meh - change to object later 

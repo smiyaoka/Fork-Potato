@@ -384,7 +384,7 @@ function updateGameArea() {
 }
 
 var imageNumber = 0; // number of images to animate
-var imgSpeedCount = 0; // the lowert the slower, adjust in refresh()
+var imgSpeedCount = 0; // the lower the faster char animates, adjust in refresh()
 
 //animating player 
 function animate() {

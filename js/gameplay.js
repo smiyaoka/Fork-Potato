@@ -267,7 +267,7 @@ var bossChar;
 var bossStop = 350; 
 
 function startGame() {
-    playerChar = new component(80, 80, "images/placeholder/player.gif", 30, 190, "image", playerMaxHP);
+    playerChar = new component(80, 80, "images/placeholder/player1.gif", 30, 190, "image", playerMaxHP);
     background = new component(800, 310, "images/placeholder/1.png", 0, 0, "background");
     background.speedX = -1;
             
@@ -383,9 +383,28 @@ function updateGameArea() {
     refresh();
 }
 
+var imageNumber = 0; // number of images to animate
+var imgSpeedCount = 0; // the lowert the slower, adjust in refresh()
+
+//animating player 
+function animate() {
+
+	imageNumber++
+	if(imageNumber == 5){
+		imageNumber = 1;
+		}
+	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
+}
+
 function refresh() {
     gameArea.clear();
     background.update();
+	
+    imgSpeedCount++; // the lower this number, the faster character move.
+    if(imgSpeedCount == 5) {
+	animate();
+	imgSpeedCount = 0;
+    }
     playerChar.update();
     enemies.forEach(function(part, index, arr){
         arr[index].update();        

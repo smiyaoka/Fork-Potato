@@ -1,58 +1,101 @@
 html {
-    width: 100vw; 
-    height: 100vh; 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
 }
 
 body {
     padding: 0; 
     margin: 0; 
-    width: 100vw; 
-    height: 100vh; 
+    width: 100%; 
+    height: 100%; 
 }
 
-#divLevelArt {
-    background-color: darksalmon; 
+#divLevelArea {
+    background-color: black; 
     border: 1px solid black; 
     box-sizing: border-box; 
-    height: 47vh; 
-    margin-top: 20vh; 
+    height: 67.1%; 
 }
 
-#divTriviaQuestion {
+#canvasLevelArea {
+    width: 100%; 
+    height: 100%; 
+}
+
+#divDialogue {
+    position: absolute; 
+    background-color: darkolivegreen;  
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 20%; 
+    width: 100%; 
+    top: 0; 
+}
+
+#divQuestion {
+    position: absolute; 
     background-color: cadetblue; 
     border: 1px solid black; 
     box-sizing: border-box; 
-    position: fixed; 
-    height: 20vh; 
-    width: 100vw; 
+    height: 20%; 
+    width: 100%; 
     top: 0; 
+}
+
+#divCombatButtons {
+    position: fixed;
+    bottom: 0; 
+    width: 100%; 
+    height: 33%;     
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
 }
 
 #divAnswerButtons {
     position: fixed;
     bottom: 0; 
     width: 100%; 
-    height: 33vh; 
+    height: 33%; 
+    min-height: 33%; 
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
 }
 
-.classQuizAnswer {
+.classCombatButton {
+    background-color: forestgreen; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 50%;    
+}
+
+#divCombatButton1, #divCombatButton2 {
+    width: 50%; 
+}
+
+#divCombatButton3, #divCombatButton5 {
+    width: 33%; 
+}
+
+#divCombatButton4 {
+    width: 34%; 
+}
+
+.classAnswer {
     background-color: aqua; 
     border: 1px solid black; 
     box-sizing: border-box; 
-    display: block; 
     height: 50%;
     width: 50%;
-    float: left; 
 }
 
-.classQuizAnswerRightSide {
-    float: right; 
-}
-
-.classQuizAnswerEliminated {
+.classAnswerEliminated {
     background-color: grey; 
 }
 
-.classQuizAnswerCorrect {
+.classAnswerCorrect {
     background-color: green; 
 }

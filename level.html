@@ -5,39 +5,59 @@
 	<title>Level Screen</title>
     <link type="text/css" rel="stylesheet" href="css/level.css">
     <script src="js/jquery-3.2.1.min.js"></script>
-	<script src="https://cdn.firebase.com/js/client/2.3.1/firebase.js"></script>
 	
 </head> 
 
 <body> 
-    <div id="divQuestion" style="display: none;">
+    <div id="divTriviaQuestion">
         
     </div>
     
-    <div id="divDialogue" style="display: none;">
+    <div id="divLevelArt"> </div>
     
-    </div>
-    
-    <div id="divLevelArea"> 
-        <canvas id="canvasLevelArea"></canvas>
-    </div>
-    
-    <div id="divCombatButtons">
-        <div class="classCombatButton" id="divCombatButton1">Eat<br>Does one damage. </div>
-        <div class="classCombatButton" id="divCombatButton2">Skill<br>Does 3 damage to range.</div>
-        <div class="classCombatButton" id="divCombatButton3"></div>
-        <div class="classCombatButton" id="divCombatButton4"></div>
-        <div class="classCombatButton" id="divCombatButton5"></div>
-    </div>
-    
-    <div id="divAnswerButtons" style="display: none;">
-        <div class="classAnswer" id="divAnswer1"></div>
-        <div class="classAnswer" id="divAnswer2"></div>
-        <div class="classAnswer" id="divAnswer3"></div>
-        <div class="classAnswer" id="divAnswer4"></div>
+    <div id="divAnswerButtons">
+        <div class="classQuizAnswer" id="divQuizAnswer1">
+        </div>
+        <div class="classQuizAnswer classQuizAnswerRightSide" id="divQuizAnswer2"></div>
+        <div class="classQuizAnswer" id="divQuizAnswer3"></div>
+        <div class="classQuizAnswer classQuizAnswerRightSide" id="divQuizAnswer4"></div>
     </div>
 </body>
 
 </html>
 
-<script src="js/gameplay.js"></script>
+<script>
+    function clickQuizButton(number) {
+        if (number == correctAnswer) {
+            markCorrectQuizButton(number);
+        } else {
+            eliminateQuizButton(number);
+        }
+    }
+    
+    function markCorrectQuizButton(number) {
+        $("#divQuizAnswer" + number).addClass("classQuizAnswerCorrect");
+    }
+    
+    function eliminateQuizButton(number) {
+        $("#divQuizAnswer" + number).addClass("classQuizAnswerEliminated");
+    }
+    
+    function nextQuestion() {
+        for(var i = 1; i <= 4; i++) {
+            $("#divQuizAnswer" + i).removeClass("classQuizAnswerCorrect classQuizAnswerEliminated");
+        }
+    }
+    
+</script>
+
+<script> 
+    var correctAnswer = 4; 
+    
+    for(let i = 1; i <= 4; i++) {
+        $("#divQuizAnswer" + i).click(function(){clickQuizButton(i);});
+    }
+    
+    $("#divTempClear").click(function(){nextQuestion();});
+    
+</script>

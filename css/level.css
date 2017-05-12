@@ -1,0 +1,101 @@
+html {
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    padding: 0; 
+    margin: 0; 
+    width: 100%; 
+    height: 100%; 
+}
+
+#divLevelArea {
+    background-color: black; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 67.1%; 
+}
+
+#canvasLevelArea {
+    width: 100%; 
+    height: 100%; 
+}
+
+#divDialogue {
+    position: absolute; 
+    background-color: darkolivegreen;  
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 20%; 
+    width: 100%; 
+    top: 0; 
+}
+
+#divQuestion {
+    position: absolute; 
+    background-color: cadetblue; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 20%; 
+    width: 100%; 
+    top: 0; 
+}
+
+#divCombatButtons {
+    position: fixed;
+    bottom: 0; 
+    width: 100%; 
+    height: 33%;     
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
+}
+
+#divAnswerButtons {
+    position: fixed;
+    bottom: 0; 
+    width: 100%; 
+    height: 33%; 
+    min-height: 33%; 
+    display: flex; 
+    flex-wrap: wrap; 
+    flex-direction: row; 
+}
+
+.classCombatButton {
+    background-color: forestgreen; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 50%;    
+}
+
+#divCombatButton1, #divCombatButton2 {
+    width: 50%; 
+}
+
+#divCombatButton3, #divCombatButton5 {
+    width: 33%; 
+}
+
+#divCombatButton4 {
+    width: 34%; 
+}
+
+.classAnswer {
+    background-color: aqua; 
+    border: 1px solid black; 
+    box-sizing: border-box; 
+    height: 50%;
+    width: 50%;
+}
+
+.classAnswerEliminated {
+    background-color: grey; 
+}
+
+.classAnswerCorrect {
+    background-color: green; 
+}

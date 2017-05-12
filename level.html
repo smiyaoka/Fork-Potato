@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>Level Screen</title>
+    <link type="text/css" rel="stylesheet" href="css/level.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+	<script src="https://cdn.firebase.com/js/client/2.3.1/firebase.js"></script>
+	
+</head> 
+
+<body> 
+    <div id="divQuestion" style="display: none;">
+        
+    </div>
+    
+    <div id="divDialogue" style="display: none;">
+    
+    </div>
+    
+    <div id="divLevelArea"> 
+        <canvas id="canvasLevelArea"></canvas>
+    </div>
+    
+    <div id="divCombatButtons">
+        <div class="classCombatButton" id="divCombatButton1">Eat<br>Does one damage. </div>
+        <div class="classCombatButton" id="divCombatButton2">Skill<br>Does 3 damage to range.</div>
+        <div class="classCombatButton" id="divCombatButton3"></div>
+        <div class="classCombatButton" id="divCombatButton4"></div>
+        <div class="classCombatButton" id="divCombatButton5"></div>
+    </div>
+    
+    <div id="divAnswerButtons" style="display: none;">
+        <div class="classAnswer" id="divAnswer1"></div>
+        <div class="classAnswer" id="divAnswer2"></div>
+        <div class="classAnswer" id="divAnswer3"></div>
+        <div class="classAnswer" id="divAnswer4"></div>
+    </div>
+</body>
+
+</html>
+
+<script src="js/gameplay.js"></script>

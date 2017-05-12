@@ -89,7 +89,7 @@ function skillUpdate() {
     skillCooldownTime -= 100; 
     console.log(skillCooldownTime/1000); 
     if(skillCooldownTime <= 0) {
-        $("#divCombatButton2").html("Eat<br>Does one damage.");
+        $("#divCombatButton2").html("Skill<br>Does 3 damage to range.");
         skillCooldown = false; 
         clearInterval(skillTimer); 
     } else {
@@ -363,7 +363,7 @@ function updateGameArea() {
     playerChar.newPos();  
         
     enemies.forEach(function(part, index, arr){
-        arr[index].speedX = -2; 
+        arr[index].speedX = -1; 
         arr[index].newPos();
         if (playerChar.collided(arr[index])) {
             hurtEnemy(arr[index], 100);
@@ -373,7 +373,7 @@ function updateGameArea() {
     killEnemies();
     
     if (bossChar != null) {
-        bossChar.speedX = -2; 
+        bossChar.speedX = -1; 
         bossChar.newPos();
         if (bossChar.x <= bossStop) {
             startTrivia();
@@ -469,7 +469,7 @@ for(let i = 3; i <= 5; i++) {
 
 // Trivia Script 
 var correctAnswer = 1; 
-var nextQuestionDelay = 3000; 
+var nextQuestionDelay = 1200; 
 var triviaDamage = 1; 
 var remainingQuestions = 2; 
 

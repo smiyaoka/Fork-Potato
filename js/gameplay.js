@@ -1,7 +1,7 @@
 //connect to firebase.
  var ref = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
 
-// UI FUNCTIONS 
+// UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Switches between the combat buttons and the trivia buttons. 
 function swapButtons() {
@@ -42,7 +42,7 @@ function toggleDialogue() {
     }
 }
 
-// GAME FLOW FUNCTIONS 
+// GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
 // This function is currently a placeholder. 
@@ -63,7 +63,14 @@ function gameOver() {
     $("#divDialogue").html("Game Over");
 }
 
-// COMBAT FUNCTIONS
+// COMBAT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Freezes the level. 
+var freeze = false; 
+
+// Prevents the player from clicking certain buttons. 
+// This doesn't freeze the entire level. 
+var blockInput = false; 
 
 // The player character's component. 
 var playerChar;
@@ -76,6 +83,24 @@ var enemies = [];
 
 // The boss character's component. 
 var bossChar; 
+
+// The array of items. 
+var items = []; 
+
+// The player's max hp. 
+var playerMaxHP = 10; 
+
+// Each enemy's max hp. 
+var enemyMaxHP = 3; 
+
+// Each enemy's initial horizontal velocity. 
+var enemySpeedX = -1; 
+
+// The number of enemies remaining in this combat phase. 
+var remainingEnemies = 3; 
+
+// The number of bosses remaining in this level. 
+var remainingBosses = 2;
 
 // Starts the level. 
 function startGame() {
@@ -207,6 +232,155 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.autoAttackLoop; 
 }
 
+// The interval between each auto attack, measured in milliseconds. 
+var autoAttackInterval = 800; 
+
+// The damage dealt during an auto attack. 
+var autoAttackDamage = 1; 
+
+// Repeatedly called as part of the auto attack mechanic. 
+// Each auto attack deals damage to both the player and the enemy. 
+function autoAttackUpdate(enemy) {
+    if (freeze) 
+        return; 
+    hurtEnemy(enemy, autoAttackDamage); 
+    hurtPlayer(autoAttackDamage);
+}
+
+// The x position at which a boss or miniboss stops moving. 
+var bossStop = 350; 
+
+// Updates the level. 
+function updateGameArea() {
+    if (freeze) 
+        return;     
+    // Determine the new background and player positions. 
+    background.newPos();            
+    playerChar.newPos();  
+    // For each enemy... 
+    enemies.forEach(function(part, index, arr){
+        // Determine the new position. 
+        arr[index].newPos();
+        // If the enemy collides with the player... 
+        if (playerChar.collided(arr[index])) {
+            // and it's the first time... 
+            if (arr[index].autoAttackLoop == null) {
+                // Make the enemy stop moving. 
+                arr[index].speedX = 0; 
+                // Start the autoattack loop. 
+                autoAttackUpdate(arr[index]);
+                arr[index].autoAttackLoop = setInterval(function(){
+                    autoAttackUpdate(arr[index]);
+                }, autoAttackInterval); 
+            }
+        }
+    });
+    // Remove defeated enemies from the level. 
+    killEnemies();
+    // If there's a boss in the level...
+    if (bossChar != null) {
+        bossChar.newPos();
+        // And it reaches the stop point...
+        if (bossChar.x <= bossStop) {
+            // Start the trivia gameplay. 
+            startTrivia();
+            freeze = true; 
+        }
+    }    
+    refresh();
+}
+
+// Deletes enemies by removing them from the array. 
+function killEnemies() {
+    enemies.forEach(function(part, index, arr){
+        // If the enemy's health is fully depleted. 
+        if (arr[index].hp <= 0) {
+            // Stop auto attacking if the enemy `already is. 
+            if (arr[index].autoAttackLoop != null) {
+                clearInterval(arr[index].autoAttackLoop); 
+            }
+            // Remove the enemy from the array. 
+            arr.splice(index, 1); 
+            // Spawn a new enemy. 
+            spawnEnemy();
+            // Repeat the previous code. This helps when the 
+            // changing index values makes the foreach loop skip 
+            // an enemy. 
+            while(arr[index] != null && arr[index].hp <= 0) {
+                if (arr[index].autoAttackLoop != null) {
+                    clearInterval(arr[index].autoAttackLoop); 
+                }
+                arr.splice(index, 1); 
+                spawnEnemy();
+            }
+        }
+    });
+}
+
+// Refreshes the level canvas. 
+function refresh() {
+    // Clear the canvas and draw the background. 
+    gameArea.clear();
+    background.update();
+	
+    // The lower this number, the faster character move.
+    imgSpeedCount++; 
+    if(imgSpeedCount == 5) {
+	animate();
+	imgSpeedCount = 0;
+    }
+    
+    // Draw the player character. 
+    playerChar.update();    
+    // Draw the enemy characters. 
+    enemies.forEach(function(part, index, arr){
+        arr[index].update();        
+    });    
+    // Draw the boss character if one exists. 
+    if (bossChar != null) {
+        bossChar.update();
+    }
+}
+
+// The number of images to animate. 
+var imageNumber = 0; 
+
+// the lower the faster char animates, adjust in refresh()
+var imgSpeedCount = 0; 
+
+//animating player 
+function animate() {
+	imageNumber++
+	if(imageNumber == 5){
+		imageNumber = 1;
+    }
+	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
+}
+
+// Spawns an enemy, miniboss, or boss. 
+function spawnEnemy() {
+    // If there are still enemies left in this combat phase. 
+    if (remainingEnemies > 0) {
+        // Spawn a regular enemy. 
+        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 
+                                   480, 190, "combat", enemySpeedX,enemyMaxHP));
+        remainingEnemies --; 
+        // Otherwise, if a boss hasn't been spawned yet... 
+    } else if (bossChar == null) {
+        // IF this is the last boss in the level...
+        if (remainingBosses == 1) {
+            // Spawn the last boss in this level. 
+            bossChar = new component(80, 80, "images/placeholder/final.gif", 
+                                     480, 190, "boss", enemySpeedX); 
+        } else {
+            // Otherwise, spawn a miniboss. 
+            bossChar = new component(80, 80, "images/placeholder/potato.gif", 
+                                     480, 190, "boss", enemySpeedX); 
+        }        
+        remainingBosses--; 
+    }
+}
+
 // Deals damage to a specific enemy. 
 // @param target The enemy. 
 // @param damage The damage to be dealt. 
@@ -319,7 +493,6 @@ function skillUpdate() {
     }
 }
 
-
 // The amount of hp healed when the player uses an item. 
 var itemHealing = 3; 
 
@@ -356,14 +529,25 @@ function addItem(item) {
     }
 }
 
-
-// TRIVIA FUNCTIONS 
+// TRIVIA FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // The number of questions asked by each miniboss. 
 var miniBossQuestions = 1; 
 
 // The number of questions asked by the last boss in a level. 
 var bossQuestions = 3; 
+
+// The damage dealt to the player for each wrong answer. 
+var triviaDamage = 1; 
+
+// The delay before the next question loads. 
+var nextQuestionDelay = 1200; 
+
+// The number of questions remaining in this trivia phase. 
+var remainingQuestions = 2; 
+
+// The answer button corresponding with the correct answer. 
+var correctAnswer = 1; 
 
 // Starts each trivia portion of the level. 
 function startTrivia() {
@@ -485,152 +669,20 @@ function resetAnswerButtons() {
     }
 }    
 
+// SETUP CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-
-
-
-
-function autoAttackUpdate(enemy) {
-    if (freeze) 
-        return; 
-    hurtEnemy(enemy, autoAttackDamage); 
-    hurtPlayer(enemyPower);
-}
-
-// The x position at which a boss or miniboss stops moving. 
-var bossStop = 350; 
-
-var autoAttackInterval = 800; 
-var autoAttackDamage = 1; 
-function updateGameArea() {
-    if (freeze) 
-        return;     
-    background.newPos();            
-    playerChar.newPos();  
-        
-    enemies.forEach(function(part, index, arr){
-        arr[index].newPos();
-        if (playerChar.collided(arr[index])) {
-            if (arr[index].autoAttackLoop == null) {
-                arr[index].speedX = 0; 
-                autoAttackUpdate(arr[index]);
-                arr[index].autoAttackLoop = setInterval(function(){
-                    autoAttackUpdate(arr[index]);
-                }, autoAttackInterval); 
-            }
-        }
-    });
-    
-    killEnemies();
-    
-    if (bossChar != null) {
-        bossChar.newPos();
-        if (bossChar.x <= bossStop) {
-            startTrivia();
-            freeze = true; 
-        }
-    }    
-    refresh();
-}
-
-var imageNumber = 0; // number of images to animate
-var imgSpeedCount = 0; // the lower the faster char animates, adjust in refresh()
-
-//animating player 
-function animate() {
-
-	imageNumber++
-	if(imageNumber == 5){
-		imageNumber = 1;
-    }
-	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
-}
-
-function refresh() {
-    gameArea.clear();
-    background.update();
-	
-    imgSpeedCount++; // the lower this number, the faster character move.
-    if(imgSpeedCount == 5) {
-	animate();
-	imgSpeedCount = 0;
-    }
-    playerChar.update();
-    enemies.forEach(function(part, index, arr){
-        arr[index].update();        
-    });
-    if (bossChar != null) {
-        bossChar.update();
-    }
-}
-
-function killEnemies() {
-    enemies.forEach(function(part, index, arr){
-        if (arr[index].hp <= 0) {
-            clearInterval(arr[index].autoAttackLoop); 
-            arr.splice(index, 1); 
-            spawnEnemy();
-            while(arr[index] != null && arr[index].hp <= 0) {
-                arr.splice(index, 1); 
-                spawnEnemy();
-            }
-        }
-    });
-}
-
-var freeze = false; 
-
-function spawnEnemy() {
-    if (remainingEnemies > 0) {
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 480, 190, "combat", enemySpeedX,enemyMaxHP));
-        remainingEnemies --; 
-    } else if (bossChar == null) {
-        if (remainingBosses == 1) {
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 480, 190, "boss", enemySpeedX); 
-        } else {
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 480, 190, "boss", enemySpeedX); 
-        }        
-        remainingBosses--; 
-    }
-}
-
-$("#divLevelArea").ready(startGame);
-
-
-
-
-// Combat Script
-var blockInput = false; 
-
-var playerMaxHP = 10; 
-var enemyMaxHP = 3; 
-var enemySpeedX = -1; 
-var enemyPower = 1; // remove later 
-var remainingEnemies = 3; // defined earlier 
-var items = []; // this is meh - change to object later 
-var itemDamage = []; // this is meh - change to object later 
-itemDamage["PLACEHOLDER"] = 2; // 
-var remainingBosses = 2; // needs to be defined when level data loads 
-
+// Set events for the combat buttons. 
 $("#divCombatButton1").click(function(){clickEat();});
 $("#divCombatButton2").click(function(){clickSkill();});
 for(let i = 3; i <= 5; i++) {
     $("#divCombatButton" + i).click(function(){clickItem(i);});
 }
 
-
-// Trivia Script 
-var correctAnswer = 1; 
-var nextQuestionDelay = 1200; 
-var triviaDamage = 1; 
-var remainingQuestions = 2; 
-
+// Set events for the trivia buttons. 
 for(let i = 1; i <= 4; i++) {
     $("#divAnswer" + i).click(function(){clickAnswer(i);});
 }
 
+$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
-
 

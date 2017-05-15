@@ -103,10 +103,22 @@ var remainingEnemies = 3;
 var remainingBosses = 2;
 
 // The width of the game area. 
-var gameWidth = 480; 
+var gameWidth;  
 
 // The height of the game area. 
-var gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
+var gameHeight; 
+
+// Calculates gameWidth and gameHeight differently depending on screen orientation. 
+if ($(window).height() > $(window).width()) {
+    // Initially portrait. 
+    gameWidth = 480; 
+    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
+} else {
+    // Initially landscape. 
+    gameHeight = 480; 
+    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
+}
+
 
 // The y distance between the bottom of the game area and the bottom of each character. 
 var yFromBottom = 80; 

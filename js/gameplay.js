@@ -102,13 +102,22 @@ var remainingEnemies = 3;
 // The number of bosses remaining in this level. 
 var remainingBosses = 2;
 
+// The width of the game area. 
+var gameWidth = 480; 
+
+// The height of the game area. 
+var gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
+
+// The y distance between the bottom of the game area and the bottom of each character. 
+var yFromBottom = 80; 
+
 // Starts the level. 
 function startGame() {
     // Set up the player and background components. 
-    playerChar = new component(80, 80, "images/placeholder/player1.gif", 
-                               30, 190, "combat", 0, playerMaxHP);
-    background = new component(800, 310, "images/placeholder/1.png", 
-                               0, 0, "background");
+    playerChar = new component(130, 130, "images/placeholder/player1.gif", 
+                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
+    background = new component(800, 600, "images/placeholder/1.png", 
+                               0, gameHeight - 600, "background");
     background.speedX = -1;
     // Start the combat phase. 
     startCombat();
@@ -133,8 +142,8 @@ var gameArea = {
     // Called to set up the canvas. 
     start : function() {
         this.canvas = $("#divLevelArea").children("canvas")[0];
-        this.canvas.width = 480; 
-        this.canvas.height = 300; 
+        this.canvas.width = gameWidth; 
+        this.canvas.height = gameHeight; 
         this.context = this.canvas.getContext("2d");
         this.frameNo = 0;
         // Update the game area every 10 milliseconds. 
@@ -248,7 +257,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 350; 
+var bossStop = 320; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -362,20 +371,23 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (remainingEnemies > 0) {
         // Spawn a regular enemy. 
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 
-                                   480, 190, "combat", enemySpeedX,enemyMaxHP));
+        enemies.push(new component(130, 130, "images/placeholder/enemy.gif", 
+                                   480, gameHeight - yFromBottom - 130, 
+                                   "combat", enemySpeedX,enemyMaxHP));
         remainingEnemies --; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, "images/placeholder/final.gif", 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, "images/placeholder/potato.gif", 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         }        
         remainingBosses--; 
     }

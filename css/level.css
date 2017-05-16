@@ -116,15 +116,6 @@ body {
     background-color: green; 
 }
 
-
-
-
-
-
-
-
-
-
 #cover {
     position:fixed;
     top:0;
@@ -136,35 +127,23 @@ body {
     display:none;
 }
 
-#pauseScreen { 
-    height:380px;
-    width:340px;
-    margin:0 auto;
-    position:relative;
+#divPauseScreen { 
+    height:50%;
+    width:50%;
+    margin:auto;
+    position:absolute;
     z-index:10;
     display:none;
     background: url(login.png) no-repeat;
     border:5px solid #cccccc;
     border-radius:10px;
-    margin-top: 10px;
     background-color: white;
+    left: 0; 
+    right: 0; 
+    top: 0; 
+    bottom: 0;
 } 
 
-#pauseScreen:target, #pauseScreen:target + #cover{ 
-    display:block;
-    opacity:2;
-} 
-
-
-.cancel { 
-    display:block;
-    position:absolute;
-    top:3px; right:2px;
-    background:rgb(245,245,245);
-    color:black;
-    height:30px;
-    width:35px; 
-    font-size:30px;
-    text-decoration:none;
-    text-align:center; font-weight:bold; 
+#divResume {
+    background-color: chartreuse; 
 }

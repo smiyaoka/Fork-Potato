@@ -42,6 +42,14 @@ function toggleDialogue() {
     }
 }
 
+// Opens the pause menu and pauses the game. 
+function pauseToggle(pause) {
+    freeze = pause; 
+    blockInput = pause; 
+    $("#divPauseScreen").css("display", (pause ? "block" : "none"));
+}
+
+
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
@@ -766,3 +774,5 @@ for(let i = 1; i <= 4; i++) {
 $("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
+$("#divPauseButton").click(function(){pauseToggle(true);});
+$("#divResume").click(function(){pauseToggle(false);});

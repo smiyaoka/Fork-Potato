@@ -613,14 +613,29 @@ function clickAnswer(number) {
     }
 }
 
+// Tracks which questions have already been used in this level. 
+var usedQuestions = []; 
+
 // Loads the next question. 
 function nextQuestion() {
     blockInput = false;
     // If there are remaining questions, load it. 
     if (remainingQuestions > 0) {
 		
+        resetAnswerButtons();
+        
         // Get the random question number. 
-        var questionNumber = randomQuestionNumber();
+        var questionNumber;
+        var repeatQuestion; 
+        do {
+            questionNumber = randomQuestionNumber();
+            repeatQuestion = false; 
+            usedQuestions.forEach(function(part, index, arr){
+                if (questionNumber == usedQuestions[index]){
+                    repeatQuestion = true; 
+                }
+            });
+        } while(repeatQuestion); 
         
 		//getting questions and answers from firebase 
 		//question
@@ -678,7 +693,6 @@ function nextQuestion() {
         });
 		
         remainingQuestions--; 
-        resetAnswerButtons();
     } else if (remainingBosses > 0) {
         // Otherwise... 
         // If it was just a miniboss...
@@ -725,6 +739,7 @@ function resetAnswerButtons() {
     for(var i = 1; i <= 4; i++) {
         $("#divAnswer" + i).removeClass(
             "classAnswerCorrect classAnswerEliminated");
+        $("divAnswer" + i).html("");
     }
 }    
 

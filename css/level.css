@@ -25,14 +25,26 @@ body {
     height: 100%; 
 }
 
+#divPauseButton {
+    background-color: darkred; 
+    position: absolute; 
+    height: 60px; 
+    width: 60px; 
+    margin: 0 auto; 
+    right: 0; 
+}
+
 #divDialogue {
     position: absolute; 
     background-color: darkolivegreen;  
     border: 1px solid black; 
     box-sizing: border-box; 
     height: 20%; 
-    width: 100%; 
+    width: 50%; 
     top: 0; 
+    margin: 0 auto; 
+    left: 0; 
+    right: 0; 
 }
 
 #divQuestion {
@@ -41,8 +53,11 @@ body {
     border: 1px solid black; 
     box-sizing: border-box; 
     height: 20%; 
-    width: 100%; 
+    width: 50%; 
     top: 0; 
+    margin: 0 auto; 
+    left: 0; 
+    right: 0; 
 }
 
 #divCombatButtons {

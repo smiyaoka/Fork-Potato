@@ -553,6 +553,12 @@ function addItem(item) {
     }
 }
 
+// Changes the text in the dialogue box. 
+function updateDialogue(text) {
+    $("divDialogue").html(text);
+}
+
+
 // TRIVIA FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // The number of questions asked by each miniboss. 

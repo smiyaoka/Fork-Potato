@@ -1,5 +1,5 @@
 //connect to firebase.
- var ref = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
+var refQuestions = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -645,7 +645,7 @@ function nextQuestion() {
         
 		//getting questions and answers from firebase 
 		//question
-		ref.child("question" + questionNumber + "/question").on(
+		refQuestions.child("question" + questionNumber + "/question").on(
             "value", function(snapshot) {
 			$("#divQuestion").html(snapshot.val());
         }, function (errorObject) {
@@ -667,7 +667,7 @@ function nextQuestion() {
         }
         
         //answer1(correct answer)
-		ref.child("question" + questionNumber + "/answer1").on("value", 
+		refQuestions.child("question" + questionNumber + "/answer1").on("value", 
             function(snapshot) {
                 $("#divAnswer" + correctAnswer).html(snapshot.val());
         }, function (errorObject) {
@@ -675,7 +675,7 @@ function nextQuestion() {
         });
 		
 		//answer2
-		ref.child("question" + questionNumber + "/answer2").on("value", 
+		refQuestions.child("question" + questionNumber + "/answer2").on("value", 
             function(snapshot) {
                 $("#divAnswer" + wrong[2]).html(snapshot.val());
         }, function (errorObject) {
@@ -683,7 +683,7 @@ function nextQuestion() {
         });
 		
 		//answer3
-		ref.child("question" + questionNumber + "/answer3").on("value", 
+		refQuestions.child("question" + questionNumber + "/answer3").on("value", 
             function(snapshot) {
 			     $("#divAnswer" + wrong[3]).html(snapshot.val());
         }, function (errorObject) {
@@ -691,7 +691,7 @@ function nextQuestion() {
         });
 		
 		//answer4
-		ref.child("question" + questionNumber + "/answer4").on("value", 
+		refQuestions.child("question" + questionNumber + "/answer4").on("value", 
             function(snapshot) {
 			     $("#divAnswer" + wrong[4]).html(snapshot.val());
         }, function (errorObject) {

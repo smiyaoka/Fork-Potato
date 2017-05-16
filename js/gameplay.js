@@ -571,7 +571,7 @@ var nextQuestionDelay = 1200;
 var remainingQuestions = 2; 
 
 // The answer button corresponding with the correct answer. 
-var correctAnswer = 1; 
+var correctAnswer;
 
 // Starts each trivia portion of the level. 
 function startTrivia() {
@@ -627,30 +627,40 @@ function nextQuestion() {
           console.log("The read failed: " + errorObject.code);
         });
 		
+        correctAnswer = d4();
+        var wrong = []; 
+        for (var i = 2; i <= 4; i++) {
+            var slot; 
+            do {
+                slot = d4();
+            } while(slot == correctAnswer || slot == wrong[2] || slot == wrong[3] || slot == wrong[4]);
+            wrong[i] = slot; 
+        }
+        
         //answer1(correct answer)
 		ref.child("question1/answer1").on("value", function(snapshot) {
-			$("#divAnswer1").html(snapshot.val());
+			$("#divAnswer" + correctAnswer).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer2
 		ref.child("question1/answer2").on("value", function(snapshot) {
-			$("#divAnswer2").html(snapshot.val());
+			$("#divAnswer" + wrong[2]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer3
 		ref.child("question1/answer3").on("value", function(snapshot) {
-			$("#divAnswer3").html(snapshot.val());
+			$("#divAnswer" + wrong[3]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer4
 		ref.child("question1/answer4").on("value", function(snapshot) {
-			$("#divAnswer4").html(snapshot.val());
+			$("#divAnswer" + wrong[4]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
@@ -673,6 +683,11 @@ function nextQuestion() {
         // Otherwise, that was the last boss, so the level is over.  
         levelComplete();
     }
+}
+
+// Random number, 1-4
+function d4() {
+    return 1 + Math.floor(Math.random() * 4);
 }
 
 // Visibly marks an answer button as the correct answer. 

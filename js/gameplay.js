@@ -619,48 +619,60 @@ function nextQuestion() {
     // If there are remaining questions, load it. 
     if (remainingQuestions > 0) {
 		
+        // Get the random question number. 
+        var questionNumber = randomQuestionNumber();
+        
 		//getting questions and answers from firebase 
 		//question
-		ref.child("question1/question").on("value", function(snapshot) {
+		ref.child("question" + questionNumber + "/question").on(
+            "value", function(snapshot) {
 			$("#divQuestion").html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
+        // Assign which answer should go in which slot 
         correctAnswer = d4();
         var wrong = []; 
         for (var i = 2; i <= 4; i++) {
             var slot; 
             do {
                 slot = d4();
-            } while(slot == correctAnswer || slot == wrong[2] || slot == wrong[3] || slot == wrong[4]);
+            } while(slot == correctAnswer 
+                    || slot == wrong[2] 
+                    || slot == wrong[3] 
+                    || slot == wrong[4]);
             wrong[i] = slot; 
         }
         
         //answer1(correct answer)
-		ref.child("question1/answer1").on("value", function(snapshot) {
-			$("#divAnswer" + correctAnswer).html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer1").on("value", 
+            function(snapshot) {
+                $("#divAnswer" + correctAnswer).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer2
-		ref.child("question1/answer2").on("value", function(snapshot) {
-			$("#divAnswer" + wrong[2]).html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer2").on("value", 
+            function(snapshot) {
+                $("#divAnswer" + wrong[2]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer3
-		ref.child("question1/answer3").on("value", function(snapshot) {
-			$("#divAnswer" + wrong[3]).html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer3").on("value", 
+            function(snapshot) {
+			     $("#divAnswer" + wrong[3]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer4
-		ref.child("question1/answer4").on("value", function(snapshot) {
-			$("#divAnswer" + wrong[4]).html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer4").on("value", 
+            function(snapshot) {
+			     $("#divAnswer" + wrong[4]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
@@ -688,6 +700,14 @@ function nextQuestion() {
 // Random number, 1-4
 function d4() {
     return 1 + Math.floor(Math.random() * 4);
+}
+
+// The total number of questions in the database. 
+var totalQuestions = 25; 
+
+// The total questions. 
+function randomQuestionNumber() {
+    return 1 + Math.floor(Math.random() * totalQuestions);
 }
 
 // Visibly marks an answer button as the correct answer. 

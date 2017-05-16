@@ -1,5 +1,7 @@
 //connect to firebase.
-var refQuestions = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
+var database = firebase.database();
+//reference to questions
+var ref = database.ref('questions');
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -651,14 +653,7 @@ function nextQuestion() {
             });
         } while(repeatQuestion); 
         
-		//getting questions and answers from firebase 
-		//question
-		refQuestions.child("question" + questionNumber + "/question").on(
-            "value", function(snapshot) {
-			$("#divQuestion").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
+
 		
         // Assign which answer should go in which slot 
         correctAnswer = d4();
@@ -674,37 +669,25 @@ function nextQuestion() {
             wrong[i] = slot; 
         }
         
-        //answer1(correct answer)
-		refQuestions.child("question" + questionNumber + "/answer1").on("value", 
-            function(snapshot) {
-                $("#divAnswer" + correctAnswer).html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
+		//getting question from firebase
+		ref.once('value').then(gotData);
 		
-		//answer2
-		refQuestions.child("question" + questionNumber + "/answer2").on("value", 
-            function(snapshot) {
-                $("#divAnswer" + wrong[2]).html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-		//answer3
-		refQuestions.child("question" + questionNumber + "/answer3").on("value", 
-            function(snapshot) {
-			     $("#divAnswer" + wrong[3]).html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-		//answer4
-		refQuestions.child("question" + questionNumber + "/answer4").on("value", 
-            function(snapshot) {
-			     $("#divAnswer" + wrong[4]).html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
+			function gotData(data) {
+				var question = data.val();
+				var keys = Object.keys(question);
+				//console.log(keys);
+				
+				$("#divQuestion").html(question[keys[0]].question);
+				$("#divAnswer1").html(question[keys[0]].answer1);
+				$("#divAnswer2").html(question[keys[0]].answer2);
+				$("#divAnswer3").html(question[keys[0]].answer3);
+				$("#divAnswer4").html(question[keys[0]].answer4);
+				
+				// var accountID = question[keys[0]].answer1;	
+				// console.log(accountID);				  
+			  
+			}
+
 		
         remainingQuestions--; 
     } else if (remainingBosses > 0) {

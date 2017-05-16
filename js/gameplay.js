@@ -745,7 +745,7 @@ function resetAnswerButtons() {
     for(var i = 1; i <= 4; i++) {
         $("#divAnswer" + i).removeClass(
             "classAnswerCorrect classAnswerEliminated");
-        $("divAnswer" + i).html("");
+        $("#divAnswer" + i).html("");
     }
 }    
 

@@ -3,23 +3,31 @@
 html {
     width: 100vw; 
     height: 100vh; 
+    background-image: url("../images/1.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 body {
     padding: 0; 
     margin: 0; 
     width: 100vw; 
-    height: 100vh; 
+    height: 100vh;
+    
 }
 
 td {
     text-align: center;
 }
 
+a {
+    text-decoration: none;
+}
+
 #runningContainer {
-    position: fixed;
-    background-color: darksalmon; 
-    border: 1px solid black; 
+    
+    position: fixed; 
+    border: none; 
     box-sizing: border-box; 
     height: 47vh; 
     width: 100vw;
@@ -27,8 +35,6 @@ td {
 }
 
 #headerContainer {
-    background-color: cadetblue; 
-    border: 1px solid black; 
     box-sizing: border-box; 
     position: fixed; 
     height: 20vh; 
@@ -37,9 +43,7 @@ td {
 }
 
 #bodyContainer {
-    position: fixed;
-    background-color: darksalmon; 
-    border: 1px solid black; 
+    position: fixed; 
     box-sizing: border-box; 
     height: 80vh; 
     width: 100vw;
@@ -48,8 +52,6 @@ td {
 
 #indexContainer {
     position: fixed;
-    background-color: darksalmon; 
-    border: 1px solid black; 
     box-sizing: border-box; 
     height: 100vh; 
     width: 100vw; 
@@ -72,8 +74,6 @@ td {
 }
 
 .menuBtn {
-    background-color: aqua; 
-    border: 1px solid black; 
     box-sizing: border-box; 
     display: block; 
     height: 50%;
@@ -88,7 +88,32 @@ td {
 #menuNewGame {
     display: block;
     margin: 0 auto;
-    margin-top: 1vh;
+    height: 200px;
+    width: 100%;
+    
+    max-width: 400px;
+    background-color: #FFF950;
+    border-bottom-color: #BA7500;
+    border-left-color: #DB8A00;
+    border-right-color: #DB8A00;
+    border-top-color: #E89200;
+    color: #D1AD43;
+    border-width: 3px;
+    border-style: solid;
+    font-family:"Arial Black";
+    font-size:4.2em;
+    -webkit-border-radius: 50px;
+    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
+}
+
+#menuNewGame:active {
+	color:#777;
+    background-color: #FFF986;
+	border:1px solid #999;
+	/*{Shadow}*/
+	box-shadow:inset 0 0 5px 0 #333;
+	-moz-box-shadow:inset 0 0 5px 0 #333;
+	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
 }
 
 #menuResume {
@@ -98,29 +123,93 @@ td {
 }
 
 #menuAffilitrated {
+    height: 200px;
+    width: 300px;
     margin-bottom: auto;
     display: block;
     margin: 0 auto;
-    margin-top: 1vh;
+    margin-top: 100px;
+    background-color: #7f92ff;
+    border-bottom-color: #7f92aa;
+    border-left-color: #7f92cc;
+    border-right-color: #7f92ee;
+    border-top-color: #7f9233;
+    color: #3388aa;
+    border-width: 3px;
+    border-style: solid;
+    font-family:"Arial Black";
+    font-size:3.2em;
+    -webkit-border-radius: 50px;
+    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
+}
+
+#menuAffilitrated:active {
+    background-color: #7faaff;
+    border-bottom-color: #7faaaa;
+    border-left-color: #7faacc;
+    border-right-color: #7faaee;
+    border-top-color: #7faa33;
+    color: #66aaaa;
 }
 
 #menuQuit {
+    width: 100px;
+    height: 100px;
     display: block;
     margin-left: auto;
-    margin-top: 10vh;
     margin-right: 1vw;
+    background-color: #FF3333;
+    border-bottom-color: #BA3333;
+    border-left-color: #DB3333;
+    border-right-color: #DB3388;
+    border-top-color: #E83333;
+    color: #aa0000;
+    border-width: 3px;
+    border-style: solid;
+    font-family:"Arial Black";
+    font-size:2.2em;
+    -webkit-border-radius: 200px;
+    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
+}
+
+#menuQuit:active {
+	color:#777;
+    background-color: #FF7777;
+	border:1px solid #999;
+	/*{Shadow}*/
+	box-shadow:inset 0 0 5px 0 #333;
+	-moz-box-shadow:inset 0 0 5px 0 #333;
+	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
 }
 
 #loginBtn {
+    height: 200px;
+    width: 300px;
     display: block;
     float: right;
     margin: 10px;
+    background-color: #A4DB39;
+    border-bottom-color: #64DB39;
+    border-left-color: #A4DB39;
+    border-right-color: #A49B39;
+    border-top-color: #A4cB39;
+    color: #81aB39;
+    border-width: 3px;
+    border-style: solid;
+    font-family:"Arial Black";
+    font-size:3.2em;
+    -webkit-border-radius: 50px;
+    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
 }
 
-#createBtn {
-    display: block;
-    float: right;
-    margin: 10px;
+#loginBtn:active {
+    color:#777;
+    background-color: #bbDB99;
+	border:1px solid #999;
+	/*{Shadow}*/
+	box-shadow:inset 0 0 5px 0 #333;
+	-moz-box-shadow:inset 0 0 5px 0 #333;
+	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
 }
 
 .button { 
@@ -151,6 +240,15 @@ td {
     margin-top: 10px;
     background-color: white;
 } 
+#loginScreen:active {
+    color:#777;
+    background-color: #bbDB99;
+	border:1px solid #999;
+	/*{Shadow}*/
+	box-shadow:inset 0 0 5px 0 #333;
+	-moz-box-shadow:inset 0 0 5px 0 #333;
+	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
+}
 
 #loginScreen:target, #loginScreen:target + #cover{ 
     display:block;
@@ -187,4 +285,8 @@ td {
     font-size:30px;
     text-decoration:none;
     text-align:center; font-weight:bold; 
+}
+
+#spaceEater {
+    height: 80%;
 }

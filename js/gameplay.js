@@ -776,3 +776,4 @@ $("#divTempClear").click(function(){nextQuestion();});
 
 $("#divPauseButton").click(function(){pauseToggle(true);});
 $("#divResume").click(function(){pauseToggle(false);});
+

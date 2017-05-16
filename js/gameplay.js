@@ -102,13 +102,34 @@ var remainingEnemies = 3;
 // The number of bosses remaining in this level. 
 var remainingBosses = 2;
 
+// The width of the game area. 
+var gameWidth;  
+
+// The height of the game area. 
+var gameHeight; 
+
+// Calculates gameWidth and gameHeight differently depending on screen orientation. 
+if ($(window).height() > $(window).width()) {
+    // Initially portrait. 
+    gameWidth = 480; 
+    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
+} else {
+    // Initially landscape. 
+    gameHeight = 480; 
+    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
+}
+
+
+// The y distance between the bottom of the game area and the bottom of each character. 
+var yFromBottom = 80; 
+
 // Starts the level. 
 function startGame() {
     // Set up the player and background components. 
-    playerChar = new component(80, 80, "images/placeholder/player1.gif", 
-                               30, 190, "combat", 0, playerMaxHP);
-    background = new component(800, 310, "images/placeholder/1.png", 
-                               0, 0, "background");
+    playerChar = new component(130, 130, "images/placeholder/player1.gif", 
+                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
+    background = new component(800, 600, "images/placeholder/1.png", 
+                               0, gameHeight - 600, "background");
     background.speedX = -1;
     // Start the combat phase. 
     startCombat();
@@ -133,8 +154,8 @@ var gameArea = {
     // Called to set up the canvas. 
     start : function() {
         this.canvas = $("#divLevelArea").children("canvas")[0];
-        this.canvas.width = 480; 
-        this.canvas.height = 300; 
+        this.canvas.width = gameWidth; 
+        this.canvas.height = gameHeight; 
         this.context = this.canvas.getContext("2d");
         this.frameNo = 0;
         // Update the game area every 10 milliseconds. 
@@ -248,7 +269,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 350; 
+var bossStop = 320; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -362,20 +383,23 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (remainingEnemies > 0) {
         // Spawn a regular enemy. 
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 
-                                   480, 190, "combat", enemySpeedX,enemyMaxHP));
+        enemies.push(new component(130, 130, "images/placeholder/enemy.gif", 
+                                   480, gameHeight - yFromBottom - 130, 
+                                   "combat", enemySpeedX,enemyMaxHP));
         remainingEnemies --; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, "images/placeholder/final.gif", 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, "images/placeholder/potato.gif", 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         }        
         remainingBosses--; 
     }
@@ -529,6 +553,12 @@ function addItem(item) {
     }
 }
 
+// Changes the text in the dialogue box. 
+function updateDialogue(text) {
+    $("divDialogue").html(text);
+}
+
+
 // TRIVIA FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // The number of questions asked by each miniboss. 
@@ -547,7 +577,7 @@ var nextQuestionDelay = 1200;
 var remainingQuestions = 2; 
 
 // The answer button corresponding with the correct answer. 
-var correctAnswer = 1; 
+var correctAnswer;
 
 // Starts each trivia portion of the level. 
 function startTrivia() {
@@ -589,50 +619,86 @@ function clickAnswer(number) {
     }
 }
 
+// Tracks which questions have already been used in this level. 
+var usedQuestions = []; 
+
 // Loads the next question. 
 function nextQuestion() {
     blockInput = false;
     // If there are remaining questions, load it. 
     if (remainingQuestions > 0) {
 		
+        resetAnswerButtons();
+        
+        // Get the random question number. 
+        var questionNumber;
+        var repeatQuestion; 
+        do {
+            questionNumber = randomQuestionNumber();
+            repeatQuestion = false; 
+            usedQuestions.forEach(function(part, index, arr){
+                if (questionNumber == usedQuestions[index]){
+                    repeatQuestion = true; 
+                }
+            });
+        } while(repeatQuestion); 
+        
 		//getting questions and answers from firebase 
 		//question
-		ref.child("question1/question").on("value", function(snapshot) {
+		ref.child("question" + questionNumber + "/question").on(
+            "value", function(snapshot) {
 			$("#divQuestion").html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
+        // Assign which answer should go in which slot 
+        correctAnswer = d4();
+        var wrong = []; 
+        for (var i = 2; i <= 4; i++) {
+            var slot; 
+            do {
+                slot = d4();
+            } while(slot == correctAnswer 
+                    || slot == wrong[2] 
+                    || slot == wrong[3] 
+                    || slot == wrong[4]);
+            wrong[i] = slot; 
+        }
+        
         //answer1(correct answer)
-		ref.child("question1/answer1").on("value", function(snapshot) {
-			$("#divAnswer1").html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer1").on("value", 
+            function(snapshot) {
+                $("#divAnswer" + correctAnswer).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer2
-		ref.child("question1/answer2").on("value", function(snapshot) {
-			$("#divAnswer2").html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer2").on("value", 
+            function(snapshot) {
+                $("#divAnswer" + wrong[2]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer3
-		ref.child("question1/answer3").on("value", function(snapshot) {
-			$("#divAnswer3").html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer3").on("value", 
+            function(snapshot) {
+			     $("#divAnswer" + wrong[3]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
 		//answer4
-		ref.child("question1/answer4").on("value", function(snapshot) {
-			$("#divAnswer4").html(snapshot.val());
+		ref.child("question" + questionNumber + "/answer4").on("value", 
+            function(snapshot) {
+			     $("#divAnswer" + wrong[4]).html(snapshot.val());
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
 		
         remainingQuestions--; 
-        resetAnswerButtons();
     } else if (remainingBosses > 0) {
         // Otherwise... 
         // If it was just a miniboss...
@@ -651,6 +717,19 @@ function nextQuestion() {
     }
 }
 
+// Random number, 1-4
+function d4() {
+    return 1 + Math.floor(Math.random() * 4);
+}
+
+// The total number of questions in the database. 
+var totalQuestions = 25; 
+
+// The total questions. 
+function randomQuestionNumber() {
+    return 1 + Math.floor(Math.random() * totalQuestions);
+}
+
 // Visibly marks an answer button as the correct answer. 
 function markCorrectButton(number) {
     $("#divAnswer" + number).addClass("classAnswerCorrect");
@@ -666,6 +745,7 @@ function resetAnswerButtons() {
     for(var i = 1; i <= 4; i++) {
         $("#divAnswer" + i).removeClass(
             "classAnswerCorrect classAnswerEliminated");
+        $("divAnswer" + i).html("");
     }
 }    
 

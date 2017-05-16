@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>LOGIN</title>
+	
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB8EekPhs6qYLXCxCi0oyypG3f25MlBFFY",
+    authDomain: "project-fork-and-potato.firebaseapp.com",
+    databaseURL: "https://project-fork-and-potato.firebaseio.com",
+    projectId: "project-fork-and-potato",
+    storageBucket: "project-fork-and-potato.appspot.com",
+    messagingSenderId: "119574546255"
+  };
+  
+  firebase.initializeApp(config);
+
+</script>
+</head> 
+
+<script>
+
+		
+		function $(id) {
+			return document.getElementById(id);
+		}
+		
+
+			var database = firebase.database();
+		var ref = database.ref('users');
+		var acc = 1234;
+		var pw;
+	
+	//function verify( account, passWord) {
+	
+			ref.once('value').then(gotData);
+			
+			function gotData(data) {
+				var scores = data.val();
+				var keys = Object.keys(scores);
+				console.log(keys);
+				
+				  for (var i = 0; i < keys.length; i++) {
+					var k = keys[i];
+					var initials = scores[k].id;	
+				
+					if(initials == acc) {
+					alert("fuk ya");
+					}
+				  }
+				  
+				  
+			  
+			}
+	
+	
+			
+		
+</script>
+
+<body>
+
+
+
+<!-- log in validation -->
+<form method="post" action="" onsubmit= "verify('account', 'passWord');">
+  ID:<br>
+  <input type="text" id="account" name="account" value="Mickey">
+  <br>
+  Password:<br>
+  <input type="text" id="passWord" name="passWord" value="Mouse">
+  <br><br>
+  <input type="submit" value="Log In">
+</form> 
+
+
+</body>
+</html>

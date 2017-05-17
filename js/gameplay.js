@@ -33,7 +33,6 @@ var dialogue;
 // Grab all data for this level, and then start the game. 
 refLevel.once('value').then(function(data) {
     level = data.val();
-    remainingBosses = level.bosses;
     dialogue = level["dialogue"];
     startGame();
 });
@@ -41,8 +40,8 @@ refLevel.once('value').then(function(data) {
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Switches between the combat buttons and the trivia buttons. 
-function swapButtons() {
-    if ($("#divCombatButtons").css("display") == "flex") {
+function toggleButtons(trivia) {
+    if (trivia) {
         $("#divCombatButtons").css("display", "none");
         $("#divAnswerButtons").css("display", "flex");
     } else {
@@ -71,13 +70,26 @@ function showDialogue() {
     $("#divDialogue").css("display", "block"); 
 }
 
-// Opens the pause menu and pauses the game. 
-function pauseToggle(pause) {
-    freeze = pause; 
-    blockInput = pause; 
-    $("#divPauseScreen").css("display", (pause ? "block" : "none"));
-}
+// The value for freeze prior to freezing the game. 
+var previousFreeze; 
 
+// The value for blockInput prior to pausing the game. 
+var previousBlockInput; 
+
+// Opens the pause menu and pauses the game. 
+function togglePause(pause) {
+    if (pause) {
+        previousFreeze = freeze; 
+        previousBlockInput = blockInput; 
+        freeze = pause; 
+        blockInput = pause; 
+        $("#divPauseScreen").css("display", "block");
+    } else {
+        freeze = previousFreeze; 
+        blockInput = previousBlockInput; 
+        $("#divPauseScreen").css("display", "none");
+    } 
+}
 
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -109,7 +121,7 @@ var blockInput = true;
 var enemyData;
 
 // The current combat phase. 
-var combatPhase = 0; 
+var combatPhase; 
 
 // The current number of enemies spawned this phase. 
 var spawnedCount; 
@@ -164,11 +176,43 @@ function loadEnemyData() {
     }
 }
 
+// Restarts the level. 
+function restartLevel() {
+    
+    clearInterval(skillTimer);
+    clearTimeout(questionTimer);
+    
+    
+    enemies.forEach(function(part, index, arr){
+        if (arr[index].autoAttackLoop != null) {
+            clearInterval(arr[index].autoAttackLoop);
+        }
+    });
+    
+    previousFreeze = freeze; 
+    previousBlockInput = blockInput; 
+    togglePause(false);
+    freeze = true; 
+    blockInput = true; 
+    hideQuestion();
+    toggleButtons(false);
+    gameArea.stop();
+    gameArea.clear();
+    startGame();
+}
+
 // The y distance between the bottom of the game area and the bottom of each character. 
 var yFromBottom = 80; 
 
 // Starts the level. 
 function startGame() {
+    
+    remainingBosses = level.bosses;
+    combatPhase = 0; 
+    bossChar = null; 
+    enemies = []; 
+    usedQuestions = []; 
+    
     // Set up the player and background components. 
     playerChar = new component(130, 130, "images/placeholder/player1.gif", 
                                30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
@@ -651,7 +695,7 @@ var correctAnswer;
 // Starts each trivia portion of the level. 
 function startTrivia() {
     // Load the trivia windows and buttons. 
-    swapButtons();
+    toggleButtons(true);
     hideDialogue();
     showQuestion();
     // Set the number of questions. 
@@ -665,6 +709,9 @@ function startTrivia() {
     // Load the next question. 
     nextQuestion();
 }
+
+// Stores the value of setTimeout for loading the next question. 
+var questionTimer; 
 
 // Called when the player clicks on a question button. 
 // @param number The number of the question button. 
@@ -681,7 +728,7 @@ function clickAnswer(number) {
         markCorrectButton(number); 
         // Set the timer for the next question. 
         blockInput = true; 
-        setTimeout(nextQuestion, nextQuestionDelay);         
+        questionTimer = setTimeout(nextQuestion, nextQuestionDelay); 
     } else {
         // Otherwise, mark the answer as wrong and damage the player.
         eliminateButton(number);
@@ -749,7 +796,7 @@ function nextQuestion() {
         bossChar = null; 
         // Return to combat gameplay. 
         freeze = false; 
-        swapButtons();
+        toggleButtons(false);
         hideQuestion();
         startCombat();
     } else {
@@ -807,6 +854,6 @@ for(let i = 1; i <= 4; i++) {
 //$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
-$("#divPauseButton").click(function(){pauseToggle(true);});
-$("#divResume").click(function(){pauseToggle(false);});
-
+$("#divPauseButton").click(function(){togglePause(true);});
+$("#divResume").click(function(){togglePause(false);});
+$("#divRestart").click(function(){restartLevel()});

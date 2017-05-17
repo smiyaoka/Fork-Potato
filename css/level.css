@@ -151,3 +151,7 @@ body {
 #divExit {
     background-color: cyan; 
 }
+
+#divRestart {
+    background-color: dodgerblue;  
+}

@@ -76,12 +76,28 @@ body {
     width: 50%; 
 }
 
-#divCombatButton3, #divCombatButton5 {
-    width: 33%; 
+#divCombatButton3{
+    width: 33%;
+    background-image: url("../images/container.gif");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#divCombatButton5 {
+    width: 33%;
+    background-image: url("../images/zip.gif");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #divCombatButton4 {
-    width: 34%; 
+    width: 34%;
+    background-image: url("../images/jar.gif");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .classAnswer {

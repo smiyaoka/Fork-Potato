@@ -1,9 +1,15 @@
+// DATABASE SECTION ----------------------------------------
+
 //connect to firebase.
 var database = firebase.database();
-//reference to questions
+
+// Reference to question data. 
 var refQuestions = database.ref('questions');
 
+// All of the question data from the database. 
 var questions; 
+
+// All of the keys for the question data. 
 var keysQuestions; 
 
 // Grab all trivia question data. 
@@ -12,6 +18,21 @@ refQuestions.once('value').then(function(data) {
     keysQuestions = Object.keys(questions);
 });
 
+// Placeholder variable for level data. 
+var levelNumber = 1; 
+
+// Reference to level 
+var refLevel = database.ref("levels/level" + levelNumber);
+
+// The entire data for the level. 
+var level; 
+
+// Grab all data for this level, and then start the game. 
+refLevel.once('value').then(function(data) {
+    level = data.val();
+    remainingBosses = level.bosses;
+    startGame();
+});
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -86,17 +107,29 @@ function gameOver() {
 // COMBAT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Freezes the level. 
-var freeze = false; 
+var freeze = true; 
 
 // Prevents the player from clicking certain buttons. 
 // This doesn't freeze the entire level. 
-var blockInput = false; 
+var blockInput = true; 
+
+// All of the enemy data for the current combat phase. 
+var enemyData;
+
+// The current combat phase. 
+var combatPhase = 0; 
+
+// The current number of enemies spawned this phase. 
+var spawnedCount; 
+
+// The number of bosses remaining in this level. 
+var remainingBosses;
+
+// The background image's component. 
+var background;
 
 // The player character's component. 
 var playerChar;
-
-// The background image's component. 
-var myBackground;
 
 // The array of enemy components. 
 var enemies = []; 
@@ -110,17 +143,8 @@ var items = [];
 // The player's max hp. 
 var playerMaxHP = 10; 
 
-// Each enemy's max hp. 
-var enemyMaxHP = 3; 
-
 // Each enemy's initial horizontal velocity. 
 var enemySpeedX = -1; 
-
-// The number of enemies remaining in this combat phase. 
-var remainingEnemies = 3; 
-
-// The number of bosses remaining in this level. 
-var remainingBosses = 2;
 
 // The width of the game area. 
 var gameWidth;  
@@ -139,6 +163,14 @@ if ($(window).height() > $(window).width()) {
     gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
 }
 
+// Loads the data for the next combat phase. 
+function loadEnemyData() {
+    combatPhase++;
+    if (combatPhase <= Object.keys(level["combat"]).length) {
+        spawnedCount = 1; 
+        enemyData = level["combat"]["combat" + combatPhase];
+    }
+}
 
 // The y distance between the bottom of the game area and the bottom of each character. 
 var yFromBottom = 80; 
@@ -151,22 +183,30 @@ function startGame() {
     background = new component(800, 600, "images/placeholder/1.png", 
                                0, gameHeight - 600, "background");
     background.speedX = -1;
+    
+    // Un-freeze the UI. 
+    freeze = false; 
+    blockInput = false; 
+    
     // Start the combat phase. 
     startCombat();
+    
     // Start the canvas. 
     gameArea.start();    
 }
 
-// The number of enemies in each combat phase of the level. 
-var enemiesPerCombat = 3; 
-
 // Starts the combat phase.  
 function startCombat() {
     // Set the number of enemies. 
-    remainingEnemies = enemiesPerCombat; 
+    loadEnemyData();
     // Spawn one enemy. 
     spawnEnemy();
 }
+
+
+
+
+
 
 // The area where the game characters are drawn. 
 var gameArea = {
@@ -401,12 +441,12 @@ function animate() {
 // Spawns an enemy, miniboss, or boss. 
 function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
-    if (remainingEnemies > 0) {
+    if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
         enemies.push(new component(130, 130, "images/placeholder/enemy.gif", 
                                    480, gameHeight - yFromBottom - 130, 
-                                   "combat", enemySpeedX,enemyMaxHP));
-        remainingEnemies --; 
+                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
@@ -754,7 +794,7 @@ for(let i = 1; i <= 4; i++) {
     $("#divAnswer" + i).click(function(){clickAnswer(i);});
 }
 
-$("#divLevelArea").ready(startGame);
+//$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
 $("#divPauseButton").click(function(){pauseToggle(true);});

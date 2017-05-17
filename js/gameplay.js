@@ -855,5 +855,5 @@ for(let i = 1; i <= 4; i++) {
 $("#divTempClear").click(function(){nextQuestion();});
 
 $("#divPauseButton").click(function(){togglePause(true);});
-$("#divResume").click(function(){togglePause(false);});
-$("#divRestart").click(function(){restartLevel()});
+$("#divPauseResume").click(function(){togglePause(false);});
+$("#divPauseRestart").click(function(){restartLevel()});

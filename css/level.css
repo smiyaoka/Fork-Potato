@@ -144,7 +144,7 @@ body {
     bottom: 0;
 } 
 
-#divResume {
+#divPauseResume {
     background-color: chartreuse; 
 }
 
@@ -152,6 +152,6 @@ body {
     background-color: cyan; 
 }
 
-#divRestart {
+#divPauseRestart {
     background-color: dodgerblue;  
 }

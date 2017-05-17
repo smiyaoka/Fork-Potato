@@ -24,6 +24,16 @@ a {
     text-decoration: none;
 }
 
+#clickToStart {
+    text-shadow: 2px 2px #ff0000;
+    font-family: verdana;
+    font-size: 8vh;
+}
+
+#clickToStart:active {
+    padding-top: 2px;
+}
+
 #runningContainer {
     
     position: fixed; 

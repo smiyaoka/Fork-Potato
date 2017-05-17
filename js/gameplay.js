@@ -1,7 +1,7 @@
 //connect to firebase.
 var database = firebase.database();
 //reference to questions
-var ref = database.ref('questions');
+var refQuestions = database.ref('questions');
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -652,9 +652,7 @@ function nextQuestion() {
                 }
             });
         } while(repeatQuestion); 
-        
-
-		
+        		
         // Assign which answer should go in which slot 
         correctAnswer = d4();
         var wrong = []; 
@@ -669,26 +667,21 @@ function nextQuestion() {
             wrong[i] = slot; 
         }
         
-		//getting question from firebase
-		ref.once('value').then(gotData);
-		
-			function gotData(data) {
-				var question = data.val();
-				var keys = Object.keys(question);
-				//console.log(keys);
-				
-				$("#divQuestion").html(question[keys[0]].question);
-				$("#divAnswer1").html(question[keys[0]].answer1);
-				$("#divAnswer2").html(question[keys[0]].answer2);
-				$("#divAnswer3").html(question[keys[0]].answer3);
-				$("#divAnswer4").html(question[keys[0]].answer4);
-				
-				// var accountID = question[keys[0]].answer1;	
-				// console.log(accountID);				  
-			  
-			}
-
-		
+		//getting question and applying question from database
+		refQuestions.once('value').then(function(data) {
+            var questions = data.val();
+            var keys = Object.keys(questions);
+            $("#divQuestion").html(
+                questions[keys[questionNumber]].question);
+            $("#divAnswer" + correctAnswer).html(
+                questions[keys[questionNumber]].answer1);
+            $("#divAnswer" + wrong[2]).html(
+                questions[keys[questionNumber]].answer2);
+            $("#divAnswer" + wrong[3]).html(
+                questions[keys[questionNumber]].answer3);
+            $("#divAnswer" + wrong[4]).html(
+                questions[keys[questionNumber]].answer4);
+        });
         remainingQuestions--; 
     } else if (remainingBosses > 0) {
         // Otherwise... 
@@ -718,7 +711,7 @@ var totalQuestions = 25;
 
 // The total questions. 
 function randomQuestionNumber() {
-    return 1 + Math.floor(Math.random() * totalQuestions);
+    return Math.floor(Math.random() * totalQuestions);
 }
 
 // Visibly marks an answer button as the correct answer. 

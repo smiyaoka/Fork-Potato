@@ -62,6 +62,7 @@ $(window).on('load', function(){
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Switches between the combat buttons and the trivia buttons. 
+// @param trivia true if trivia to be shown, false if combat is to be shown. 
 function toggleButtons(trivia) {
     if (trivia) {
         $("#divCombatButtons").css("display", "none");
@@ -119,6 +120,7 @@ var previousFreeze;
 var previousBlockInput; 
 
 // Opens the pause menu and pauses the game. 
+// @param pause true if pausing, false if unpausing. 
 function togglePause(pause) {
     if (pause) {
         previousFreeze = freeze; 
@@ -418,6 +420,7 @@ var autoAttackDamage = 1;
 
 // Repeatedly called as part of the auto attack mechanic. 
 // Each auto attack deals damage to both the player and the enemy. 
+// @param enemy The enemy to attack. 
 function autoAttackUpdate(enemy) {
     if (freeze) 
         return; 
@@ -716,11 +719,13 @@ function addItem(item) {
 }
 
 // Changes the text in the dialogue box. 
+// @param text The text that should appear in the dialogue box. 
 function setDialogue(text) {
     $("#divDialogue").html(text);
     showDialogue();
 }
 
+// Checks whether dialogue should be loaded, and then loads it. 
 function checkDialogue() {
     if (dialogue == null) 
         return; 
@@ -872,21 +877,25 @@ function nextQuestion() {
 }
 
 // Random number, 1-4
+// @return integer 1-4
 function d4() {
     return 1 + Math.floor(Math.random() * 4);
 }
 
 // The total questions. 
+// @return A random key for the questions data object. 
 function randomQuestionNumber() {
     return Math.floor(Math.random() * keysQuestions.length);
 }
 
 // Visibly marks an answer button as the correct answer. 
+// @param number The answer button's number. 
 function markCorrectButton(number) {
     $("#divAnswer" + number).addClass("classAnswerCorrect");
 }
 
 // Visibly marks an answer button as an incorrect answer. 
+// @param number The answer button's number. 
 function eliminateButton(number) {
     $("#divAnswer" + number).addClass("classAnswerEliminated");
 }
@@ -914,9 +923,9 @@ for(let i = 1; i <= 4; i++) {
     $("#divAnswer" + i).click(function(){clickAnswer(i);});
 }
 
-//$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
+// Set up pause. 
 $("#divPauseButton").click(function(){
     if (!freeze && !blockInput)
         togglePause(true);
@@ -924,4 +933,5 @@ $("#divPauseButton").click(function(){
 $("#divPauseResume").click(function(){togglePause(false);});
 $("#divPauseRestart").click(function(){restartLevel()});
 
+// Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});

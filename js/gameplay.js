@@ -3,6 +3,16 @@ var database = firebase.database();
 //reference to questions
 var refQuestions = database.ref('questions');
 
+var questions; 
+var keysQuestions; 
+
+// Grab all trivia question data. 
+refQuestions.once('value').then(function(data) {
+    questions = data.val();
+    keysQuestions = Object.keys(questions);
+});
+
+
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Switches between the combat buttons and the trivia buttons. 
@@ -667,21 +677,18 @@ function nextQuestion() {
             wrong[i] = slot; 
         }
         
-		//getting question and applying question from database
-		refQuestions.once('value').then(function(data) {
-            var questions = data.val();
-            var keys = Object.keys(questions);
-            $("#divQuestion").html(
-                questions[keys[questionNumber]].question);
-            $("#divAnswer" + correctAnswer).html(
-                questions[keys[questionNumber]].answer1);
-            $("#divAnswer" + wrong[2]).html(
-                questions[keys[questionNumber]].answer2);
-            $("#divAnswer" + wrong[3]).html(
-                questions[keys[questionNumber]].answer3);
-            $("#divAnswer" + wrong[4]).html(
-                questions[keys[questionNumber]].answer4);
-        });
+		// Setting the question data into the interface. 
+		$("#divQuestion").html(
+            questions[keysQuestions[questionNumber]].question);
+        $("#divAnswer" + correctAnswer).html(
+            questions[keysQuestions[questionNumber]].answer1);
+        $("#divAnswer" + wrong[2]).html(
+            questions[keysQuestions[questionNumber]].answer2);
+        $("#divAnswer" + wrong[3]).html(
+            questions[keysQuestions[questionNumber]].answer3);
+        $("#divAnswer" + wrong[4]).html(
+            questions[keysQuestions[questionNumber]].answer4);
+        
         remainingQuestions--; 
     } else if (remainingBosses > 0) {
         // Otherwise... 

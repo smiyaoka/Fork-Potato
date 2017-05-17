@@ -30,12 +30,34 @@ var level;
 // The entire data for this level's dialogue. 
 var dialogue; 
 
+// Whether the page has finished loading. 
+var pageLoaded = false; 
+
+// Whether the level data has been retrieved from the database. 
+var dataLoaded = false; 
+
+// Whether the game has started. 
+var gameStarted = false; 
+
 // Grab all data for this level, and then start the game. 
 refLevel.once('value').then(function(data) {
     level = data.val();
     dialogue = level["dialogue"];
-    startGame();
+    dataLoaded = true; 
+    if (pageLoaded && !gameStarted) {
+        gameStarted = true; 
+        startGame();
+    }
 });
+
+// Makes sure the page finishes loading before starting. 
+$(window).on('load', function(){
+    pageLoaded = true; 
+    if (dataLoaded && !gameStarted) {
+        gameStarted = true; 
+        startGame();
+    }
+}); 
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -731,7 +753,7 @@ var triviaDamage = 1;
 var nextQuestionDelay = 1200; 
 
 // The number of questions remaining in this trivia phase. 
-var remainingQuestions = 2; 
+var remainingQuestions; 
 
 // The answer button corresponding with the correct answer. 
 var correctAnswer;
@@ -854,12 +876,9 @@ function d4() {
     return 1 + Math.floor(Math.random() * 4);
 }
 
-// The total number of questions in the database. 
-var totalQuestions = 25; 
-
 // The total questions. 
 function randomQuestionNumber() {
-    return Math.floor(Math.random() * totalQuestions);
+    return Math.floor(Math.random() * keysQuestions.length);
 }
 
 // Visibly marks an answer button as the correct answer. 

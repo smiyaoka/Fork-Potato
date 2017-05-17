@@ -898,7 +898,10 @@ for(let i = 1; i <= 4; i++) {
 //$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
-$("#divPauseButton").click(function(){togglePause(true);});
+$("#divPauseButton").click(function(){
+    if (!freeze && !blockInput)
+        togglePause(true);
+});
 $("#divPauseResume").click(function(){togglePause(false);});
 $("#divPauseRestart").click(function(){restartLevel()});
 

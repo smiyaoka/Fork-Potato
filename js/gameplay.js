@@ -21,16 +21,20 @@ refQuestions.once('value').then(function(data) {
 // Placeholder variable for level data. 
 var levelNumber = 1; 
 
-// Reference to level 
+// Reference to level data. 
 var refLevel = database.ref("levels/level" + levelNumber);
 
 // The entire data for the level. 
 var level; 
 
+// The entire data for this level's dialogue. 
+var dialogue; 
+
 // Grab all data for this level, and then start the game. 
 refLevel.once('value').then(function(data) {
     level = data.val();
     remainingBosses = level.bosses;
+    dialogue = level["dialogue"];
     startGame();
 });
 
@@ -47,32 +51,24 @@ function swapButtons() {
     }                
 }
 
-// Hides and unhides the question box at the top of the screen. 
-function toggleQuestion() {
-    /*
-    if ($("#divDialogue").css("display") == "block") {
-        $("#divDialogue").css("display", "none");
-    } 
-    */
-    if ($("#divQuestion").css("display") == "block") {
-        $("#divQuestion").css("display", "none"); 
-    } else {
-        $("#divQuestion").css("display", "block"); 
-    }
+// Hide the question box. 
+function hideQuestion() {
+    $("#divQuestion").css("display", "none");
 }
 
-// Hides and unhides the dialogue box at the top of the screen. 
-function toggleDialogue() {
-    /*
-    if ($("#divQuestion").css("display") == "block") {
-        $("#divQuestion").css("display", "none");
-    } 
-    */
-    if ($("#divDialogue").css("display") == "block") {
-        $("#divDialogue").css("display", "none"); 
-    } else {
-        $("#divDialogue").css("display", "block"); 
-    }
+// Show the question box. 
+function showQuestion() {
+    $("#divQuestion").css("display", "block");
+}
+
+// Hide the dialogue box. 
+function hideDialogue() {
+    $("#divDialogue").css("display", "none"); 
+}
+
+// Show the dialogue box. 
+function showDialogue() {
+    $("#divDialogue").css("display", "block"); 
 }
 
 // Opens the pause menu and pauses the game. 
@@ -90,8 +86,6 @@ function pauseToggle(pause) {
 function levelComplete() {
     blockInput = true; 
     console.log("LEVEL COMPLETE"); 
-    toggleDialogue();
-    $("#divDialogue").html("Level Complete");
 }
 
 // Called when the player fails the level. 
@@ -100,8 +94,6 @@ function gameOver() {
     blockInput = true; 
     freeze = true; 
     console.log("GAME OVER"); 
-    toggleDialogue();
-    $("#divDialogue").html("Game Over");
 }
 
 // COMBAT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -435,6 +427,11 @@ function animate() {
 
 // Spawns an enemy, miniboss, or boss. 
 function spawnEnemy() {
+    
+    // Update the dialogue box. 
+    hideDialogue();
+    checkDialogue();
+    
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
@@ -609,8 +606,25 @@ function addItem(item) {
 }
 
 // Changes the text in the dialogue box. 
-function updateDialogue(text) {
-    $("divDialogue").html(text);
+function setDialogue(text) {
+    $("#divDialogue").html(text);
+    showDialogue();
+}
+
+function checkDialogue() {
+    if (dialogue == null) 
+        return; 
+    for (var i = 1; i <= Object.keys(dialogue).length; i++) {
+        if (combatPhase == dialogue["dialogue" + i]["combatphase"]) {
+            if (spawnedCount == dialogue["dialogue" + i]["enemynumber"] 
+                || (spawnedCount > Object.keys(enemyData).length 
+                    && dialogue["dialogue" + i]["enemynumber"] 
+                    > Object.keys(enemyData).length)) {
+                
+                setDialogue(dialogue["dialogue" + i]["text"]);
+            }
+        }
+    }
 }
 
 
@@ -638,7 +652,8 @@ var correctAnswer;
 function startTrivia() {
     // Load the trivia windows and buttons. 
     swapButtons();
-    toggleQuestion();
+    hideDialogue();
+    showQuestion();
     // Set the number of questions. 
     if (remainingBosses > 0) {
         // The boss is a miniboss. 
@@ -735,7 +750,7 @@ function nextQuestion() {
         // Return to combat gameplay. 
         freeze = false; 
         swapButtons();
-        toggleQuestion();
+        hideQuestion();
         startCombat();
     } else {
         // Otherwise, that was the last boss, so the level is over.  

@@ -25,29 +25,16 @@ var ref = database.ref('users');
 
   function execMouseDown() { 
       
-      
-
-		firebase.auth().onAuthStateChanged(function(user) {
-			
-		  if (user) {
-				// User is signed in.
-				alert("Welcome to Fork&Potato");
 				var user1 = firebase.auth().currentUser;
 				console.log(firebase.auth().currentUser.uid);
 				if(user1) {
-					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
-					var easterValue = snapshot.val().easter;
-					console.log(easterValue);
+					firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ easter: "1" });
 				});
 				} else {
 				 
 				}
 				// console.log(firebase.auth().currentUser.uid);
-		  } else {
-			//alert("You're not logged in!");
-		  }
-		  
-		});
+		
  }
 
   var easterButton = document.getElementById("easterBtn");

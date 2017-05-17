@@ -70,6 +70,26 @@ function showDialogue() {
     $("#divDialogue").css("display", "block"); 
 }
 
+// Hide the game over box. 
+function hideGameOver() {
+    $("#divGameOver").css("display", "none"); 
+}
+
+// Show the game over box. 
+function showGameOver() {
+    $("#divGameOver").css("display", "block"); 
+}
+
+// Hide the level complete box. 
+function hideLevelComplete() {
+    $("#divLevelComplete").css("display", "none"); 
+}
+
+// Show the level complete box. 
+function showLevelComplete() {
+    $("#divLevelComplete").css("display", "block"); 
+}
+
 // The value for freeze prior to freezing the game. 
 var previousFreeze; 
 
@@ -97,7 +117,8 @@ function togglePause(pause) {
 // This function is currently a placeholder. 
 function levelComplete() {
     blockInput = true; 
-    console.log("LEVEL COMPLETE"); 
+    freeze = true; 
+    showLevelComplete();
 }
 
 // Called when the player fails the level. 
@@ -105,7 +126,7 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     freeze = true; 
-    console.log("GAME OVER"); 
+    showGameOver();
 }
 
 // COMBAT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,6 +223,7 @@ function restartLevel() {
     hideDialogue();
     hideQuestion();
     toggleButtons(false);
+    hideGameOver();
     
     // Reset the placeholder button text. 
     $("#divCombatButton2").html(
@@ -879,3 +901,5 @@ $("#divTempClear").click(function(){nextQuestion();});
 $("#divPauseButton").click(function(){togglePause(true);});
 $("#divPauseResume").click(function(){togglePause(false);});
 $("#divPauseRestart").click(function(){restartLevel()});
+
+$("#divGameOverRestart").click(function(){restartLevel()});

@@ -127,7 +127,7 @@ body {
     display:none;
 }
 
-#divPauseScreen { 
+#divPauseScreen, #divGameOver, #divLevelComplete { 
     height:50%;
     width:50%;
     margin:auto;
@@ -148,10 +148,14 @@ body {
     background-color: chartreuse; 
 }
 
-#divExit {
+#divPauseExit, #divGameOverExit, #divLevelCompleteExit {
     background-color: cyan; 
 }
 
-#divPauseRestart {
+#divPauseRestart. #divGameOverRestart {
     background-color: dodgerblue;  
+}
+
+#divLevelCompleteNextLevel {
+    background-color: darkgoldenrod;
 }

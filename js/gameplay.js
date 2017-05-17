@@ -203,11 +203,6 @@ function startCombat() {
     spawnEnemy();
 }
 
-
-
-
-
-
 // The area where the game characters are drawn. 
 var gameArea = {
     canvas : $("#divLevelArea").children("canvas")[0],

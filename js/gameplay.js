@@ -178,26 +178,43 @@ function loadEnemyData() {
 
 // Restarts the level. 
 function restartLevel() {
+    // Unpause 
+    togglePause(false);
     
-    clearInterval(skillTimer);
-    clearTimeout(questionTimer);
+    // Block input. 
+    freeze = true; 
+    blockInput = true; 
     
+    // Clear skill timer and question timer. 
+    if (skillTimer != null)
+        clearInterval(skillTimer);
+    if (questionTimer != null)
+        clearTimeout(questionTimer);
     
+    // Clear all enemy auto attack. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].autoAttackLoop != null) {
             clearInterval(arr[index].autoAttackLoop);
         }
     });
     
-    previousFreeze = freeze; 
-    previousBlockInput = blockInput; 
-    togglePause(false);
-    freeze = true; 
-    blockInput = true; 
+    // Reset the UI. 
+    hideDialogue();
     hideQuestion();
     toggleButtons(false);
+    
+    // Reset the placeholder button text. 
+    $("#divCombatButton2").html(
+            "Skill<br>Does 3 damage to range.");
+    $("#divCombatButton3").html("");
+    $("#divCombatButton4").html("");
+    $("#divCombatButton5").html("");
+    
+    // Reset the game area. 
     gameArea.stop();
     gameArea.clear();
+    
+    // Start the game. 
     startGame();
 }
 
@@ -207,11 +224,16 @@ var yFromBottom = 80;
 // Starts the level. 
 function startGame() {
     
+    previousFreeze = false; 
+    previousBlockInput = false; 
+    
     remainingBosses = level.bosses;
     combatPhase = 0; 
     bossChar = null; 
     enemies = []; 
     usedQuestions = []; 
+    items = []; 
+    skillOnCooldown = false; 
     
     // Set up the player and background components. 
     playerChar = new component(130, 130, "images/placeholder/player1.gif", 

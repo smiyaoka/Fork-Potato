@@ -967,8 +967,9 @@ $("#divTempClear").click(function(){nextQuestion();});
 
 // Set up pause. 
 $("#divPauseButton").click(function(){
-    if (!freeze && !blockInput)
+    if ($("#divPauseScreen").css("display") == "none") {
         togglePause(true);
+    }
 });
 $("#divPauseResume").click(function(){togglePause(false);});
 $("#divPauseRestart").click(function(){restartLevel()});

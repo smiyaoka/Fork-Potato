@@ -418,14 +418,14 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.height = (height == 0) ? (this.width) : (height);
     this.getWidth = function() {
         if (type != "background") {
-            return this.width * getScale(); 
+            return this.width * getGameHeight(); 
         } else {
             return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
         }
     }
     this.getHeight = function() {
         if (type != "background") {
-            return this.height * getScale(); 
+            return this.height * getGameHeight(); 
         } else {
             return getGameHeight(); 
         }
@@ -435,7 +435,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.x = x;
     this.y = y;    
     this.getX = function() {
-        return this.x * getGameHeight(); 
+        return this.x * getGameWidth(); 
     }
     this.getY = function() {
         return this.y * getGameHeight(); 

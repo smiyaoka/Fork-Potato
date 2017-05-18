@@ -468,6 +468,7 @@ function updateGameArea() {
             freeze = true; 
         }
     }    
+    animate();
     refresh();
 }
 
@@ -503,13 +504,6 @@ function refresh() {
     // Clear the canvas and draw the background. 
     gameArea.clear();
     background.update();
-	
-    // The lower this number, the faster character move.
-    imgSpeedCount++; 
-    if(imgSpeedCount == 5) {
-	animate();
-	imgSpeedCount = 0;
-    }
     
     // Draw the player character. 
     playerChar.update();    
@@ -529,13 +523,26 @@ var imageNumber = 0;
 // the lower the faster char animates, adjust in refresh()
 var imgSpeedCount = 0; 
 
+
+var playerImages = [];
+for (i = 1; i <= 4; i++) {
+    playerImages[i] = new Image();
+    playerImages[i].src = "images/placeholder/player" + i + ".gif";
+}
+
 //animating player 
 function animate() {
-	imageNumber++
-	if(imageNumber == 5){
-		imageNumber = 1;
+    
+    // The lower this number, the faster character move.
+    imgSpeedCount++; 
+    if(imgSpeedCount >= 5) {
+        imgSpeedCount = 0;
+        imageNumber++
+        if(imageNumber >= 5){
+            imageNumber = 1;
+        }
+        playerChar.image = playerImages[imageNumber];
     }
-	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
 }
 
 // Spawns an enemy, miniboss, or boss. 

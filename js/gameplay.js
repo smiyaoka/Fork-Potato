@@ -1,11 +1,99 @@
+// IMAGE SECTION -------------------------------------------
+
+// Load the player images. 
+var playerImages = [];
+for (i = 0; i < 4; i++) {
+    playerImages[i] = new Image();
+    playerImages[i].src = "images/placeholder/player" + (i + 1) + ".gif";
+}
+
+// Load the background image. 
+var backgroundImage = new Image();
+backgroundImage.src = "images/placeholder/2.png";
+
+// Load the enemy image. 
+var enemyImage = new Image();
+enemyImage.src = "images/placeholder/enemy.gif";
+
+// Load the miniboss image. 
+var minibossImage = new Image();
+minibossImage.src = "images/placeholder/potato.gif";
+
+// Load the boss image. 
+var bossImage = new Image();
+bossImage.src = "images/placeholder/final.gif";
+
+// Load the easter egg image.
+var easterEggImage = new Image();
+easterEggImage.src = "images/placeholder/easterEgg.gif";
+
+// DATABASE SECTION ----------------------------------------
+
 //connect to firebase.
- var ref = new Firebase("https://project-fork-and-potato.firebaseio.com/questions");
+var database = firebase.database();
+
+// Reference to question data. 
+var refQuestions = database.ref('questions');
+
+// All of the question data from the database. 
+var questions; 
+
+// All of the keys for the question data. 
+var keysQuestions; 
+
+// Grab all trivia question data. 
+refQuestions.once('value').then(function(data) {
+    questions = data.val();
+    keysQuestions = Object.keys(questions);
+});
+
+// Placeholder variable for level data. 
+var levelNumber = 1; 
+
+// Reference to level data. 
+var refLevel = database.ref("levels/level" + levelNumber);
+
+// The entire data for the level. 
+var level; 
+
+// The entire data for this level's dialogue. 
+var dialogue; 
+
+// Whether the page has finished loading. 
+var pageLoaded = false; 
+
+// Whether the level data has been retrieved from the database. 
+var dataLoaded = false; 
+
+// Whether the game has started. 
+var gameStarted = false; 
+
+// Grab all data for this level, and then start the game. 
+refLevel.once('value').then(function(data) {
+    level = data.val();
+    dialogue = level["dialogue"];
+    dataLoaded = true; 
+    if (pageLoaded && !gameStarted) {
+        gameStarted = true; 
+        startGame();
+    }
+});
+
+// Makes sure the page finishes loading before starting. 
+$(window).on('load', function(){
+    pageLoaded = true; 
+    if (dataLoaded && !gameStarted) {
+        gameStarted = true; 
+        startGame();
+    }
+}); 
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Switches between the combat buttons and the trivia buttons. 
-function swapButtons() {
-    if ($("#divCombatButtons").css("display") == "flex") {
+// @param trivia true if trivia to be shown, false if combat is to be shown. 
+function toggleButtons(trivia) {
+    if (trivia) {
         $("#divCombatButtons").css("display", "none");
         $("#divAnswerButtons").css("display", "flex");
     } else {
@@ -14,32 +102,66 @@ function swapButtons() {
     }                
 }
 
-// Hides and unhides the question box at the top of the screen. 
-function toggleQuestion() {
-    /*
-    if ($("#divDialogue").css("display") == "block") {
-        $("#divDialogue").css("display", "none");
-    } 
-    */
-    if ($("#divQuestion").css("display") == "block") {
-        $("#divQuestion").css("display", "none"); 
-    } else {
-        $("#divQuestion").css("display", "block"); 
-    }
+// Hide the question box. 
+function hideQuestion() {
+    $("#divQuestion").css("display", "none");
 }
 
-// Hides and unhides the dialogue box at the top of the screen. 
-function toggleDialogue() {
-    /*
-    if ($("#divQuestion").css("display") == "block") {
-        $("#divQuestion").css("display", "none");
-    } 
-    */
-    if ($("#divDialogue").css("display") == "block") {
-        $("#divDialogue").css("display", "none"); 
+// Show the question box. 
+function showQuestion() {
+    $("#divQuestion").css("display", "block");
+}
+
+// Hide the dialogue box. 
+function hideDialogue() {
+    $("#divDialogue").css("display", "none"); 
+}
+
+// Show the dialogue box. 
+function showDialogue() {
+    $("#divDialogue").css("display", "block"); 
+}
+
+// Hide the game over box. 
+function hideGameOver() {
+    $("#divGameOver").css("display", "none"); 
+}
+
+// Show the game over box. 
+function showGameOver() {
+    $("#divGameOver").css("display", "block"); 
+}
+
+// Hide the level complete box. 
+function hideLevelComplete() {
+    $("#divLevelComplete").css("display", "none"); 
+}
+
+// Show the level complete box. 
+function showLevelComplete() {
+    $("#divLevelComplete").css("display", "block"); 
+}
+
+// The value for freeze prior to freezing the game. 
+var previousFreeze; 
+
+// The value for blockInput prior to pausing the game. 
+var previousBlockInput; 
+
+// Opens the pause menu and pauses the game. 
+// @param pause true if pausing, false if unpausing. 
+function togglePause(pause) {
+    if (pause) {
+        previousFreeze = freeze; 
+        previousBlockInput = blockInput; 
+        freeze = pause; 
+        blockInput = pause; 
+        $("#divPauseScreen").css("display", "block");
     } else {
-        $("#divDialogue").css("display", "block"); 
-    }
+        freeze = previousFreeze; 
+        blockInput = previousBlockInput; 
+        $("#divPauseScreen").css("display", "none");
+    } 
 }
 
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,9 +170,8 @@ function toggleDialogue() {
 // This function is currently a placeholder. 
 function levelComplete() {
     blockInput = true; 
-    console.log("LEVEL COMPLETE"); 
-    toggleDialogue();
-    $("#divDialogue").html("Level Complete");
+    freeze = true; 
+    showLevelComplete();
 }
 
 // Called when the player fails the level. 
@@ -58,25 +179,35 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     freeze = true; 
-    console.log("GAME OVER"); 
-    toggleDialogue();
-    $("#divDialogue").html("Game Over");
+    showGameOver();
 }
 
 // COMBAT FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Freezes the level. 
-var freeze = false; 
+var freeze = true; 
 
 // Prevents the player from clicking certain buttons. 
 // This doesn't freeze the entire level. 
-var blockInput = false; 
+var blockInput = true; 
+
+// All of the enemy data for the current combat phase. 
+var enemyData;
+
+// The current combat phase. 
+var combatPhase; 
+
+// The current number of enemies spawned this phase. 
+var spawnedCount; 
+
+// The number of bosses remaining in this level. 
+var remainingBosses;
+
+// The background image's component. 
+var background;
 
 // The player character's component. 
 var playerChar;
-
-// The background image's component. 
-var myBackground;
 
 // The array of enemy components. 
 var enemies = []; 
@@ -90,41 +221,119 @@ var items = [];
 // The player's max hp. 
 var playerMaxHP = 10; 
 
-// Each enemy's max hp. 
-var enemyMaxHP = 3; 
-
 // Each enemy's initial horizontal velocity. 
 var enemySpeedX = -1; 
 
-// The number of enemies remaining in this combat phase. 
-var remainingEnemies = 3; 
+// The width of the game area. 
+var gameWidth;  
 
-// The number of bosses remaining in this level. 
-var remainingBosses = 2;
+// The height of the game area. 
+var gameHeight; 
+
+// Calculates gameWidth and gameHeight differently depending on screen orientation. 
+if ($(window).height() > $(window).width()) {
+    // Initially portrait. 
+    gameWidth = 480; 
+    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
+} else {
+    // Initially landscape. 
+    gameHeight = 480; 
+    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
+}
+
+// Loads the data for the next combat phase. 
+function loadEnemyData() {
+    combatPhase++;
+    if (combatPhase <= Object.keys(level["combat"]).length) {
+        spawnedCount = 1; 
+        enemyData = level["combat"]["combat" + combatPhase];
+    }
+}
+
+// Restarts the level. 
+function restartLevel() {
+    // Unpause 
+    togglePause(false);
+    
+    // Block input. 
+    freeze = true; 
+    blockInput = true; 
+    
+    // Clear skill timer and question timer. 
+    if (skillTimer != null)
+        clearInterval(skillTimer);
+    if (questionTimer != null)
+        clearTimeout(questionTimer);
+    
+    // Clear all enemy auto attack. 
+    enemies.forEach(function(part, index, arr){
+        if (arr[index].autoAttackLoop != null) {
+            clearInterval(arr[index].autoAttackLoop);
+        }
+    });
+    
+    // Reset the UI. 
+    hideDialogue();
+    hideQuestion();
+    toggleButtons(false);
+    hideGameOver();
+    
+    // Reset the placeholder button text. 
+    $("#divCombatButton2").html(
+            "Skill<br>Does 3 damage to range.");
+    $("#divCombatButton3").html("");
+    $("#divCombatButton4").html("");
+    $("#divCombatButton5").html("");
+    
+    // Reset the game area. 
+    gameArea.stop();
+    gameArea.clear();
+    
+    // Start the game. 
+    startGame();
+}
+
+// The y distance between the bottom of the game area and the bottom of each character. 
+var yFromBottom = 80; 
 
 // Starts the level. 
 function startGame() {
+    
+    previousFreeze = false; 
+    previousBlockInput = false; 
+    
+    remainingBosses = level.bosses;
+    combatPhase = 0; 
+    bossChar = null; 
+    enemies = []; 
+    usedQuestions = []; 
+    items = []; 
+    skillOnCooldown = false; 
+    
     // Set up the player and background components. 
-    playerChar = new component(80, 80, "images/placeholder/player1.gif", 
-                               30, 190, "combat", 0, playerMaxHP);
-    background = new component(800, 310, "images/placeholder/1.png", 
-                               0, 0, "background");
+    playerChar = new component(130, 130, playerImages, 
+                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
+    background = new component(800, 600, backgroundImage, 
+                               0, gameHeight - 600, "background");
     background.speedX = -1;
+    
+    // Un-freeze the UI. 
+    freeze = false; 
+    blockInput = false; 
+    
     // Start the combat phase. 
     startCombat();
+    
     // Start the canvas. 
     gameArea.start();    
 }
 
-// The number of enemies in each combat phase of the level. 
-var enemiesPerCombat = 3; 
-
 // Starts the combat phase.  
 function startCombat() {
     // Set the number of enemies. 
-    remainingEnemies = enemiesPerCombat; 
+    loadEnemyData();
     // Spawn one enemy. 
-    spawnEnemy();
+    isEaster();
 }
 
 // The area where the game characters are drawn. 
@@ -133,8 +342,8 @@ var gameArea = {
     // Called to set up the canvas. 
     start : function() {
         this.canvas = $("#divLevelArea").children("canvas")[0];
-        this.canvas.width = 480; 
-        this.canvas.height = 300; 
+        this.canvas.width = gameWidth; 
+        this.canvas.height = gameHeight; 
         this.context = this.canvas.getContext("2d");
         this.frameNo = 0;
         // Update the game area every 10 milliseconds. 
@@ -153,7 +362,7 @@ var gameArea = {
 // Each component represents a character or sprite in the canvas. 
 // @param width The width of the component. 
 // @param height The height of the component. 
-// @param img The image for the component. . 
+// @param img The image or image array for the component. 
 // @param x The initial x position of the component. 
 // @param y The initial y position of the component. 
 // @param type The type of the component as a string. 
@@ -165,9 +374,23 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // Set the component's type. 
     this.type = type;
     
-    // Set the image. 
-    this.image = new Image();
-    this.image.src = img; 
+    // The currently displayed image. 
+    this.image; 
+    // The image array for if the image is animated. 
+    this.imageArray = null; 
+    // The current index in the array. 
+    this.imageCount = 0; 
+    // Update the animation after this number of frames. 
+    this.updatesPerAnim = 5; 
+    // The number of updates since the last animation frame. 
+    this.updateCount = 0; 
+    // Set the image or image array. 
+    if (img.constructor === Array) {
+        this.imageArray = img; 
+        this.image = this.imageArray[this.imageCount]; 
+    } else {
+        this.image = img; 
+    }
     
     // Set the width and height. 
     this.width = width;
@@ -203,8 +426,25 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
                 this.width, this.height);
         }
     }
+    // Cycles through the animation. 
+    this.animate = function() {
+        // Ignore if the image isn't animated. 
+        if (this.imageArray == null) 
+            return; 
+        // Only update once per number of updates. 
+        this.updateCount++; 
+        if (this.updateCount < this.updatesPerAnim) 
+            return; 
+        // Reset the update count. 
+        this.updateCount = 0; 
+        // Update the image. 
+        this.imageCount++; 
+        if (this.imageCount >= this.imageArray.length)
+            this.imageCount = 0; 
+        this.image = this.imageArray[this.imageCount];
+    }
     // Called to re-calculate the component's position. 
-    this.newPos = function() {
+        this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
         // If the component is a background, make it repeat. 
@@ -240,6 +480,7 @@ var autoAttackDamage = 1;
 
 // Repeatedly called as part of the auto attack mechanic. 
 // Each auto attack deals damage to both the player and the enemy. 
+// @param enemy The enemy to attack. 
 function autoAttackUpdate(enemy) {
     if (freeze) 
         return; 
@@ -248,7 +489,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 350; 
+var bossStop = 320; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -287,6 +528,7 @@ function updateGameArea() {
             freeze = true; 
         }
     }    
+    animate();
     refresh();
 }
 
@@ -302,7 +544,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            spawnEnemy();
+            isEaster();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -311,7 +553,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                spawnEnemy();
+                isEaster();
             }
         }
     });
@@ -322,13 +564,6 @@ function refresh() {
     // Clear the canvas and draw the background. 
     gameArea.clear();
     background.update();
-	
-    // The lower this number, the faster character move.
-    imgSpeedCount++; 
-    if(imgSpeedCount == 5) {
-	animate();
-	imgSpeedCount = 0;
-    }
     
     // Draw the player character. 
     playerChar.update();    
@@ -342,40 +577,69 @@ function refresh() {
     }
 }
 
-// The number of images to animate. 
-var imageNumber = 0; 
-
-// the lower the faster char animates, adjust in refresh()
-var imgSpeedCount = 0; 
-
-//animating player 
-function animate() {
-	imageNumber++
-	if(imageNumber == 5){
-		imageNumber = 1;
-    }
-	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
+// Progresses the animations. 
+function animate() {    
+    playerChar.animate();
 }
 
 // Spawns an enemy, miniboss, or boss. 
 function spawnEnemy() {
+    
+    // Update the dialogue box. 
+    hideDialogue();
+    checkDialogue();
+    
     // If there are still enemies left in this combat phase. 
-    if (remainingEnemies > 0) {
+    if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(80, 80, "images/placeholder/enemy.gif", 
-                                   480, 190, "combat", enemySpeedX,enemyMaxHP));
-        remainingEnemies --; 
+        enemies.push(new component(130, 130, enemyImage, 
+                                   480, gameHeight - yFromBottom - 130, 
+                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(80, 80, "images/placeholder/final.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, bossImage, 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(80, 80, "images/placeholder/potato.gif", 
-                                     480, 190, "boss", enemySpeedX); 
+            bossChar = new component(130, 130, minibossImage, 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
+        }        
+        remainingBosses--; 
+    }
+}
+
+function spawnEaster() {
+    
+    // Update the dialogue box. 
+    hideDialogue();
+    checkDialogue();
+    
+    // If there are still enemies left in this combat phase. 
+    if (spawnedCount <= Object.keys(enemyData).length) {
+        // Spawn a regular enemy. 
+        enemies.push(new component(130, 130, easterEggImage, 
+                                   480, gameHeight - yFromBottom - 130, 
+                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        spawnedCount ++; 
+        // Otherwise, if a boss hasn't been spawned yet... 
+    } else if (bossChar == null) {
+        // IF this is the last boss in the level...
+        if (remainingBosses == 1) {
+            // Spawn the last boss in this level. 
+            bossChar = new component(130, 130, easterEggImage, 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
+        } else {
+            // Otherwise, spawn a miniboss. 
+            bossChar = new component(130, 130, easterEggImage, 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
         }        
         remainingBosses--; 
     }
@@ -514,17 +778,44 @@ function clickItem(number) {
     $("#divCombatButton" + number).empty();
 }
 
-// Adds an item to the nearest empty item slot. 
-// If there is no room, no item is added. 
-// @param The name of the item. 
+//hide item 1
+$("#hiding").hide();
+
 function addItem(item) {
     var searching = true; 
    // Item slots are combat buttons 3-5. 
     for (var i = 3; i <= 5 && searching; i++) {
         if (!items[i]) {
+			
             items[i] = item; 
-            $("#divCombatButton" + i).html(item);
+			//show item 1
+			$("#hiding").show();
             searching = false; 
+			
+        }
+    }
+}
+
+// Changes the text in the dialogue box. 
+// @param text The text that should appear in the dialogue box. 
+function setDialogue(text) {
+    $("#divDialogue").html(text);
+    showDialogue();
+}
+
+// Checks whether dialogue should be loaded, and then loads it. 
+function checkDialogue() {
+    if (dialogue == null) 
+        return; 
+    for (var i = 1; i <= Object.keys(dialogue).length; i++) {
+        if (combatPhase == dialogue["dialogue" + i]["combatphase"]) {
+            if (spawnedCount == dialogue["dialogue" + i]["enemynumber"] 
+                || (spawnedCount > Object.keys(enemyData).length 
+                    && dialogue["dialogue" + i]["enemynumber"] 
+                    > Object.keys(enemyData).length)) {
+                
+                setDialogue(dialogue["dialogue" + i]["text"]);
+            }
         }
     }
 }
@@ -544,16 +835,17 @@ var triviaDamage = 1;
 var nextQuestionDelay = 1200; 
 
 // The number of questions remaining in this trivia phase. 
-var remainingQuestions = 2; 
+var remainingQuestions; 
 
 // The answer button corresponding with the correct answer. 
-var correctAnswer = 1; 
+var correctAnswer;
 
 // Starts each trivia portion of the level. 
 function startTrivia() {
     // Load the trivia windows and buttons. 
-    swapButtons();
-    toggleQuestion();
+    toggleButtons(true);
+    hideDialogue();
+    showQuestion();
     // Set the number of questions. 
     if (remainingBosses > 0) {
         // The boss is a miniboss. 
@@ -565,6 +857,9 @@ function startTrivia() {
     // Load the next question. 
     nextQuestion();
 }
+
+// Stores the value of setTimeout for loading the next question. 
+var questionTimer; 
 
 // Called when the player clicks on a question button. 
 // @param number The number of the question button. 
@@ -581,7 +876,7 @@ function clickAnswer(number) {
         markCorrectButton(number); 
         // Set the timer for the next question. 
         blockInput = true; 
-        setTimeout(nextQuestion, nextQuestionDelay);         
+        questionTimer = setTimeout(nextQuestion, nextQuestionDelay); 
     } else {
         // Otherwise, mark the answer as wrong and damage the player.
         eliminateButton(number);
@@ -589,50 +884,57 @@ function clickAnswer(number) {
     }
 }
 
+// Tracks which questions have already been used in this level. 
+var usedQuestions = []; 
+
 // Loads the next question. 
 function nextQuestion() {
     blockInput = false;
     // If there are remaining questions, load it. 
     if (remainingQuestions > 0) {
 		
-		//getting questions and answers from firebase 
-		//question
-		ref.child("question1/question").on("value", function(snapshot) {
-			$("#divQuestion").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-        //answer1(correct answer)
-		ref.child("question1/answer1").on("value", function(snapshot) {
-			$("#divAnswer1").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-		//answer2
-		ref.child("question1/answer2").on("value", function(snapshot) {
-			$("#divAnswer2").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-		//answer3
-		ref.child("question1/answer3").on("value", function(snapshot) {
-			$("#divAnswer3").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-		//answer4
-		ref.child("question1/answer4").on("value", function(snapshot) {
-			$("#divAnswer4").html(snapshot.val());
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-		
-        remainingQuestions--; 
         resetAnswerButtons();
+        
+        // Get the random question number. 
+        var questionNumber;
+        var repeatQuestion; 
+        do {
+            questionNumber = randomQuestionNumber();
+            repeatQuestion = false; 
+            usedQuestions.forEach(function(part, index, arr){
+                if (questionNumber == usedQuestions[index]){
+                    repeatQuestion = true; 
+                }
+            });
+        } while(repeatQuestion); 
+        		
+        // Assign which answer should go in which slot 
+        correctAnswer = d4();
+        var wrong = []; 
+        for (var i = 2; i <= 4; i++) {
+            var slot; 
+            do {
+                slot = d4();
+            } while(slot == correctAnswer 
+                    || slot == wrong[2] 
+                    || slot == wrong[3] 
+                    || slot == wrong[4]);
+            wrong[i] = slot; 
+        }
+        
+		// Setting the question data into the interface. 
+		$("#divQuestion").html(
+            questions[keysQuestions[questionNumber]].question);
+        $("#divAnswer" + correctAnswer).html(
+            questions[keysQuestions[questionNumber]].answer1);
+        $("#divAnswer" + wrong[2]).html(
+            questions[keysQuestions[questionNumber]].answer2);
+        $("#divAnswer" + wrong[3]).html(
+            questions[keysQuestions[questionNumber]].answer3);
+        $("#divAnswer" + wrong[4]).html(
+            questions[keysQuestions[questionNumber]].answer4);
+        
+        remainingQuestions--; 
     } else if (remainingBosses > 0) {
         // Otherwise... 
         // If it was just a miniboss...
@@ -642,8 +944,8 @@ function nextQuestion() {
         bossChar = null; 
         // Return to combat gameplay. 
         freeze = false; 
-        swapButtons();
-        toggleQuestion();
+        toggleButtons(false);
+        hideQuestion();
         startCombat();
     } else {
         // Otherwise, that was the last boss, so the level is over.  
@@ -651,12 +953,26 @@ function nextQuestion() {
     }
 }
 
+// Random number, 1-4
+// @return integer 1-4
+function d4() {
+    return 1 + Math.floor(Math.random() * 4);
+}
+
+// The total questions. 
+// @return A random key for the questions data object. 
+function randomQuestionNumber() {
+    return Math.floor(Math.random() * keysQuestions.length);
+}
+
 // Visibly marks an answer button as the correct answer. 
+// @param number The answer button's number. 
 function markCorrectButton(number) {
     $("#divAnswer" + number).addClass("classAnswerCorrect");
 }
 
 // Visibly marks an answer button as an incorrect answer. 
+// @param number The answer button's number. 
 function eliminateButton(number) {
     $("#divAnswer" + number).addClass("classAnswerEliminated");
 }
@@ -666,6 +982,7 @@ function resetAnswerButtons() {
     for(var i = 1; i <= 4; i++) {
         $("#divAnswer" + i).removeClass(
             "classAnswerCorrect classAnswerEliminated");
+        $("#divAnswer" + i).html("");
     }
 }    
 
@@ -683,6 +1000,42 @@ for(let i = 1; i <= 4; i++) {
     $("#divAnswer" + i).click(function(){clickAnswer(i);});
 }
 
-$("#divLevelArea").ready(startGame);
 $("#divTempClear").click(function(){nextQuestion();});
 
+// Set up pause. 
+$("#divPauseButton").click(function(){
+    if ($("#divPauseScreen").css("display") == "none") {
+        togglePause(true);
+    }
+});
+$("#divPauseResume").click(function(){togglePause(false);});
+$("#divPauseRestart").click(function(){restartLevel()});
+
+// Set up game over. 
+$("#divGameOverRestart").click(function(){restartLevel()});
+
+// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function isEaster() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        
+				var user1 = firebase.auth().currentUser;
+				console.log(firebase.auth().currentUser.uid);
+				if(user1) {
+					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
+					var easterValue = snapshot.val().easter;
+					console.log(easterValue);
+                        if(easterValue == 1) {
+                            //alert("It works!");
+                            spawnEaster();
+                        } else {
+                            //alert("It doesnt work!");
+                            spawnEnemy();
+                        }
+				});
+				} else {
+				 
+				}
+				// console.log(firebase.auth().currentUser.uid);
+		});
+}

@@ -9,7 +9,13 @@ for (i = 0; i < 4; i++) {
 
 // Load the background image. 
 var backgroundImage = new Image();
-backgroundImage.src = "images/placeholder/1.png";
+backgroundImage.src = "Image/Background/Backgroundv1.png";
+
+// The width of the backround image 
+var backgroundImageWidth = 1800; 
+
+// The height of the 
+var backgroundImageHeight = 450; 
 
 // Load the enemy image. 
 var enemyImage = new Image();
@@ -160,16 +166,10 @@ function togglePause(pause) {
     } 
 }
 
-
-
-window.addEventListener("orientationchange", function() {
-    updateRotation();
+window.addEventListener("resize", function() {
+    setScreenSize(); 
+    refresh();
 });
-
-function updateRotation() {
-    setScreenSize();
-}
-
 
 
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -301,7 +301,7 @@ function restartLevel() {
 }
 
 // The y distance between the bottom of the game area and the bottom of each character. 
-var yFromBottom = 0.125; 
+var yFromBottom = 0.15; 
 
 // Starts the level. 
 function startGame() {
@@ -399,13 +399,6 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.image = img; 
     }
     
-    /*
-    this.originalWidth = width; 
-    this.originalHeight = height; 
-    this.originalX = x; 
-    this.originalY = y; 
-    */
-    
     // Set the width and height. 
     this.width = width;
     this.height = (height == 0) ? (this.width) : (height);
@@ -424,24 +417,29 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.update = function() {
         ctx = gameArea.context;
         // Draw the image. 
+        if (this.type != "background")
         ctx.drawImage(this.image, 
             this.x, 
             this.y,
             this.width * scale, 
             this.height * scale); 
         // If it's a combat character, draw an hp marker. 
-        if (type == "combat") {
+        if (this.type == "combat") {
             ctx.font="20px Georgia";
             ctx.fillText(this.hp,this.x,this.y - 10);
-        } else if (type == "background") {
-            
+        } else if (this.type == "background") {
+            ctx.drawImage(this.image, 
+            this.x, 
+            this.y,
+            gameHeight / backgroundImageHeight * backgroundImageWidth, 
+            gameHeight); 
             
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
-                this.x + this.width * scale, 
+                this.x + gameHeight / backgroundImageHeight * backgroundImageWidth, 
                 this.y,
-                this.width * scale, 
-                this.height * scale);
+                gameHeight / backgroundImageHeight * backgroundImageWidth, 
+                gameHeight);
         }
     }
     // Cycles through the animation. 
@@ -467,7 +465,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.y += this.speedY * gameHeight;
         // If the component is a background, make it repeat. 
         if (this.type == "background") {
-            if (this.x <= -((this.width - 0.1) * scale)) {
+            if (this.x <= -gameHeight / backgroundImageHeight * backgroundImageWidth) {
                 this.x = 0;
             }
         }
@@ -685,7 +683,7 @@ function clickEat() {
 // The range of the user's skill attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var skillRange = 350; 
+var skillRange = 0.8; 
 
 // The amount of damage done by the skill attack. 
 var skillDamage = 3; 
@@ -712,7 +710,7 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange + playerChar.x + playerChar.width; 
+    var farEnd = skillRange * gameWidth + playerChar.x + playerChar.width * scale; 
     // Damage all enemies within range. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].x < farEnd) {

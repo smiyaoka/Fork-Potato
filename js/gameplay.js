@@ -166,6 +166,7 @@ function togglePause(pause) {
     } 
 }
 
+// Resize the game area when the window changes size. 
 window.addEventListener("resize", function() {
     setScreenSize(); 
     gameArea.canvas.width = getGameWidth(); 
@@ -234,32 +235,31 @@ var playerMaxHP = 10;
 // Each enemy's initial horizontal velocity. 
 var enemySpeedX = -0.002; 
 
-// The width of the game area. 
+// The width of the game canvas. 
 var gameWidth;  
 
-// The height of the game area. 
+// The height of the game canvas. 
 var gameHeight; 
 
-// BLAH
-var scale; 
-
+// Returns the gameWidth. 
+// @param gameWidth The height of the game canvas. 
 function getGameWidth() {
     return gameWidth; 
 }
 
+// Returns the gameHeight. 
+// @param gameHeight The height of the game canvas. 
 function getGameHeight() {
     return gameHeight; 
 }
 
-function getScale() {
-    return scale; 
-}
-
+// Sets the screen size. 
 function setScreenSize() {
     gameWidth = $(window).width(); 
     gameHeight = $(window).height() * 0.67;
-    scale = (getGameWidth() > getGameHeight()) ? getGameHeight() : getGameWidth(); 
 }
+
+// Initial setting. 
 setScreenSize();
 
 // Loads the data for the next combat phase. 
@@ -416,6 +416,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // Set the width and height. 
     this.width = width;
     this.height = (height == 0) ? (this.width) : (height);
+    
+    // Returns the scaled width. 
     this.getWidth = function() {
         if (type != "background") {
             return this.width * getGameHeight(); 
@@ -423,6 +425,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
             return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
         }
     }
+    // Returns the scaled height. 
     this.getHeight = function() {
         if (type != "background") {
             return this.height * getGameHeight(); 
@@ -434,9 +437,12 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // Set the initial position. 
     this.x = x;
     this.y = y;    
+    
+    // Returns the scaled x position. 
     this.getX = function() {
         return this.x * getGameWidth(); 
     }
+    // Returns the scaled y position. 
     this.getY = function() {
         return this.y * getGameHeight(); 
     }

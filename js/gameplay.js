@@ -305,7 +305,7 @@ function restartLevel() {
 }
 
 // The y distance between the bottom of the game area and the bottom of each character. 
-var yFromBottom = 80; 
+var yFromBottom = 0.2; 
 
 // Starts the level. 
 function startGame() {
@@ -322,11 +322,11 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(130, 130, playerImages, 
-                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
-    background = new component(800, 600, backgroundImage, 
-                               0, gameHeight - 600, "background");
-    background.speedX = -1;
+    playerChar = new component(0.25, 0.25, playerImages, 
+                               0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
+    background = new component(1.0, 0.75, backgroundImage, 
+                               0, 1.0 - 0.75, "background");
+    background.speedX = -0.01;
     
     // Un-freeze the UI. 
     freeze = false; 
@@ -603,7 +603,7 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, enemyImage, 
+        enemies.push(new component(0.25, 0.25, enemyImage, 
                                    480, gameHeight - yFromBottom - 130, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 

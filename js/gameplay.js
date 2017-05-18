@@ -29,6 +29,10 @@ minibossImage.src = "images/placeholder/potato.gif";
 var bossImage = new Image();
 bossImage.src = "images/placeholder/final.gif";
 
+// Load the easter egg image.
+var easterEggImage = new Image();
+easterEggImage.src = "images/placeholder/easterEgg.gif";
+
 // DATABASE SECTION ----------------------------------------
 
 //connect to firebase.
@@ -354,7 +358,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    spawnEnemy();
+    isEaster();
 }
 
 // The area where the game characters are drawn. 
@@ -493,7 +497,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.image = this.imageArray[this.imageCount];
     }
     // Called to re-calculate the component's position. 
-    this.newPos = function() {
+        this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
         // If the component is a background, make it repeat. 
@@ -593,7 +597,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            spawnEnemy();
+            isEaster();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -602,7 +606,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                spawnEnemy();
+                isEaster();
             }
         }
     });
@@ -657,6 +661,37 @@ function spawnEnemy() {
             // Otherwise, spawn a miniboss. 
             bossChar = new component(0.25, 0, minibossImage, 
                                      1.0, 1.0 - yFromBottom - 0.25, 
+                                     "boss", enemySpeedX); 
+        }        
+        remainingBosses--; 
+    }
+}
+
+function spawnEaster() {
+    
+    // Update the dialogue box. 
+    hideDialogue();
+    checkDialogue();
+    
+    // If there are still enemies left in this combat phase. 
+    if (spawnedCount <= Object.keys(enemyData).length) {
+        // Spawn a regular enemy. 
+        enemies.push(new component(130, 130, easterEggImage, 
+                                   480, gameHeight - yFromBottom - 130, 
+                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        spawnedCount ++; 
+        // Otherwise, if a boss hasn't been spawned yet... 
+    } else if (bossChar == null) {
+        // IF this is the last boss in the level...
+        if (remainingBosses == 1) {
+            // Spawn the last boss in this level. 
+            bossChar = new component(130, 130, easterEggImage, 
+                                     480, gameHeight - yFromBottom - 130, 
+                                     "boss", enemySpeedX); 
+        } else {
+            // Otherwise, spawn a miniboss. 
+            bossChar = new component(130, 130, easterEggImage, 
+                                     480, gameHeight - yFromBottom - 130, 
                                      "boss", enemySpeedX); 
         }        
         remainingBosses--; 
@@ -834,7 +869,6 @@ function checkDialogue() {
         }
     }
 }
-
 
 // TRIVIA FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1029,3 +1063,29 @@ $("#divPauseRestart").click(function(){restartLevel()});
 
 // Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});
+
+// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function isEaster() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        
+				var user1 = firebase.auth().currentUser;
+				console.log(firebase.auth().currentUser.uid);
+				if(user1) {
+					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
+					var easterValue = snapshot.val().easter;
+					console.log(easterValue);
+                        if(easterValue == 1) {
+                            //alert("It works!");
+                            spawnEaster();
+                        } else {
+                            //alert("It doesnt work!");
+                            spawnEnemy();
+                        }
+				});
+				} else {
+				 
+				}
+				// console.log(firebase.auth().currentUser.uid);
+		});
+}

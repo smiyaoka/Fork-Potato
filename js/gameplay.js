@@ -1,3 +1,28 @@
+// IMAGE SECTION -------------------------------------------
+
+// Load the player images. 
+var playerImages = [];
+for (i = 0; i < 4; i++) {
+    playerImages[i] = new Image();
+    playerImages[i].src = "images/placeholder/player" + (i + 1) + ".gif";
+}
+
+// Load the background image. 
+var backgroundImage = new Image();
+backgroundImage.src = "images/placeholder/1.png";
+
+// Load the enemy image. 
+var enemyImage = new Image();
+enemyImage.src = "images/placeholder/enemy.gif";
+
+// Load the miniboss image. 
+var minibossImage = new Image();
+minibossImage.src = "images/placeholder/potato.gif";
+
+// Load the boss image. 
+var bossImage = new Image();
+bossImage.src = "images/placeholder/final.gif";
+
 // DATABASE SECTION ----------------------------------------
 
 //connect to firebase.
@@ -282,9 +307,9 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(130, 130, "images/placeholder/player1.gif", 
+    playerChar = new component(130, 130, playerImages, 
                                30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
-    background = new component(800, 600, "images/placeholder/1.png", 
+    background = new component(800, 600, backgroundImage, 
                                0, gameHeight - 600, "background");
     background.speedX = -1;
     
@@ -345,9 +370,23 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // Set the component's type. 
     this.type = type;
     
-    // Set the image. 
-    this.image = new Image();
-    this.image.src = img; 
+    // The currently displayed image. 
+    this.image; 
+    // The image array for if the image is animated. 
+    this.imageArray = null; 
+    // The current index in the array. 
+    this.imageCount = 0; 
+    // Update the animation after this number of frames. 
+    this.updatesPerAnim = 5; 
+    // The number of updates since the last animation frame. 
+    this.updateCount = 0; 
+    // Set the image or image array. 
+    if (img.constructor === Array) {
+        this.imageArray = img; 
+        this.image = this.imageArray[this.imageCount]; 
+    } else {
+        this.image = img; 
+    }
     
     // Set the width and height. 
     this.width = width;
@@ -382,6 +421,23 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
                 this.y,
                 this.width, this.height);
         }
+    }
+    // Cycles through the animation. 
+    this.animate = function() {
+        // Ignore if the image isn't animated. 
+        if (this.imageArray == null) 
+            return; 
+        // Only update once per number of updates. 
+        this.updateCount++; 
+        if (this.updateCount < this.updatesPerAnim) 
+            return; 
+        // Reset the update count. 
+        this.updateCount = 0; 
+        // Update the image. 
+        this.imageCount++; 
+        if (this.imageCount >= this.imageArray.length)
+            this.imageCount = 0; 
+        this.image = this.imageArray[this.imageCount];
     }
     // Called to re-calculate the component's position. 
     this.newPos = function() {
@@ -468,6 +524,7 @@ function updateGameArea() {
             freeze = true; 
         }
     }    
+    animate();
     refresh();
 }
 
@@ -503,13 +560,6 @@ function refresh() {
     // Clear the canvas and draw the background. 
     gameArea.clear();
     background.update();
-	
-    // The lower this number, the faster character move.
-    imgSpeedCount++; 
-    if(imgSpeedCount == 5) {
-	animate();
-	imgSpeedCount = 0;
-    }
     
     // Draw the player character. 
     playerChar.update();    
@@ -523,19 +573,9 @@ function refresh() {
     }
 }
 
-// The number of images to animate. 
-var imageNumber = 0; 
-
-// the lower the faster char animates, adjust in refresh()
-var imgSpeedCount = 0; 
-
-//animating player 
-function animate() {
-	imageNumber++
-	if(imageNumber == 5){
-		imageNumber = 1;
-    }
-	playerChar.image.src = 'images/placeholder/player' + imageNumber + '.gif'
+// Progresses the animations. 
+function animate() {    
+    playerChar.animate();
 }
 
 // Spawns an enemy, miniboss, or boss. 
@@ -548,7 +588,7 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, "images/placeholder/enemy.gif", 
+        enemies.push(new component(130, 130, enemyImage, 
                                    480, gameHeight - yFromBottom - 130, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
@@ -557,12 +597,12 @@ function spawnEnemy() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, "images/placeholder/final.gif", 
+            bossChar = new component(130, 130, bossImage, 
                                      480, gameHeight - yFromBottom - 130, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, "images/placeholder/potato.gif", 
+            bossChar = new component(130, 130, minibossImage, 
                                      480, gameHeight - yFromBottom - 130, 
                                      "boss", enemySpeedX); 
         }        

@@ -831,6 +831,9 @@ function clickItem(number) {
     $("#divCombatButton" + number).empty();
 }
 
+//hide item
+$("#hiding").hide();
+
 // Adds an item to the nearest empty item slot. 
 // If there is no room, no item is added. 
 // @param The name of the item. 
@@ -840,7 +843,8 @@ function addItem(item) {
     for (var i = 3; i <= 5 && searching; i++) {
         if (!items[i]) {
             items[i] = item; 
-            $("#divCombatButton" + i).html(item);
+            //show item
+			$("#hiding").show();
             searching = false; 
         }
     }

@@ -19,14 +19,12 @@
   };
   
   firebase.initializeApp(config);
-
 </script>
 </head> 
 
 <script>
 		var database = firebase.database();
 		var ref = database.ref('users');
-
 		firebase.auth().onAuthStateChanged(function(user) {
 		  if (user) {
 			// User is signed in.
@@ -36,13 +34,11 @@
 			//alert("You're not logged in!");
 		  }
 		});
-
 		function signIn(acc, pw) {
 		
 			 var email = document.getElementById('account').value;
 			 var password = document.getElementById('passWord').value;
 			 var checker = false;
-
 			// Sign in with email and password
 			firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
 			
@@ -58,7 +54,6 @@
 			  }
 			  console.log(error);
 	  
-
 			});
 			
 		}
@@ -67,7 +62,6 @@
 				 var email = document.getElementById('account').value;
 				 var password = document.getElementById('passWord').value;
 				  
-
 					// signup with email and password
 				  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
 					
@@ -92,6 +86,7 @@
 					   firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
 					   
 						easter: "0",
+                        charNum: "0",
 						email: firebase.auth().currentUser.email
 						
 					  });
@@ -114,7 +109,6 @@
 			  // An error happened.
 			});
 			}
-
 		
 		
 		
@@ -148,12 +142,12 @@
         
         <div id="menuContainer">
         <div class="menuBtn" id="btnNewGame">
-            <a href="level.html"><button type="button" id="menuNewGame">New Game</button></a>
+            <a href="charSelect.html"><button type="button" id="menuNewGame">New Game</button></a>
             
         </div>
         <div class="menuBtn" id="btnBottom">
-            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Links</button></a>
-            <button type="button" id="menuQuit">X</button>
+            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Affilitrated Sites</button></a>
+            <button type="button" id="menuQuit">Quit</button>
         </div>
     </div>
         
@@ -164,11 +158,9 @@
 function openNav() {
     document.getElementById("myNav").style.height = "100%";
 }
-
 function closeNav() {
     document.getElementById("myNav").style.height = "0%";
 }
-
 </script>
     
 </body>

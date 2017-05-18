@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+	<title>Character Select</title>
+    <link type="text/css" rel="stylesheet" href="css/select.css"> 
+    
+    
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    
+    <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB8EekPhs6qYLXCxCi0oyypG3f25MlBFFY",
+    authDomain: "project-fork-and-potato.firebaseapp.com",
+    databaseURL: "https://project-fork-and-potato.firebaseio.com",
+    projectId: "project-fork-and-potato",
+    storageBucket: "project-fork-and-potato.appspot.com",
+    messagingSenderId: "119574546255"
+  };
+  
+  firebase.initializeApp(config);
+</script>
+    
+    
+</head> 
+
+
+
+<body> 
+    <div id="headerContainer">
+        <a href="menu.html"><button type="button" id="backBtn">Back</button></a>
+    </div>
+    <div id="leftContainer"><button type="button" id="leftButton" class="sideBtn" onclick="plusDivs(-1)"><</button></div> 
+        
+    <div id="bodyContainer">
+        
+    <img class="mySlides" id="char0" src="images/placeholder/mom.gif" style="height:100%">
+    <img class="mySlides" id="char1" src="images/placeholder/player.gif" style="height:100%">
+    <img class="mySlides" id="char2" src="images/placeholder/sis.gif" style="height:100%">
+        
+    </div>
+    <div id="rightContainer"><button type="button" id="rightButton" class="sideBtn" onclick="plusDivs(1)">></button>
+    </div>
+        
+        <div id="footerContainer">
+        <div class="selectBtn" id="btnSelect">
+            <button type="button" id="selectBtn">Select Character</button>
+            <a href="level.html"><button type="button" id="selectBtn">Start Game</button></a>
+        </div>
+        
+    </div>
+        
+</div>
+    
+<script>
+	var database = firebase.database();
+	//var ref = database.ref('users');
+			   
+			(function() {
+	  var mouseTimer;
+	  function mouseDown() { 
+		  mouseUp();
+		  mouseTimer = window.setTimeout(execMouseDown,1000); //set timeout to fire in 2 seconds when the user presses mouse button down
+	  }
+	  function mouseUp() { 
+		  if (mouseTimer) window.clearTimeout(mouseTimer);  //cancel timer when mouse button is released
+		  
+		  console.log("Mouse out");
+	  }
+	  function execMouseDown() { 
+			
+				//console.log("works");
+				console.log(firebase.auth().currentUser.uid);
+				firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ easter: "1" });
+				
+	  }
+	  var div = document.getElementById("selectBtn");
+	  div.addEventListener("mousedown", mouseDown);
+	  document.body.addEventListener("mouseup", mouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
+	}());
+	
+</script>
+    <script>
+var slideIndex = 1;
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+</script>
+    
+    
+</body>
+
+</html>

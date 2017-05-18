@@ -168,6 +168,8 @@ function togglePause(pause) {
 
 window.addEventListener("resize", function() {
     setScreenSize(); 
+    gameArea.canvas.width = getGameWidth(); 
+    gameArea.canvas.height = getGameHeight(); 
     refresh();
 });
 
@@ -241,10 +243,22 @@ var gameHeight;
 // BLAH
 var scale; 
 
+function getGameWidth() {
+    return gameWidth; 
+}
+
+function getGameHeight() {
+    return gameHeight; 
+}
+
+function getScale() {
+    return scale; 
+}
+
 function setScreenSize() {
     gameWidth = $(window).width(); 
     gameHeight = $(window).height() * 0.67;
-    scale = (gameWidth > gameHeight) ? gameHeight: gameWidth; 
+    scale = (getGameWidth() > getGameHeight()) ? getGameHeight() : getGameWidth(); 
 }
 setScreenSize();
 
@@ -404,16 +418,16 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.height = (height == 0) ? (this.width) : (height);
     this.getWidth = function() {
         if (type != "background") {
-            return this.width * scale; 
+            return this.width * getScale(); 
         } else {
-            return gameHeight / backgroundImageHeight * backgroundImageWidth; 
+            return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
         }
     }
     this.getHeight = function() {
         if (type != "background") {
-            return this.height * scale; 
+            return this.height * getScale(); 
         } else {
-            return gameHeight; 
+            return getGameHeight(); 
         }
     }
     
@@ -421,10 +435,10 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.x = x;
     this.y = y;    
     this.getX = function() {
-        return this.x * gameWidth; 
+        return this.x * getGameHeight(); 
     }
     this.getY = function() {
-        return this.y * gameHeight; 
+        return this.y * getGameHeight(); 
     }
     
     // speedX is the horizontal velocity. 
@@ -449,7 +463,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         } else if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
-                this.getX() + gameHeight / backgroundImageHeight * backgroundImageWidth, 
+                this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 
                 this.getY(),
                 this.getWidth(), 
                 this.getHeight());
@@ -551,7 +565,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.getX() <= bossStop * gameWidth) {
+        if (bossChar.getX() <= bossStop * getGameWidth()) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -675,7 +689,7 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange * gameWidth + playerChar.getX() + playerChar.getWidth();
+    var farEnd = eatRange * getGameWidth() + playerChar.getX() + playerChar.getWidth();
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
@@ -723,7 +737,7 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange * gameWidth + playerChar.getX() + playerChar.getWidth(); 
+    var farEnd = skillRange * getGameWidth() + playerChar.getX() + playerChar.getWidth(); 
     // Damage all enemies within range. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].getX() < farEnd) {

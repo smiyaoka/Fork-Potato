@@ -22,7 +22,6 @@
 	  };
 	  
 	  firebase.initializeApp(config);
-
 	</script>
 </head> 
 
@@ -30,7 +29,7 @@
     <div id="divPauseScreen">
         <div id="divPauseResume">Resume Playing</div>
         <div id="divPauseRestart">Restart Level</div>
-        <div id="divPauseExit"><a href="menu.html">Exit Game</a></div>
+        <div id="divPauseExit"><a href="menu.html" id="exitToMenu1">Exit Game</a></div>
     </div> 
     <div id="divGameOver">
         <div id="divGameOverRestart">Restart Level</div>
@@ -43,7 +42,7 @@
     
     <div id="cover" ></div>
     <div id="divPauseButton">
-        
+        <img src="images/pause.png" id="pauseButton">
     </div>
     
     <div id="divQuestion" style="display: none;">
@@ -60,9 +59,9 @@
     </div>
     
     <div id="divCombatButtons">
-        <div class="classCombatButton" id="divCombatButton1">Eat<br>Does one damage. </div>
-        <div class="classCombatButton" id="divCombatButton2">Skill<br>Does 3 damage to range.</div>
-        <div class="classCombatButton" id="divCombatButton3"><div id="hiding" style=""><img src="Image/Item/Item-Container260x260/Item-Container260x260.gif" alt="container" height="120" width="150" style="margin-left: 150px;"></div></div>
+        <div class="classCombatButton" id="divCombatButton1"></div>
+        <div class="classCombatButton" id="divCombatButton2"></div>
+        <div class="classCombatButton" id="divCombatButton3"></div>
         <div class="classCombatButton" id="divCombatButton4"></div>
         <div class="classCombatButton" id="divCombatButton5"></div>
     </div>

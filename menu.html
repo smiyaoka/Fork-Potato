@@ -114,27 +114,11 @@
 		
 </script>
 
-
 <body> 
     <div id="headerContainer">
         <a href="#loginScreen"><button type="button" onclick="#loginScreen" id="loginBtn">Login</button></a>
         
-        <div id="loginScreen">
-			<form >
-					  E-mail:<br>
-					  <input type="text" id="account" name="account" value="email@yolo.com">
-					  <br>
-					  Password:<br>
-					  <input type="text" id="passWord" name="passWord" value="password">
-					  <br><br>
-					  <input type="button" value="Log In" onclick= "signIn('account', 'passWord');">
-					  <input type="button" value="Log out" onclick= "signOut();">
-					    <input type="button" value="Register" onclick= "signUp('account2', 'passWord2');">
-				</form> 
-		<a href="#" class="cancel">&times;</a> </div> 
-			<div id="cover" > 
-				
-			</div>
+        <div id="loginScreen">LOGIN<a href="#" class="cancel">&times;</a> </div> <div id="cover" > </div>
         
     <div id="runningContainer">
     </div>
@@ -142,12 +126,12 @@
         
         <div id="menuContainer">
         <div class="menuBtn" id="btnNewGame">
-            <a href="charSelect.html"><button type="button" id="menuNewGame">New Game</button></a>
+            <a href="level.html"><button type="button" id="menuNewGame">New Game</button></a>
             
         </div>
         <div class="menuBtn" id="btnBottom">
-            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Affilitrated Sites</button></a>
-            <button type="button" id="menuQuit">Quit</button>
+            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Links</button></a>
+            <button type="button" id="menuQuit">X</button>
         </div>
     </div>
         
@@ -158,6 +142,7 @@
 function openNav() {
     document.getElementById("myNav").style.height = "100%";
 }
+
 function closeNav() {
     document.getElementById("myNav").style.height = "0%";
 }

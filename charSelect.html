@@ -26,6 +26,8 @@
     
 </head> 
 
+
+
 <body> 
     <div id="headerContainer">
         <a href="menu.html"><button type="button" id="backBtn">Back</button></a>
@@ -45,47 +47,45 @@
 </div>
     
     
-    <script>
-        var database = firebase.database();
-var ref = database.ref('users');
-        
-        
-        
-        
-        
-        
-        
-        (function() {
 
-  var mouseTimer;
-  function mouseDown() { 
-      mouseUp();
-      mouseTimer = window.setTimeout(execMouseDown,2000); //set timeout to fire in 2 seconds when the user presses mouse button down
-  }
+    
+    
+    
+    
+    
+<script>
+	var database = firebase.database();
+	//var ref = database.ref('users');
+			   
+			(function() {
 
-  function mouseUp() { 
-      if (mouseTimer) window.clearTimeout(mouseTimer);  //cancel timer when mouse button is released
-      
-      console.log("Mouse out");
-  }
+	  var mouseTimer;
+	  function mouseDown() { 
+		  mouseUp();
+		  mouseTimer = window.setTimeout(execMouseDown,1000); //set timeout to fire in 2 seconds when the user presses mouse button down
+	  }
 
-  function execMouseDown() { 
-        
-            console.log("Mouse in");
-            
-  }
+	  function mouseUp() { 
+		  if (mouseTimer) window.clearTimeout(mouseTimer);  //cancel timer when mouse button is released
+		  
+		  console.log("Mouse out");
+	  }
 
-  var div = document.getElementById("selectBtn");
-  div.addEventListener("mousedown", mouseDown);
-  document.body.addEventListener("mouseup", mouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
-  
-}());
-    </script>
-    
-    
-    
-    
-    
+	  function execMouseDown() { 
+			
+				//console.log("works");
+				console.log(firebase.auth().currentUser.uid);
+				firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ easter: "1" });
+				
+	  }
+
+	  var div = document.getElementById("selectBtn");
+	  div.addEventListener("mousedown", mouseDown);
+	  document.body.addEventListener("mouseup", mouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
+	  
+	}());
+	
+</script>
     
     
     

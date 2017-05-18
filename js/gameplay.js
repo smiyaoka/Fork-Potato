@@ -167,8 +167,7 @@ window.addEventListener("orientationchange", function() {
 });
 
 function updateRotation() {
-    // recalculate width and height. 
-    // set new width and height 
+    setScreenSize();
 }
 
 
@@ -231,7 +230,7 @@ var items = [];
 var playerMaxHP = 10; 
 
 // Each enemy's initial horizontal velocity. 
-var enemySpeedX = -1; 
+var enemySpeedX = -0.002; 
 
 // The width of the game area. 
 var gameWidth;  
@@ -239,19 +238,16 @@ var gameWidth;
 // The height of the game area. 
 var gameHeight; 
 
-// Calculates gameWidth and gameHeight differently depending on screen orientation. 
-if ($(window).height() > $(window).width()) {
-    // Initially portrait. 
-    gameWidth = 480; 
-    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
-} else {
-    // Initially landscape. 
-    gameHeight = 480; 
-    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
-}
+// BLAH
+var scale; 
 
-gameWidth = $(window).width(); 
-gameHeight = $(window).height() * 0.67;
+function setScreenSize() {
+    gameWidth = $(window).width(); 
+    gameHeight = $(window).height() * 0.67;
+    scale = (gameWidth > gameHeight) ? gameHeight: gameWidth; 
+}
+setScreenSize();
+
 // Loads the data for the next combat phase. 
 function loadEnemyData() {
     combatPhase++;
@@ -305,7 +301,7 @@ function restartLevel() {
 }
 
 // The y distance between the bottom of the game area and the bottom of each character. 
-var yFromBottom = 0.2; 
+var yFromBottom = 0.125; 
 
 // Starts the level. 
 function startGame() {
@@ -322,11 +318,11 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(0.25, 0.25, playerImages, 
+    playerChar = new component(0.25, 0, playerImages, 
                                0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
-    background = new component(1.0, 0.75, backgroundImage, 
-                               0, 1.0 - 0.75, "background");
-    background.speedX = -0.01;
+    background = new component(1.0, 1.0, backgroundImage, 
+                               0, 0, "background");
+    background.speedX = -0.002;
     
     // Un-freeze the UI. 
     freeze = false; 
@@ -403,9 +399,16 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.image = img; 
     }
     
+    /*
+    this.originalWidth = width; 
+    this.originalHeight = height; 
+    this.originalX = x; 
+    this.originalY = y; 
+    */
+    
     // Set the width and height. 
     this.width = width;
-    this.height = height;
+    this.height = (height == 0) ? (this.width) : (height);
     
     // speedX is the horizontal velocity. 
     // If a speedX is not provided, set it to 0. 
@@ -414,8 +417,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     this.speedY = 0;
     
     // Set the initial position. 
-    this.x = x;
-    this.y = y;    
+    this.x = x * gameWidth;
+    this.y = y * gameHeight;    
     
     // Called to refresh the component. 
     this.update = function() {
@@ -424,17 +427,21 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         ctx.drawImage(this.image, 
             this.x, 
             this.y,
-            this.width, this.height); 
+            this.width * scale, 
+            this.height * scale); 
         // If it's a combat character, draw an hp marker. 
         if (type == "combat") {
             ctx.font="20px Georgia";
             ctx.fillText(this.hp,this.x,this.y - 10);
         } else if (type == "background") {
+            
+            
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
-                this.x + this.width, 
+                this.x + this.width * scale, 
                 this.y,
-                this.width, this.height);
+                this.width * scale, 
+                this.height * scale);
         }
     }
     // Cycles through the animation. 
@@ -456,11 +463,11 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     }
     // Called to re-calculate the component's position. 
     this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+        this.x += this.speedX * gameWidth;
+        this.y += this.speedY * gameHeight;
         // If the component is a background, make it repeat. 
         if (this.type == "background") {
-            if (this.x == -(this.width)) {
+            if (this.x <= -((this.width - 0.1) * scale)) {
                 this.x = 0;
             }
         }
@@ -475,7 +482,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         }
         // Returns whether the other component's left has passed this
         // component's right. 
-        var myRight = this.x + (this.width); 
+        var myRight = this.x + (this.width * scale); 
         var otherLeft = obj.x; 
         return myRight > otherLeft;
     }
@@ -500,7 +507,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 320; 
+var bossStop = 0.75; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -533,7 +540,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.x <= bossStop) {
+        if (bossChar.x <= bossStop * gameWidth) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -603,8 +610,8 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0.25, enemyImage, 
-                                   480, gameHeight - yFromBottom - 130, 
+        enemies.push(new component(0.25, 0, enemyImage, 
+                                   1.0, 1.0 - yFromBottom - 0.25, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
@@ -612,13 +619,13 @@ function spawnEnemy() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, bossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0, bossImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, minibossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0, minibossImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         }        
         remainingBosses--; 
@@ -645,7 +652,7 @@ function hurtPlayer(damage) {
 // The range of the user's eat attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var eatRange = 80;  
+var eatRange = 0.2;  
 
 // The amount of damage done by the eat attack. 
 var eatDamage = 1; 
@@ -657,7 +664,7 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange + playerChar.x + playerChar.width;     
+    var farEnd = eatRange * gameWidth + playerChar.x + playerChar.width * scale;
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){

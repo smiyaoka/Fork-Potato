@@ -369,7 +369,7 @@ var gameArea = {
 // Each component represents a character or sprite in the canvas. 
 // @param width The width of the component. 
 // @param height The height of the component. 
-// @param img The image for the component. . 
+// @param img The image or image array for the component. 
 // @param x The initial x position of the component. 
 // @param y The initial y position of the component. 
 // @param type The type of the component as a string. 

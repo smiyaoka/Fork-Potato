@@ -6,7 +6,9 @@ html {
 body {
     padding: 0; 
     margin: 0; 
-    width: 100vw; 
+    width: 100vw;
+    font-family: verdana;
+    font-size: 3vh;
 }
 
 td {
@@ -15,10 +17,18 @@ td {
     padding-bottom: 15px;
 }
 
+.col-sm-4 {
+-webkit-transition: border 2s;
+    transition: border 2s;
+}
+
+.col-sm-4:hover {
+    border: solid white 3px;
+}
+
 #affiliateBody {
     position: absolute;
-    background-color: darksalmon; 
-    border: 1px solid black; 
+    background-color: #58B7FF; 
     box-sizing: border-box; 
     width: 100%;
     height: auto;

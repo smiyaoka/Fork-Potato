@@ -676,8 +676,8 @@ function spawnEaster() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, easterEggImage, 
-                                   480, gameHeight - yFromBottom - 130, 
+        enemies.push(new component(0.25, 0.25, easterEggImage, 
+                                   1.0, 1.0 - yFromBottom - 0.25, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
@@ -685,13 +685,13 @@ function spawnEaster() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, easterEggImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0.25, easterEggImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, easterEggImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0.25, easterEggImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         }        
         remainingBosses--; 

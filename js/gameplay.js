@@ -9,7 +9,13 @@ for (i = 0; i < 4; i++) {
 
 // Load the background image. 
 var backgroundImage = new Image();
-backgroundImage.src = "images/placeholder/1.png";
+backgroundImage.src = "Image/Background/Backgroundv1.png";
+
+// The width of the backround image 
+var backgroundImageWidth = 1800; 
+
+// The height of the 
+var backgroundImageHeight = 450; 
 
 // Load the enemy image. 
 var enemyImage = new Image();
@@ -160,6 +166,15 @@ function togglePause(pause) {
     } 
 }
 
+// Resize the game area when the window changes size. 
+window.addEventListener("resize", function() {
+    setScreenSize(); 
+    gameArea.canvas.width = getGameWidth(); 
+    gameArea.canvas.height = getGameHeight(); 
+    refresh();
+});
+
+
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
@@ -218,24 +233,34 @@ var items = [];
 var playerMaxHP = 10; 
 
 // Each enemy's initial horizontal velocity. 
-var enemySpeedX = -1; 
+var enemySpeedX = -0.002; 
 
-// The width of the game area. 
+// The width of the game canvas. 
 var gameWidth;  
 
-// The height of the game area. 
+// The height of the game canvas. 
 var gameHeight; 
 
-// Calculates gameWidth and gameHeight differently depending on screen orientation. 
-if ($(window).height() > $(window).width()) {
-    // Initially portrait. 
-    gameWidth = 480; 
-    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
-} else {
-    // Initially landscape. 
-    gameHeight = 480; 
-    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
+// Returns the gameWidth. 
+// @param gameWidth The height of the game canvas. 
+function getGameWidth() {
+    return gameWidth; 
 }
+
+// Returns the gameHeight. 
+// @param gameHeight The height of the game canvas. 
+function getGameHeight() {
+    return gameHeight; 
+}
+
+// Sets the screen size. 
+function setScreenSize() {
+    gameWidth = $(window).width(); 
+    gameHeight = $(window).height() * 0.67;
+}
+
+// Initial setting. 
+setScreenSize();
 
 // Loads the data for the next combat phase. 
 function loadEnemyData() {
@@ -290,7 +315,7 @@ function restartLevel() {
 }
 
 // The y distance between the bottom of the game area and the bottom of each character. 
-var yFromBottom = 80; 
+var yFromBottom = 0.15; 
 
 // Starts the level. 
 function startGame() {
@@ -307,11 +332,11 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(130, 130, playerImages, 
-                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
-    background = new component(800, 600, backgroundImage, 
-                               0, gameHeight - 600, "background");
-    background.speedX = -1;
+    playerChar = new component(0.25, 0, playerImages, 
+                               0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
+    background = new component(1.0, 1.0, backgroundImage, 
+                               0, 0, "background");
+    background.speedX = -0.002;
     
     // Un-freeze the UI. 
     freeze = false; 
@@ -390,7 +415,37 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     
     // Set the width and height. 
     this.width = width;
-    this.height = height;
+    this.height = (height == 0) ? (this.width) : (height);
+    
+    // Returns the scaled width. 
+    this.getWidth = function() {
+        if (type != "background") {
+            return this.width * getGameHeight(); 
+        } else {
+            return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
+        }
+    }
+    // Returns the scaled height. 
+    this.getHeight = function() {
+        if (type != "background") {
+            return this.height * getGameHeight(); 
+        } else {
+            return getGameHeight(); 
+        }
+    }
+    
+    // Set the initial position. 
+    this.x = x;
+    this.y = y;    
+    
+    // Returns the scaled x position. 
+    this.getX = function() {
+        return this.x * getGameWidth(); 
+    }
+    // Returns the scaled y position. 
+    this.getY = function() {
+        return this.y * getGameHeight(); 
+    }
     
     // speedX is the horizontal velocity. 
     // If a speedX is not provided, set it to 0. 
@@ -398,28 +453,26 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // speedY is the vertical velocity. 
     this.speedY = 0;
     
-    // Set the initial position. 
-    this.x = x;
-    this.y = y;    
-    
     // Called to refresh the component. 
     this.update = function() {
         ctx = gameArea.context;
         // Draw the image. 
         ctx.drawImage(this.image, 
-            this.x, 
-            this.y,
-            this.width, this.height); 
+            this.getX(), 
+            this.getY(),
+            this.getWidth(), 
+            this.getHeight()); 
         // If it's a combat character, draw an hp marker. 
-        if (type == "combat") {
+        if (this.type == "combat") {
             ctx.font="20px Georgia";
-            ctx.fillText(this.hp,this.x,this.y - 10);
-        } else if (type == "background") {
+            ctx.fillText(this.hp,this.getX(),this.getY() - 10);
+        } else if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
-                this.x + this.width, 
-                this.y,
-                this.width, this.height);
+                this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 
+                this.getY(),
+                this.getWidth(), 
+                this.getHeight());
         }
     }
     // Cycles through the animation. 
@@ -445,11 +498,11 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.y += this.speedY;
         // If the component is a background, make it repeat. 
         if (this.type == "background") {
-            if (this.x == -(this.width)) {
+            if (this.getX() <= -this.getWidth()) {
                 this.x = 0;
             }
         }
-    }
+     }
     // Returns whether this component has collided with another component. 
     // @param obj A component. 
     // @return true if the components collided, else false. 
@@ -460,8 +513,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         }
         // Returns whether the other component's left has passed this
         // component's right. 
-        var myRight = this.x + (this.width); 
-        var otherLeft = obj.x; 
+        var myRight = this.getX() + this.getWidth(); 
+        var otherLeft = obj.getX(); 
         return myRight > otherLeft;
     }
     // Stores this enemy's auto attack loop. 
@@ -485,7 +538,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 320; 
+var bossStop = 0.75; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -518,7 +571,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.x <= bossStop) {
+        if (bossChar.getX() <= bossStop * getGameWidth()) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -588,8 +641,8 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, enemyImage, 
-                                   480, gameHeight - yFromBottom - 130, 
+        enemies.push(new component(0.25, 0, enemyImage, 
+                                   1.0, 1.0 - yFromBottom - 0.25, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
@@ -597,13 +650,13 @@ function spawnEnemy() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, bossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0, bossImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, minibossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            bossChar = new component(0.25, 0, minibossImage, 
+                                     1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         }        
         remainingBosses--; 
@@ -630,7 +683,7 @@ function hurtPlayer(damage) {
 // The range of the user's eat attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var eatRange = 80;  
+var eatRange = 0.2;  
 
 // The amount of damage done by the eat attack. 
 var eatDamage = 1; 
@@ -642,14 +695,14 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange + playerChar.x + playerChar.width;     
+    var farEnd = eatRange * getGameWidth() + playerChar.getX() + playerChar.getWidth();
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
-        if (arr[index].x < farEnd) {
+        if (arr[index].getX() < farEnd) {
             if (target == null) {
                 target = arr[index];
-            } else if(arr[index].x < target.x) {
+            } else if(arr[index].getX() < target.getX()) {
                 target = arr[index];
             }
         }
@@ -663,7 +716,7 @@ function clickEat() {
 // The range of the user's skill attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var skillRange = 350; 
+var skillRange = 0.8; 
 
 // The amount of damage done by the skill attack. 
 var skillDamage = 3; 
@@ -690,10 +743,10 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange + playerChar.x + playerChar.width; 
+    var farEnd = skillRange * getGameWidth() + playerChar.getX() + playerChar.getWidth(); 
     // Damage all enemies within range. 
     enemies.forEach(function(part, index, arr){
-        if (arr[index].x < farEnd) {
+        if (arr[index].getX() < farEnd) {
             hurtEnemy(arr[index], skillDamage); 
         }
     });    

@@ -333,11 +333,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    if(isEaster()) {
-        spawnEaster();
-    } else {
-       spawnEnemy();
-    }
+    isEaster();
 }
 
 // The area where the game characters are drawn. 
@@ -448,7 +444,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.image = this.imageArray[this.imageCount];
     }
     // Called to re-calculate the component's position. 
-    this.newPos = function() {
+        this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
         // If the component is a background, make it repeat. 
@@ -548,11 +544,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            if(isEaster()) {
-                spawnEaster();
-            } else {
-                 spawnEnemy();
-            }
+            isEaster();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -561,11 +553,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                if(isEaster()) {
-                    spawnEaster();
-                } else {
-                    spawnEnemy();
-                }
+                isEaster();
             }
         }
     });
@@ -656,8 +644,6 @@ function spawnEaster() {
         remainingBosses--; 
     }
 }
-
-
 
 // Deals damage to a specific enemy. 
 // @param target The enemy. 
@@ -830,7 +816,6 @@ function checkDialogue() {
         }
     }
 }
-
 
 // TRIVIA FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

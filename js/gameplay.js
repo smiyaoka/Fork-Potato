@@ -160,6 +160,19 @@ function togglePause(pause) {
     } 
 }
 
+
+
+window.addEventListener("orientationchange", function() {
+    updateRotation();
+});
+
+function updateRotation() {
+    // recalculate width and height. 
+    // set new width and height 
+}
+
+
+
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
@@ -237,6 +250,8 @@ if ($(window).height() > $(window).width()) {
     gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
 }
 
+gameWidth = $(window).width(); 
+gameHeight = $(window).height() * 0.67;
 // Loads the data for the next combat phase. 
 function loadEnemyData() {
     combatPhase++;

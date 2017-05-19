@@ -124,12 +124,15 @@
 					  E-mail:<br>
 					  <input type="text" id="account" name="account" value="email@yolo.com">
 					  <br>
+                        <br>
 					  Password:<br>
 					  <input type="text" id="passWord" name="passWord" value="password">
 					  <br><br>
-					  <input type="button" value="Log In" onclick= "signIn('account', 'passWord');">
-					  <input type="button" value="Log out" onclick= "signOut();">
-					    <input type="button" value="Register" onclick= "signUp('account2', 'passWord2');">
+					  <input type="button" class="loginScreenButtons" value="Log In" onclick= "signIn('account', 'passWord');"> &nbsp;
+					  <input type="button" class="loginScreenButtons" value="Log out" onclick= "signOut();">
+                        <br>
+                        <br>
+				        <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
 				</form> 
 		<a href="#" class="cancel">&times;</a> </div> 
 			<div id="cover" > 
@@ -146,8 +149,8 @@
             
         </div>
         <div class="menuBtn" id="btnBottom">
-            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Affilitrated Sites</button></a>
-            <button type="button" id="menuQuit">Quit</button>
+            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Links</button></a>
+            <button type="button" id="menuQuit">x</button>
         </div>
     </div>
         

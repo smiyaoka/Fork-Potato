@@ -711,7 +711,7 @@ function spawnEaster() {
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
         enemies.push(new component(0.25, 0, easterEggImages, 5, 
-                                   1.0, 1.0 - yFromBottom - 0.25, 
+                                   1.0, 1.0 - yFromBottom - 0.22, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
@@ -719,13 +719,13 @@ function spawnEaster() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(0.25, 0, easterBossImages, 5, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
+            bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.25, 0, easterBossImages, 5, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
+            bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
         }        
         remainingBosses--; 
@@ -1112,19 +1112,15 @@ function isEaster() {
 				if(user1) {
 					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
 					var easterValue = snapshot.val().easter;
-					console.log(easterValue);
                         //if(easterValue == 1) {
-                        if (false) {
-                            //alert("It works!");
+                        if (true) {
                             spawnEaster();
                         } else {
-                            //alert("It doesnt work!");
                             spawnEnemy();
                         }
 				});
 				} else {
 				 
 				}
-				// console.log(firebase.auth().currentUser.uid);
 		});
 }

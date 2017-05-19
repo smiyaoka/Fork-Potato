@@ -139,8 +139,14 @@ firebase.auth().onAuthStateChanged(function(user) {
         firebase.database().ref('/users/' 
             + firebase.auth().currentUser.uid).once('value').then(
                 function(snapshot) {
-                    if (snapshot.val().easter == 1) 
+                    if (snapshot.val().easter == 1) {
                         easterEgg = true;
+                        firebase.database().ref('users/' 
+                            + firebase.auth().
+                                currentUser.uid).update({ 
+                            easter: "0" 
+                        });
+                    }
                     easterLoaded = true; 
                     attemptStart();
                 });

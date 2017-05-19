@@ -554,7 +554,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 0.75; 
+var bossStop = 0.70; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -645,6 +645,11 @@ function refresh() {
 // Progresses the animations. 
 function animate() {    
     playerChar.animate();
+    enemies.forEach(function(part, index, arr){
+        arr[index].animate();
+    });
+    if (bossChar != null) 
+        bossChar.animate();
 }
 
 // Spawns an enemy, miniboss, or boss. 

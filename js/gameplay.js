@@ -467,9 +467,10 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
             this.getWidth(), 
             this.getHeight()); 
         // If it's a combat character, draw an hp marker. 
-        if (this.type == "combat") {
+        for (var i = 0; i < this.hp; i++){
             ctx.font="20px Georgia";
-            ctx.fillText(this.hp,this.getX(),this.getY() - 10);
+            ctx.fillStyle = "#f14040";
+            ctx.fillText('♥',this.x + i*12,this.y - 10);
         } else if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 

@@ -4,28 +4,60 @@
 var playerImages = [];
 for (i = 0; i < 4; i++) {
     playerImages[i] = new Image();
-    playerImages[i].src = "images/placeholder/player" + (i + 1) + ".gif";
+    playerImages[i].src = 
+        "images/placeholder/player" + (i + 1) + ".gif";
 }
 
 // Load the background image. 
 var backgroundImage = new Image();
-backgroundImage.src = "images/placeholder/2.png";
+backgroundImage.src = "Image/Background/Backgroundv1.png";
 
-// Load the enemy image. 
-var enemyImage = new Image();
-enemyImage.src = "images/placeholder/enemy.gif";
+// The width of the backround image 
+var backgroundImageWidth = 1800; 
 
-// Load the miniboss image. 
-var minibossImage = new Image();
-minibossImage.src = "images/placeholder/potato.gif";
+// The height of the 
+var backgroundImageHeight = 450; 
 
-// Load the boss image. 
-var bossImage = new Image();
-bossImage.src = "images/placeholder/final.gif";
+// Load the carrot enemy images. 
+var enemyImages = []; 
+for (i = 0; i < 2; i++) {
+    enemyImages[i] = new Image();
+    enemyImages[i].src = 
+        "Image/Mon-Mini-Carrot300x300/Mon-Mini-Carrot300x300n" 
+            + (i + 1) + ".png";
+}
 
-// Load the easter egg image.
-var easterEggImage = new Image();
-easterEggImage.src = "images/placeholder/easterEgg.gif";
+// Load the miniboss (potato) images. 
+var minibossImages = []; 
+for (i = 0; i < 4; i++) {
+    minibossImages[i] = new Image();
+    minibossImages[i].src = 
+        "Image/Mon-Mid-Potato400x400/Mon-Mid-Potato400x400n" 
+            + (i + 1) + ".png";
+}
+
+// Load the boss (pumpkin) images. 
+var bossImages = []; 
+for (i = 0; i < 2; i++) {
+    bossImages[i] = new Image();
+    bossImages[i].src 
+        = "Image/Mon-Final-Pumpkin220x220/Mon-Final-Pumpkin220x220n" 
+            + (i + 1) + ".png";
+}
+
+// Load the easter egg enemy images. 
+var easterEggImages = []; 
+for (i = 0; i < 5; i++) {
+    easterEggImages[i] = new Image();
+    easterEggImages[i].src = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+}
+
+//Load the ester egg boss images. 
+var easterBossImages = []; 
+for (i = 0; i < 12; i++) {
+    easterBossImages[i] = new Image();
+    easterBossImages[i].src = "Image/Mon-Final-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+}
 
 // DATABASE SECTION ----------------------------------------
 
@@ -73,20 +105,56 @@ refLevel.once('value').then(function(data) {
     level = data.val();
     dialogue = level["dialogue"];
     dataLoaded = true; 
-    if (pageLoaded && !gameStarted) {
-        gameStarted = true; 
-        startGame();
-    }
+    attemptStart();
 });
 
 // Makes sure the page finishes loading before starting. 
 $(window).on('load', function(){
     pageLoaded = true; 
-    if (dataLoaded && !gameStarted) {
+    attemptStart();
+}); 
+
+// Attempts to start the game. 
+// Runs only after necessary data is loaded. 
+function attemptStart() {
+    if (dataLoaded && pageLoaded && easterLoaded && !gameStarted) {
         gameStarted = true; 
         startGame();
     }
-}); 
+}
+
+
+// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Whether the easter egg has been activated. 
+var easterEgg = false; 
+
+// Whether the easter egg data has been checked. 
+var easterLoaded = false; 
+
+// Checks for easter egg data. 
+firebase.auth().onAuthStateChanged(function(user) {
+    var user1 = firebase.auth().currentUser;
+    if(user1) {
+        firebase.database().ref('/users/' 
+            + firebase.auth().currentUser.uid).once('value').then(
+                function(snapshot) {
+                    if (snapshot.val().easter == 1) {
+                        easterEgg = true;
+                        firebase.database().ref('users/' 
+                            + firebase.auth().
+                                currentUser.uid).update({ 
+                            easter: "0" 
+                        });
+                    }
+                    easterLoaded = true; 
+                    attemptStart();
+                });
+    } else {
+        easterLoaded = true; 
+        attemptStart();
+    }
+});
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -164,6 +232,15 @@ function togglePause(pause) {
     } 
 }
 
+// Resize the game area when the window changes size. 
+window.addEventListener("resize", function() {
+    setScreenSize(); 
+    gameArea.canvas.width = getGameWidth(); 
+    gameArea.canvas.height = getGameHeight(); 
+    refresh();
+});
+
+
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
@@ -179,6 +256,7 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     freeze = true; 
+    easterEgg = false; 
     showGameOver();
 }
 
@@ -222,24 +300,34 @@ var items = [];
 var playerMaxHP = 10; 
 
 // Each enemy's initial horizontal velocity. 
-var enemySpeedX = -1; 
+var enemySpeedX = -0.002; 
 
-// The width of the game area. 
+// The width of the game canvas. 
 var gameWidth;  
 
-// The height of the game area. 
+// The height of the game canvas. 
 var gameHeight; 
 
-// Calculates gameWidth and gameHeight differently depending on screen orientation. 
-if ($(window).height() > $(window).width()) {
-    // Initially portrait. 
-    gameWidth = 480; 
-    gameHeight = gameWidth / $(window).width() * $(window).height() * 0.67; 
-} else {
-    // Initially landscape. 
-    gameHeight = 480; 
-    gameWidth = gameHeight / $(window).height() * $(window).width() * 0.67; 
+// Returns the gameWidth. 
+// @param gameWidth The height of the game canvas. 
+function getGameWidth() {
+    return gameWidth; 
 }
+
+// Returns the gameHeight. 
+// @param gameHeight The height of the game canvas. 
+function getGameHeight() {
+    return gameHeight; 
+}
+
+// Sets the screen size. 
+function setScreenSize() {
+    gameWidth = $(window).width(); 
+    gameHeight = $(window).height() * 0.67;
+}
+
+// Initial setting. 
+setScreenSize();
 
 // Loads the data for the next combat phase. 
 function loadEnemyData() {
@@ -294,7 +382,7 @@ function restartLevel() {
 }
 
 // The y distance between the bottom of the game area and the bottom of each character. 
-var yFromBottom = 80; 
+var yFromBottom = 0.15; 
 
 // Starts the level. 
 function startGame() {
@@ -311,11 +399,11 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(130, 130, playerImages, 
-                               30, gameHeight - yFromBottom - 130, "combat", 0, playerMaxHP);
-    background = new component(800, 600, backgroundImage, 
-                               0, gameHeight - 600, "background");
-    background.speedX = -1;
+    playerChar = new component(0.25, 0, playerImages, 5, 
+                               0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
+    background = new component(1.0, 1.0, backgroundImage, null, 
+                               0, 0, "background");
+    background.speedX = -0.002;
     
     // Un-freeze the UI. 
     freeze = false; 
@@ -368,7 +456,8 @@ var gameArea = {
 // @param type The type of the component as a string. 
 // @param speedX The initial horizontal velocity of the component. 
 // @param initialHP The initial hp of the component. 
-function component(width, height, img, x, y, type, speedX, initialHP) {
+function component(width, height, img, imgRate, 
+                    x, y, type, speedX, initialHP) {
     // The initial hp. Set it to 1 if a value is not provided. 
     this.hp = (initialHP == null) ? 1 : initialHP; 
     // Set the component's type. 
@@ -381,7 +470,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // The current index in the array. 
     this.imageCount = 0; 
     // Update the animation after this number of frames. 
-    this.updatesPerAnim = 5; 
+    this.updatesPerAnim = imgRate; 
     // The number of updates since the last animation frame. 
     this.updateCount = 0; 
     // Set the image or image array. 
@@ -394,7 +483,37 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     
     // Set the width and height. 
     this.width = width;
-    this.height = height;
+    this.height = (height == 0) ? (this.width) : (height);
+    
+    // Returns the scaled width. 
+    this.getWidth = function() {
+        if (type != "background") {
+            return this.width * getGameHeight(); 
+        } else {
+            return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
+        }
+    }
+    // Returns the scaled height. 
+    this.getHeight = function() {
+        if (type != "background") {
+            return this.height * getGameHeight(); 
+        } else {
+            return getGameHeight(); 
+        }
+    }
+    
+    // Set the initial position. 
+    this.x = x;
+    this.y = y;    
+    
+    // Returns the scaled x position. 
+    this.getX = function() {
+        return this.x * getGameWidth(); 
+    }
+    // Returns the scaled y position. 
+    this.getY = function() {
+        return this.y * getGameHeight(); 
+    }
     
     // speedX is the horizontal velocity. 
     // If a speedX is not provided, set it to 0. 
@@ -402,28 +521,36 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // speedY is the vertical velocity. 
     this.speedY = 0;
     
-    // Set the initial position. 
-    this.x = x;
-    this.y = y;    
-    
     // Called to refresh the component. 
     this.update = function() {
+        // If the component is a background, make it restart. 
+        if (this.type == "background") {
+            if (this.getX() <= -this.getWidth()) {
+                this.x = 0;
+            }
+        }
         ctx = gameArea.context;
         // Draw the image. 
         ctx.drawImage(this.image, 
-            this.x, 
-            this.y,
-            this.width, this.height); 
+            this.getX(), 
+            this.getY(),
+            this.getWidth(), 
+            this.getHeight()); 
         // If it's a combat character, draw an hp marker. 
-        if (type == "combat") {
-            ctx.font="20px Georgia";
-            ctx.fillText(this.hp,this.x,this.y - 10);
-        } else if (type == "background") {
+        if (this.type == "combat") {
+            for (var i = 0; i < this.hp; i++){
+                ctx.font="20px Georgia";
+                ctx.fillStyle = "#f14040";
+                ctx.fillText('♥',this.getX() + i*12, this.getY() - 10);
+            }
+        }
+        if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
-                this.x + this.width, 
-                this.y,
-                this.width, this.height);
+                this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 
+                this.getY(),
+                this.getWidth(), 
+                this.getHeight());
         }
     }
     // Cycles through the animation. 
@@ -447,13 +574,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
-        // If the component is a background, make it repeat. 
-        if (this.type == "background") {
-            if (this.x == -(this.width)) {
-                this.x = 0;
-            }
-        }
-    }
+     }
     // Returns whether this component has collided with another component. 
     // @param obj A component. 
     // @return true if the components collided, else false. 
@@ -464,8 +585,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         }
         // Returns whether the other component's left has passed this
         // component's right. 
-        var myRight = this.x + (this.width); 
-        var otherLeft = obj.x; 
+        var myRight = this.getX() + this.getWidth(); 
+        var otherLeft = obj.getX(); 
         return myRight > otherLeft;
     }
     // Stores this enemy's auto attack loop. 
@@ -489,7 +610,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 320; 
+var bossStop = 0.55; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -522,7 +643,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.x <= bossStop) {
+        if (bossChar.getX() <= bossStop * getGameWidth()) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -580,6 +701,11 @@ function refresh() {
 // Progresses the animations. 
 function animate() {    
     playerChar.animate();
+    enemies.forEach(function(part, index, arr){
+        arr[index].animate();
+    });
+    if (bossChar != null) 
+        bossChar.animate();
 }
 
 // Spawns an enemy, miniboss, or boss. 
@@ -592,54 +718,43 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, enemyImage, 
-                                   480, gameHeight - yFromBottom - 130, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        if (easterEgg) {
+            enemies.push(new component(0.25, 0, easterEggImages, 5, 
+                            1.0, 1.0 - yFromBottom - 0.22, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        } else {
+            enemies.push(new component(0.25, 0, enemyImages, 35, 
+                            1.0, 1.0 - yFromBottom - 0.25, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        }
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, bossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
+            } else {
+                bossChar = new component(0.4, 0, bossImages, 25, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
+                                     "boss", enemySpeedX); 
+            }
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, minibossImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
-        }        
-        remainingBosses--; 
-    }
-}
-
-function spawnEaster() {
-    
-    // Update the dialogue box. 
-    hideDialogue();
-    checkDialogue();
-    
-    // If there are still enemies left in this combat phase. 
-    if (spawnedCount <= Object.keys(enemyData).length) {
-        // Spawn a regular enemy. 
-        enemies.push(new component(130, 130, easterEggImage, 
-                                   480, gameHeight - yFromBottom - 130, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
-        spawnedCount ++; 
-        // Otherwise, if a boss hasn't been spawned yet... 
-    } else if (bossChar == null) {
-        // IF this is the last boss in the level...
-        if (remainingBosses == 1) {
-            // Spawn the last boss in this level. 
-            bossChar = new component(130, 130, easterEggImage, 
-                                     480, gameHeight - yFromBottom - 130, 
+            } else {
+                bossChar = new component(0.4, 0, minibossImages, 45, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
                                      "boss", enemySpeedX); 
-        } else {
-            // Otherwise, spawn a miniboss. 
-            bossChar = new component(130, 130, easterEggImage, 
-                                     480, gameHeight - yFromBottom - 130, 
-                                     "boss", enemySpeedX); 
+            }
         }        
         remainingBosses--; 
     }
@@ -665,7 +780,7 @@ function hurtPlayer(damage) {
 // The range of the user's eat attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var eatRange = 80;  
+var eatRange = 0.18;  
 
 // The amount of damage done by the eat attack. 
 var eatDamage = 1; 
@@ -677,14 +792,14 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange + playerChar.x + playerChar.width;     
+    var farEnd = eatRange * getGameWidth() + playerChar.getX() + playerChar.getWidth();
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
-        if (arr[index].x < farEnd) {
+        if (arr[index].getX() < farEnd) {
             if (target == null) {
                 target = arr[index];
-            } else if(arr[index].x < target.x) {
+            } else if(arr[index].getX() < target.getX()) {
                 target = arr[index];
             }
         }
@@ -698,7 +813,7 @@ function clickEat() {
 // The range of the user's skill attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var skillRange = 350; 
+var skillRange = 0.8; 
 
 // The amount of damage done by the skill attack. 
 var skillDamage = 3; 
@@ -725,10 +840,10 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange + playerChar.x + playerChar.width; 
+    var farEnd = skillRange * getGameWidth() + playerChar.getX() + playerChar.getWidth(); 
     // Damage all enemies within range. 
     enemies.forEach(function(part, index, arr){
-        if (arr[index].x < farEnd) {
+        if (arr[index].getX() < farEnd) {
             hurtEnemy(arr[index], skillDamage); 
         }
     });    
@@ -778,9 +893,12 @@ function clickItem(number) {
     $("#divCombatButton" + number).empty();
 }
 
-//hide item 1
+//hide item
 $("#hiding").hide();
 
+// Adds an item to the nearest empty item slot. 
+// If there is no room, no item is added. 
+// @param The name of the item. 
 function addItem(item) {
     var searching = true; 
    // Item slots are combat buttons 3-5. 
@@ -788,10 +906,34 @@ function addItem(item) {
         if (!items[i]) {
 			
             items[i] = item; 
-			//show item 1
+            //show item
 			$("#hiding").show();
             searching = false; 
 			
+        }
+    }
+}
+
+// Changes the text in the dialogue box. 
+// @param text The text that should appear in the dialogue box. 
+function setDialogue(text) {
+    $("#divDialogue").html(text);
+    showDialogue();
+}
+
+// Checks whether dialogue should be loaded, and then loads it. 
+function checkDialogue() {
+    if (dialogue == null) 
+        return; 
+    for (var i = 1; i <= Object.keys(dialogue).length; i++) {
+        if (combatPhase == dialogue["dialogue" + i]["combatphase"]) {
+            if (spawnedCount == dialogue["dialogue" + i]["enemynumber"] 
+                || (spawnedCount > Object.keys(enemyData).length 
+                    && dialogue["dialogue" + i]["enemynumber"] 
+                    > Object.keys(enemyData).length)) {
+                
+                setDialogue(dialogue["dialogue" + i]["text"]);
+            }
         }
     }
 }
@@ -1013,29 +1155,3 @@ $("#divPauseRestart").click(function(){restartLevel()});
 
 // Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});
-
-// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-function isEaster() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        
-				var user1 = firebase.auth().currentUser;
-				console.log(firebase.auth().currentUser.uid);
-				if(user1) {
-					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
-					var easterValue = snapshot.val().easter;
-					console.log(easterValue);
-                        if(easterValue == 1) {
-                            //alert("It works!");
-                            spawnEaster();
-                        } else {
-                            //alert("It doesnt work!");
-                            spawnEnemy();
-                        }
-				});
-				} else {
-				 
-				}
-				// console.log(firebase.auth().currentUser.uid);
-		});
-}

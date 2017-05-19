@@ -778,7 +778,7 @@ function hurtPlayer(damage) {
 // The range of the user's eat attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var eatRange = 0.2;  
+var eatRange = 0.18;  
 
 // The amount of damage done by the eat attack. 
 var eatDamage = 1; 

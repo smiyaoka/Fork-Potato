@@ -105,20 +105,50 @@ refLevel.once('value').then(function(data) {
     level = data.val();
     dialogue = level["dialogue"];
     dataLoaded = true; 
-    if (pageLoaded && !gameStarted) {
-        gameStarted = true; 
-        startGame();
-    }
+    attemptStart();
 });
 
 // Makes sure the page finishes loading before starting. 
 $(window).on('load', function(){
     pageLoaded = true; 
-    if (dataLoaded && !gameStarted) {
+    attemptStart();
+}); 
+
+// Attempts to start the game. 
+// Runs only after necessary data is loaded. 
+function attemptStart() {
+    if (dataLoaded && pageLoaded && easterLoaded && !gameStarted) {
         gameStarted = true; 
         startGame();
     }
-}); 
+}
+
+
+// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Whether the easter egg has been activated. 
+var easterEgg = false; 
+
+// Whether the easter egg data has been checked. 
+var easterLoaded = false; 
+
+// Checks for easter egg data. 
+firebase.auth().onAuthStateChanged(function(user) {
+    var user1 = firebase.auth().currentUser;
+    if(user1) {
+        firebase.database().ref('/users/' 
+            + firebase.auth().currentUser.uid).once('value').then(
+                function(snapshot) {
+                    if (snapshot.val().easter == 1) 
+                        easterEgg = true;
+                    easterLoaded = true; 
+                    attemptStart();
+                });
+    } else {
+        easterLoaded = true; 
+        attemptStart();
+    }
+});
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -220,6 +250,7 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     freeze = true; 
+    easterEgg = false; 
     showGameOver();
 }
 
@@ -384,7 +415,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    isEaster();
+    spawnEnemy();
 }
 
 // The area where the game characters are drawn. 
@@ -626,7 +657,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            isEaster();
+            spawnEnemy();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -635,7 +666,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                isEaster();
+                spawnEnemy();
             }
         }
     });
@@ -679,54 +710,43 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0, enemyImages, 35, 
-                                   1.0, 1.0 - yFromBottom - 0.25, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        if (easterEgg) {
+            enemies.push(new component(0.25, 0, easterEggImages, 5, 
+                            1.0, 1.0 - yFromBottom - 0.22, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        } else {
+            enemies.push(new component(0.25, 0, enemyImages, 35, 
+                            1.0, 1.0 - yFromBottom - 0.25, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        }
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(0.4, 0, bossImages, 25, 
-                                     1.0, 1.0 - yFromBottom - 0.4, 
-                                     "boss", enemySpeedX); 
-        } else {
-            // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.4, 0, minibossImages, 45, 
-                                     1.0, 1.0 - yFromBottom - 0.4, 
-                                     "boss", enemySpeedX); 
-        }        
-        remainingBosses--; 
-    }
-}
-
-function spawnEaster() {
-    
-    // Update the dialogue box. 
-    hideDialogue();
-    checkDialogue();
-    
-    // If there are still enemies left in this combat phase. 
-    if (spawnedCount <= Object.keys(enemyData).length) {
-        // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0, easterEggImages, 5, 
-                                   1.0, 1.0 - yFromBottom - 0.22, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
-        spawnedCount ++; 
-        // Otherwise, if a boss hasn't been spawned yet... 
-    } else if (bossChar == null) {
-        // IF this is the last boss in the level...
-        if (remainingBosses == 1) {
-            // Spawn the last boss in this level. 
-            bossChar = new component(0.3, 0, easterBossImages, 5, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
                                      1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
+            } else {
+                bossChar = new component(0.4, 0, bossImages, 25, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
+                                     "boss", enemySpeedX); 
+            }
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.3, 0, easterBossImages, 5, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
                                      1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
+            } else {
+                bossChar = new component(0.4, 0, minibossImages, 45, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
+                                     "boss", enemySpeedX); 
+            }
         }        
         remainingBosses--; 
     }
@@ -1102,25 +1122,3 @@ $("#divPauseRestart").click(function(){restartLevel()});
 // Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});
 
-// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-function isEaster() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        
-				var user1 = firebase.auth().currentUser;
-				console.log(firebase.auth().currentUser.uid);
-				if(user1) {
-					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
-					var easterValue = snapshot.val().easter;
-                        //if(easterValue == 1) {
-                        if (true) {
-                            spawnEaster();
-                        } else {
-                            spawnEnemy();
-                        }
-				});
-				} else {
-				 
-				}
-		});
-}

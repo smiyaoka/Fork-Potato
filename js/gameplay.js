@@ -485,7 +485,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
             ctx.font="20px Georgia";
             ctx.fillStyle = "#f14040";
             ctx.fillText('♥',this.x + i*12,this.y - 10);
-        } else if (this.type == "background") {
+        }
+        if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
                 this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 

@@ -10,7 +10,13 @@ body {
     margin: 0; 
     width: 100%; 
     height: 100%; 
-    overflow-y: hidden; 
+    overflow-y: hidden;
+    font-family: verdana;
+    font-size: 3.5vh;
+}
+
+a {
+    text-decoration: none;
 }
 
 #divLevelArea {
@@ -26,17 +32,23 @@ body {
 }
 
 #divPauseButton {
-    background-color: darkred; 
+    background-color: white;
+    background-image: url(../images/pause.png);
+    background-size: 90% 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.9;
     position: absolute; 
     height: 60px; 
     width: 60px; 
     margin: 0 auto; 
-    right: 0; 
+    right: 0;
+    border-radius: 2vh;
 }
 
 #divDialogue {
     position: absolute; 
-    background-color: darkolivegreen;  
+    background-color: skyblue;  
     border: 1px solid black; 
     box-sizing: border-box; 
     height: 20%; 
@@ -82,42 +94,72 @@ body {
 }
 
 .classCombatButton {
-    background-color: forestgreen; 
     border: 1px solid black; 
     box-sizing: border-box; 
     height: 50%;    
 }
 
-#divCombatButton1, #divCombatButton2 {
-    width: 50%; 
+#divCombatButton1{
+    background-image: url(../images/test1.png);
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 50%;
+    background-color: #EEEE33; 
+}
+
+#divCombatButton1:active{
+    background-image: url(../images/test2.png);
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center; 
+}
+
+#divCombatButton2 {
+    background-image: url(../images/skill1.png);
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 50%;
+    background-color: #EEEE33;
+}
+
+#divCombatButton2:active {
+    background-image: url(../images/skill2.png);
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #divCombatButton3{
     width: 33%;
     background-image: url("../images/container.gif");
-    background-size: contain;
+    background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
+        background-color: #EEEE33; 
 }
 
 #divCombatButton5 {
     width: 33%;
     background-image: url("../images/zip.gif");
-    background-size: contain;
+    background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
+        background-color: #EEEE33; 
 }
 
 #divCombatButton4 {
     width: 34%;
     background-image: url("../images/jar.gif");
-    background-size: contain;
+    background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
+        background-color: #EEEE33;
 }
 
 .classAnswer {
-    background-color: aqua; 
+    background-color: lightblue; 
     border: 1px solid black; 
     box-sizing: border-box; 
     height: 50%;
@@ -129,7 +171,7 @@ body {
 }
 
 .classAnswerCorrect {
-    background-color: green; 
+    background-color: limegreen; 
 
 }
 
@@ -145,6 +187,8 @@ body {
 }
 
 #divPauseScreen, #divGameOver, #divLevelComplete { 
+    font-family: vedana;
+    font-size: 6.5vh;
     height:50%;
     width:50%;
     margin:auto;
@@ -155,6 +199,7 @@ body {
     border:5px solid #cccccc;
     border-radius:10px;
     background-color: white;
+    opacity: 0.9;
     left: 0; 
     right: 0; 
     top: 0; 

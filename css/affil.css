@@ -22,7 +22,7 @@ td {
     width: 100%;
     height: auto;
     background-image: url(../Image/Item/Item-Jar260x260/Item-Jar260x260.gif);
-    background-size: 10% 8%;
+    background-size: 8vh 8vh;
     background-attachment: fixed;
     background-color: lightgoldenrodyellow;
 }

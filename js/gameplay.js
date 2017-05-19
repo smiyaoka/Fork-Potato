@@ -32,8 +32,8 @@ bossImage.src = "images/placeholder/final.gif";
 // Load the easter egg enemy images. 
 var easterEggImages = []; 
 for (i = 0; i < 5; i++) {
-    playerImages[i] = new Image();
-    playerImages[i].src = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".gif";
+    easterEggImages[i] = new Image();
+    easterEggImages[i].src = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
 }
 
 //Load the ester egg boss images. 
@@ -42,10 +42,6 @@ for (i = 0; i < 12; i++) {
     easterBossImages[i] = new Image();
     easterBossImages[i].src = "Image/Mon-Final-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
 }
-
-// Load the easter egg image.
-var easterEggImage = new Image();
-easterEggImage.src = "images/placeholder/easterEgg.gif";
 
 // DATABASE SECTION ----------------------------------------
 
@@ -692,7 +688,7 @@ function spawnEaster() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0.25, easterEggImages, 
+        enemies.push(new component(0.25, 0, easterEggImages, 
                                    1.0, 1.0 - yFromBottom - 0.25, 
                                    "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
         spawnedCount ++; 
@@ -701,12 +697,12 @@ function spawnEaster() {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(0.25, 0.25, easterBossImages, 
+            bossChar = new component(0.25, 0, easterBossImages, 
                                      1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.25, 0.25, easterBossImages, 
+            bossChar = new component(0.25, 0, easterBossImages, 
                                      1.0, 1.0 - yFromBottom - 0.25, 
                                      "boss", enemySpeedX); 
         }        

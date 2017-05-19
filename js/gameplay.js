@@ -4,7 +4,8 @@
 var playerImages = [];
 for (i = 0; i < 4; i++) {
     playerImages[i] = new Image();
-    playerImages[i].src = "images/placeholder/player" + (i + 1) + ".gif";
+    playerImages[i].src = 
+        "images/placeholder/player" + (i + 1) + ".gif";
 }
 
 // Load the background image. 
@@ -17,21 +18,46 @@ var backgroundImageWidth = 1800;
 // The height of the 
 var backgroundImageHeight = 450; 
 
-// Load the enemy image. 
-var enemyImage = new Image();
-enemyImage.src = "images/placeholder/enemy.gif";
+// Load the carrot enemy images. 
+var enemyImages = []; 
+for (i = 0; i < 2; i++) {
+    enemyImages[i] = new Image();
+    enemyImages[i].src = 
+        "Image/Mon-Mini-Carrot300x300/Mon-Mini-Carrot300x300n" 
+            + (i + 1) + ".png";
+}
 
-// Load the miniboss image. 
-var minibossImage = new Image();
-minibossImage.src = "images/placeholder/potato.gif";
+// Load the miniboss (potato) images. 
+var minibossImages = []; 
+for (i = 0; i < 4; i++) {
+    minibossImages[i] = new Image();
+    minibossImages[i].src = 
+        "Image/Mon-Mid-Potato400x400/Mon-Mid-Potato400x400n" 
+            + (i + 1) + ".png";
+}
 
-// Load the boss image. 
-var bossImage = new Image();
-bossImage.src = "images/placeholder/final.gif";
+// Load the boss (pumpkin) images. 
+var bossImages = []; 
+for (i = 0; i < 2; i++) {
+    bossImages[i] = new Image();
+    bossImages[i].src 
+        = "Image/Mon-Final-Pumpkin220x220/Mon-Final-Pumpkin220x220n" 
+            + (i + 1) + ".png";
+}
 
-// Load the easter egg image.
-var easterEggImage = new Image();
-easterEggImage.src = "images/placeholder/easterEgg.gif";
+// Load the easter egg enemy images. 
+var easterEggImages = []; 
+for (i = 0; i < 5; i++) {
+    easterEggImages[i] = new Image();
+    easterEggImages[i].src = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+}
+
+//Load the ester egg boss images. 
+var easterBossImages = []; 
+for (i = 0; i < 12; i++) {
+    easterBossImages[i] = new Image();
+    easterBossImages[i].src = "Image/Mon-Final-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+}
 
 // DATABASE SECTION ----------------------------------------
 
@@ -79,20 +105,50 @@ refLevel.once('value').then(function(data) {
     level = data.val();
     dialogue = level["dialogue"];
     dataLoaded = true; 
-    if (pageLoaded && !gameStarted) {
-        gameStarted = true; 
-        startGame();
-    }
+    attemptStart();
 });
 
 // Makes sure the page finishes loading before starting. 
 $(window).on('load', function(){
     pageLoaded = true; 
-    if (dataLoaded && !gameStarted) {
+    attemptStart();
+}); 
+
+// Attempts to start the game. 
+// Runs only after necessary data is loaded. 
+function attemptStart() {
+    if (dataLoaded && pageLoaded && easterLoaded && !gameStarted) {
         gameStarted = true; 
         startGame();
     }
-}); 
+}
+
+
+// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Whether the easter egg has been activated. 
+var easterEgg = false; 
+
+// Whether the easter egg data has been checked. 
+var easterLoaded = false; 
+
+// Checks for easter egg data. 
+firebase.auth().onAuthStateChanged(function(user) {
+    var user1 = firebase.auth().currentUser;
+    if(user1) {
+        firebase.database().ref('/users/' 
+            + firebase.auth().currentUser.uid).once('value').then(
+                function(snapshot) {
+                    if (snapshot.val().easter == 1) 
+                        easterEgg = true;
+                    easterLoaded = true; 
+                    attemptStart();
+                });
+    } else {
+        easterLoaded = true; 
+        attemptStart();
+    }
+});
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -194,6 +250,7 @@ function levelComplete() {
 function gameOver() {
     blockInput = true; 
     freeze = true; 
+    easterEgg = false; 
     showGameOver();
 }
 
@@ -336,9 +393,9 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(0.25, 0, playerImages, 
+    playerChar = new component(0.25, 0, playerImages, 5, 
                                0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
-    background = new component(1.0, 1.0, backgroundImage, 
+    background = new component(1.0, 1.0, backgroundImage, null, 
                                0, 0, "background");
     background.speedX = -0.002;
     
@@ -358,7 +415,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    isEaster();
+    spawnEnemy();
 }
 
 // The area where the game characters are drawn. 
@@ -393,7 +450,8 @@ var gameArea = {
 // @param type The type of the component as a string. 
 // @param speedX The initial horizontal velocity of the component. 
 // @param initialHP The initial hp of the component. 
-function component(width, height, img, x, y, type, speedX, initialHP) {
+function component(width, height, img, imgRate, 
+                    x, y, type, speedX, initialHP) {
     // The initial hp. Set it to 1 if a value is not provided. 
     this.hp = (initialHP == null) ? 1 : initialHP; 
     // Set the component's type. 
@@ -406,7 +464,7 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     // The current index in the array. 
     this.imageCount = 0; 
     // Update the animation after this number of frames. 
-    this.updatesPerAnim = 5; 
+    this.updatesPerAnim = imgRate; 
     // The number of updates since the last animation frame. 
     this.updateCount = 0; 
     // Set the image or image array. 
@@ -459,6 +517,12 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
     
     // Called to refresh the component. 
     this.update = function() {
+        // If the component is a background, make it restart. 
+        if (this.type == "background") {
+            if (this.getX() <= -this.getWidth()) {
+                this.x = 0;
+            }
+        }
         ctx = gameArea.context;
         // Draw the image. 
         ctx.drawImage(this.image, 
@@ -471,7 +535,8 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
             ctx.font="20px Georgia";
             ctx.fillStyle = "#f14040";
             ctx.fillText('♥',this.x + i*12,this.y - 10);
-        } else if (this.type == "background") {
+        }
+        if (this.type == "background") {
             // If it's a background, draw the image again. 
             ctx.drawImage(this.image, 
                 this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 
@@ -501,12 +566,6 @@ function component(width, height, img, x, y, type, speedX, initialHP) {
         this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
-        // If the component is a background, make it repeat. 
-        if (this.type == "background") {
-            if (this.getX() <= -this.getWidth()) {
-                this.x = 0;
-            }
-        }
      }
     // Returns whether this component has collided with another component. 
     // @param obj A component. 
@@ -543,7 +602,7 @@ function autoAttackUpdate(enemy) {
 }
 
 // The x position at which a boss or miniboss stops moving. 
-var bossStop = 0.75; 
+var bossStop = 0.55; 
 
 // Updates the level. 
 function updateGameArea() {
@@ -598,7 +657,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            isEaster();
+            spawnEnemy();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -607,7 +666,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                isEaster();
+                spawnEnemy();
             }
         }
     });
@@ -634,6 +693,11 @@ function refresh() {
 // Progresses the animations. 
 function animate() {    
     playerChar.animate();
+    enemies.forEach(function(part, index, arr){
+        arr[index].animate();
+    });
+    if (bossChar != null) 
+        bossChar.animate();
 }
 
 // Spawns an enemy, miniboss, or boss. 
@@ -646,54 +710,43 @@ function spawnEnemy() {
     // If there are still enemies left in this combat phase. 
     if (spawnedCount <= Object.keys(enemyData).length) {
         // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0, enemyImage, 
-                                   1.0, 1.0 - yFromBottom - 0.25, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
+        if (easterEgg) {
+            enemies.push(new component(0.25, 0, easterEggImages, 5, 
+                            1.0, 1.0 - yFromBottom - 0.22, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        } else {
+            enemies.push(new component(0.25, 0, enemyImages, 35, 
+                            1.0, 1.0 - yFromBottom - 0.25, 
+                            "combat", enemySpeedX, 
+                            enemyData["enemyhp" + spawnedCount]));
+        }
         spawnedCount ++; 
         // Otherwise, if a boss hasn't been spawned yet... 
     } else if (bossChar == null) {
         // IF this is the last boss in the level...
         if (remainingBosses == 1) {
             // Spawn the last boss in this level. 
-            bossChar = new component(0.25, 0, bossImage, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
+            } else {
+                bossChar = new component(0.4, 0, bossImages, 25, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
+                                     "boss", enemySpeedX); 
+            }
         } else {
             // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.25, 0, minibossImage, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
+            if (easterEgg) {
+                bossChar = new component(0.3, 0, easterBossImages, 5, 
+                                     1.0, 1.0 - yFromBottom - 0.27, 
                                      "boss", enemySpeedX); 
-        }        
-        remainingBosses--; 
-    }
-}
-
-function spawnEaster() {
-    
-    // Update the dialogue box. 
-    hideDialogue();
-    checkDialogue();
-    
-    // If there are still enemies left in this combat phase. 
-    if (spawnedCount <= Object.keys(enemyData).length) {
-        // Spawn a regular enemy. 
-        enemies.push(new component(0.25, 0.25, easterEggImage, 
-                                   1.0, 1.0 - yFromBottom - 0.25, 
-                                   "combat", enemySpeedX, enemyData["enemyhp" + spawnedCount]));
-        spawnedCount ++; 
-        // Otherwise, if a boss hasn't been spawned yet... 
-    } else if (bossChar == null) {
-        // IF this is the last boss in the level...
-        if (remainingBosses == 1) {
-            // Spawn the last boss in this level. 
-            bossChar = new component(0.25, 0.25, easterEggImage, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
+            } else {
+                bossChar = new component(0.4, 0, minibossImages, 45, 
+                                     1.0, 1.0 - yFromBottom - 0.4, 
                                      "boss", enemySpeedX); 
-        } else {
-            // Otherwise, spawn a miniboss. 
-            bossChar = new component(0.25, 0.25, easterEggImage, 
-                                     1.0, 1.0 - yFromBottom - 0.25, 
-                                     "boss", enemySpeedX); 
+            }
         }        
         remainingBosses--; 
     }
@@ -1069,28 +1122,3 @@ $("#divPauseRestart").click(function(){restartLevel()});
 // Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});
 
-// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-function isEaster() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        
-				var user1 = firebase.auth().currentUser;
-				console.log(firebase.auth().currentUser.uid);
-				if(user1) {
-					firebase.database().ref('/users/' + firebase.auth().currentUser.uid).once('value').then(function(snapshot) {
-					var easterValue = snapshot.val().easter;
-					console.log(easterValue);
-                        if(easterValue == 1) {
-                            //alert("It works!");
-                            spawnEaster();
-                        } else {
-                            //alert("It doesnt work!");
-                            spawnEnemy();
-                        }
-				});
-				} else {
-				 
-				}
-				// console.log(firebase.auth().currentUser.uid);
-		});
-}

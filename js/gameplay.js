@@ -447,7 +447,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    isEaster();
+    spawnEnemy();
 }
 
 // The area where the game characters are drawn. 
@@ -700,7 +700,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            isEaster();
+            spawnEnemy();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -709,7 +709,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                isEaster();
+                spawnEnemy();
             }
         }
     });

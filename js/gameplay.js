@@ -234,10 +234,23 @@ function togglePause(pause) {
 
 // Resize the game area when the window changes size. 
 window.addEventListener("resize", function() {
+    // Set the new screen size. 
     setScreenSize(); 
     gameArea.canvas.width = getGameWidth(); 
     gameArea.canvas.height = getGameHeight(); 
+    
+    // Rescale enemy positions. 
+    enemies.forEach(function(part, index, arr){
+        arr[index].rescaleX();
+    });
+    if (bossChar != null) 
+        bossChar.rescaleX();
+    
+    // Redraw the characters. 
     refresh();
+    
+    // Set the new screen size as the previous screen size. 
+    saveScreenSize();
 });
 
 
@@ -308,6 +321,12 @@ var gameWidth;
 // The height of the game canvas. 
 var gameHeight; 
 
+// The prevoius width of the game canvas. 
+var previousWidth; 
+
+// The previous height of the game canvas. 
+var previousHeight; 
+
 // Returns the gameWidth. 
 // @param gameWidth The height of the game canvas. 
 function getGameWidth() {
@@ -326,8 +345,15 @@ function setScreenSize() {
     gameHeight = $(window).height() * 0.67;
 }
 
+// Sets the current screen size as the previous screen size. 
+function saveScreenSize() {
+    previousWidth = gameWidth; 
+    previousHeight = gameHeight; 
+}
+
 // Initial setting. 
 setScreenSize();
+saveScreenSize();
 
 // Loads the data for the next combat phase. 
 function loadEnemyData() {
@@ -588,6 +614,15 @@ function component(width, height, img, imgRate,
         var myRight = this.getX() + this.getWidth(); 
         var otherLeft = obj.getX(); 
         return myRight > otherLeft;
+    }
+    // Recalculates and sets an enemy's x position. This should only be used for enemies and bosses. 
+    this.rescaleX = function() {
+        var originalX = this.x * previousWidth; 
+        var playerOriginalFarRight = playerChar.x * previousWidth + playerChar.width * previousHeight; 
+        var distanceFromPlayer = originalX - playerOriginalFarRight; 
+        var fractionFromPlayer = distanceFromPlayer / previousWidth; 
+        var fractionToPlayerRight = playerChar.x + playerChar.getWidth() / gameWidth; 
+        this.x = fractionToPlayerRight + fractionFromPlayer; 
     }
     // Stores this enemy's auto attack loop. 
     this.autoAttackLoop; 

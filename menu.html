@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>Home Screen</title>
     <link type="text/css" rel="stylesheet" href="css/base.css"> 
+	<script src="js/jquery-3.2.1.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
 
 
@@ -110,8 +111,135 @@
 			});
 			}
 		
+		function googleSignIn(){
+		//google login
+		var provider = new firebase.auth.GoogleAuthProvider();
+		provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+		//firebase.auth().signInWithRedirect(provider);
+		firebase.auth().signInWithPopup(provider).then(function(result) {
+		  // This gives you a Google Access Token. You can use it to access the Google API.
+		  var token = result.credential.accessToken;
+		  // The signed-in user info.
+		  //var user = result.user;
+		  			firebase.auth().onAuthStateChanged(function(user) {
+				  if (user) {
+					// declare and initialize data when user sign in for the first time
+						ref.once('value', function(snapshot) {
+						  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
+							firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
+								easter: "0",
+								charNum: "0",
+								email: firebase.auth().currentUser.email
+							});
+						  }
+						});
+					  									   
+				  } else {
+					
+				  }
+				  
+				});
+		  
+		}).catch(function(error) {
+		  // Handle Errors here.
+		  var errorCode = error.code;
+		  var errorMessage = error.message;
+		  // The email of the user's account used.
+		  var email = error.email;
+		  // The firebase.auth.AuthCredential type that was used.
+		  var credential = error.credential;
+		
+			//display error messages
+			console.log(errorMessage);
+		  console.log(errorCode);
+		  
+		});
+		}
+		
+		function githubSignIn() {
+		var provider = new firebase.auth.GithubAuthProvider();
+		provider.addScope('repo');
+		firebase.auth().signInWithPopup(provider).then(function(result) {
+				  // This gives you a Google Access Token. You can use it to access the Google API.
+				  var token = result.credential.accessToken;
+				  // The signed-in user info.
+				  //var user = result.user;
+							firebase.auth().onAuthStateChanged(function(user) {
+						  if (user) {
+							// declare and initialize data when user sign in for the first time
+								ref.once('value', function(snapshot) {
+								  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
+									firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
+										easter: "0",
+										charNum: "0",
+										email: firebase.auth().currentUser.email
+									});
+								  }
+								});
+																   
+						  } else {
+							
+						  }
+						  
+						});
+				  
+				}).catch(function(error) {
+				  // Handle Errors here.
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  // The email of the user's account used.
+				  var email = error.email;
+				  // The firebase.auth.AuthCredential type that was used.
+				  var credential = error.credential;
+				
+					//display error messages
+					console.log(errorMessage);
+				  console.log(errorCode);
+				  
+				});
+		}
 		
 		
+		function twitterSignIn() {
+			var provider = new firebase.auth.TwitterAuthProvider();
+			
+			firebase.auth().signInWithPopup(provider).then(function(result) {
+				  // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+				  // You can use these server side with your app's credentials to access the Twitter API.
+				  var token = result.credential.accessToken;
+				  var secret = result.credential.secret;
+				  // The signed-in user info.
+				  var user = result.user;
+				  firebase.auth().onAuthStateChanged(function(user) {
+					  if (user) {
+						// declare and initialize data when user sign in for the first time
+							ref.once('value', function(snapshot) {
+							  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
+								firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
+									easter: "0",
+									charNum: "0",
+									email: firebase.auth().currentUser.email
+								});
+							  }
+							});
+															   
+					  } else {
+						
+					  }
+				  
+				});
+			}).catch(function(error) {
+				  // Handle Errors here.
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  // The email of the user's account used.
+				  var email = error.email;
+				  // The firebase.auth.AuthCredential type that was used.
+				  var credential = error.credential;
+				  // ...
+			});
+
+		}
 </script>
 
 
@@ -130,9 +258,12 @@
 					  <br><br>
 					  <input type="button" class="loginScreenButtons" value="Log In" onclick= "signIn('account', 'passWord');"> &nbsp;
 					  <input type="button" class="loginScreenButtons" value="Log out" onclick= "signOut();">
-                        <br>
-                        <br>
-				        <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
+                      <br>
+                      <br>
+				      <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
+					  <input type="button" class="loginScreenButtons" value="Google Login" onclick= "googleSignIn()">
+					  <input type="button" class="loginScreenButtons" value="GitHub Login" onclick= "githubSignIn()">
+					  <input type="button" class="loginScreenButtons" value="Twitter Login" onclick= "twitterSignIn()">
 				</form> 
 		<a href="#" class="cancel">&times;</a> </div> 
 			<div id="cover" > 

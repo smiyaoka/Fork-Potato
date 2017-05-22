@@ -421,7 +421,7 @@ function startCombat() {
     // Set the number of enemies. 
     loadEnemyData();
     // Spawn one enemy. 
-    spawnEnemy();
+    isEaster();
 }
 
 // The area where the game characters are drawn. 
@@ -665,7 +665,7 @@ function killEnemies() {
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
-            spawnEnemy();
+            isEaster();
             // Repeat the previous code. This helps when the 
             // changing index values makes the foreach loop skip 
             // an enemy. 
@@ -674,7 +674,7 @@ function killEnemies() {
                     clearInterval(arr[index].autoAttackLoop); 
                 }
                 arr.splice(index, 1); 
-                spawnEnemy();
+                isEaster();
             }
         }
     });
@@ -904,10 +904,36 @@ function addItem(item) {
    // Item slots are combat buttons 3-5. 
     for (var i = 3; i <= 5 && searching; i++) {
         if (!items[i]) {
+			
             items[i] = item; 
             //show item
 			$("#hiding").show();
             searching = false; 
+			
+        }
+    }
+}
+
+// Changes the text in the dialogue box. 
+// @param text The text that should appear in the dialogue box. 
+function setDialogue(text) {
+    $("#divDialogue").html(text);
+    showDialogue();
+}
+
+// Checks whether dialogue should be loaded, and then loads it. 
+function checkDialogue() {
+    if (dialogue == null) 
+        return; 
+    for (var i = 1; i <= Object.keys(dialogue).length; i++) {
+        if (combatPhase == dialogue["dialogue" + i]["combatphase"]) {
+            if (spawnedCount == dialogue["dialogue" + i]["enemynumber"] 
+                || (spawnedCount > Object.keys(enemyData).length 
+                    && dialogue["dialogue" + i]["enemynumber"] 
+                    > Object.keys(enemyData).length)) {
+                
+                setDialogue(dialogue["dialogue" + i]["text"]);
+            }
         }
     }
 }
@@ -1129,4 +1155,3 @@ $("#divPauseRestart").click(function(){restartLevel()});
 
 // Set up game over. 
 $("#divGameOverRestart").click(function(){restartLevel()});
-

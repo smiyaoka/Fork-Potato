@@ -1,11 +1,38 @@
 // IMAGE SECTION -------------------------------------------
 
-// Load the player images. 
+// Whether the player character has been loaded. 
+var playerCharLoaded = false; 
+
+// The number associated with the selected player character. 
+var playerCharNumber = 0; 
+
+// The player character images. 
 var playerImages = [];
-for (i = 0; i < 4; i++) {
-    playerImages[i] = new Image();
-    playerImages[i].src = 
-        "images/placeholder/player" + (i + 1) + ".gif";
+
+// Loads the player images. 
+function loadPlayerImages() {
+    var playerCharPartialPath; 
+    switch(playerCharNumber) {
+        case 0: 
+            playerCharPartialPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            break; 
+        case 1: 
+            playerCharPartialPath = "Char-Bro220x220/Char-Bro220x220n"; 
+            break; 
+        case 2: 
+            playerCharPartialPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            break;
+        default: 
+           goHome();
+    }
+    for (i = 0; i < 4; i++) {
+        playerImages[i] = new Image();
+        playerImages[i].src = 
+            "Image/Char/" + playerCharPartialPath 
+                + (i + 1) + ".png";
+    }
+    playerCharLoaded = true; 
+    attemptStart();
 }
 
 // Load the background image. 
@@ -49,14 +76,18 @@ for (i = 0; i < 2; i++) {
 var easterEggImages = []; 
 for (i = 0; i < 5; i++) {
     easterEggImages[i] = new Image();
-    easterEggImages[i].src = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+    easterEggImages[i].src 
+        = "Image/Mon-Mini-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" 
+            + (i + 1) + ".png";
 }
 
 //Load the ester egg boss images. 
 var easterBossImages = []; 
 for (i = 0; i < 12; i++) {
     easterBossImages[i] = new Image();
-    easterBossImages[i].src = "Image/Mon-Final-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" + (i + 1) + ".png";
+    easterBossImages[i].src 
+        = "Image/Mon-Final-EasterEgg300x300/Mon-Mini-EasterEgg300x300n" 
+            + (i + 1) + ".png";
 }
 
 // DATABASE SECTION ----------------------------------------
@@ -117,14 +148,14 @@ $(window).on('load', function(){
 // Attempts to start the game. 
 // Runs only after necessary data is loaded. 
 function attemptStart() {
-    if (dataLoaded && pageLoaded && easterLoaded && !gameStarted) {
+    if (dataLoaded && pageLoaded && playerCharLoaded && easterLoaded 
+        && !gameStarted) {
         gameStarted = true; 
         startGame();
     }
 }
 
-
-// EASTER EGG CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// AUTHETNICATION CODE CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Whether the easter egg has been activated. 
 var easterEgg = false; 
@@ -139,6 +170,15 @@ firebase.auth().onAuthStateChanged(function(user) {
         firebase.database().ref('/users/' 
             + firebase.auth().currentUser.uid).once('value').then(
                 function(snapshot) {
+                    // Player character selection code. 
+                    playerCharNumber = snapshot.val().charNum; 
+                    firebase.database().ref('users/' 
+                        + firebase.auth().
+                            currentUser.uid).update({ 
+                        charNum: "-1" 
+                    });
+                    loadPlayerImages();
+                    // Easter egg code. 
                     if (snapshot.val().easter == 1) {
                         easterEgg = true;
                         firebase.database().ref('users/' 
@@ -151,10 +191,14 @@ firebase.auth().onAuthStateChanged(function(user) {
                     attemptStart();
                 });
     } else {
-        easterLoaded = true; 
-        attemptStart();
+        goHome();
     }
 });
+
+// Heads back to the website's index.html. 
+function goHome() {
+    window.location.href = "index.html";
+}
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -236,8 +236,8 @@ function togglePause(pause) {
 window.addEventListener("resize", function() {
     // Set the new screen size. 
     setScreenSize(); 
-    gameArea.canvas.width = getGameWidth(); 
-    gameArea.canvas.height = getGameHeight(); 
+    gameArea.canvas.width = gameWidth; 
+    gameArea.canvas.height = gameHeight; 
     
     // Rescale enemy positions. 
     enemies.forEach(function(part, index, arr){
@@ -326,18 +326,6 @@ var previousWidth;
 
 // The previous height of the game canvas. 
 var previousHeight; 
-
-// Returns the gameWidth. 
-// @param gameWidth The height of the game canvas. 
-function getGameWidth() {
-    return gameWidth; 
-}
-
-// Returns the gameHeight. 
-// @param gameHeight The height of the game canvas. 
-function getGameHeight() {
-    return gameHeight; 
-}
 
 // Sets the screen size. 
 function setScreenSize() {
@@ -514,17 +502,17 @@ function component(width, height, img, imgRate,
     // Returns the scaled width. 
     this.getWidth = function() {
         if (type != "background") {
-            return this.width * getGameHeight(); 
+            return this.width * gameHeight; 
         } else {
-            return getGameHeight() / backgroundImageHeight * backgroundImageWidth; 
+            return gameHeight / backgroundImageHeight * backgroundImageWidth; 
         }
     }
     // Returns the scaled height. 
     this.getHeight = function() {
         if (type != "background") {
-            return this.height * getGameHeight(); 
+            return this.height * gameHeight; 
         } else {
-            return getGameHeight(); 
+            return gameHeight; 
         }
     }
     
@@ -534,11 +522,11 @@ function component(width, height, img, imgRate,
     
     // Returns the scaled x position. 
     this.getX = function() {
-        return this.x * getGameWidth(); 
+        return this.x * gameWidth; 
     }
     // Returns the scaled y position. 
     this.getY = function() {
-        return this.y * getGameHeight(); 
+        return this.y * gameHeight; 
     }
     
     // speedX is the horizontal velocity. 
@@ -572,10 +560,10 @@ function component(width, height, img, imgRate,
         }
         if (this.type == "background") {
             // If it's a background, keep drawing to fill the screen. 
-            var backgroundCount = Math.ceil(getGameWidth() / this.getWidth());                         
+            var backgroundCount = Math.ceil(gameWidth / this.getWidth());                         
             for (var i = 1; i <= backgroundCount; i++) {
                 ctx.drawImage(this.image, 
-                    this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth * i, 
+                    this.getX() + gameHeight / backgroundImageHeight * backgroundImageWidth * i, 
                     this.getY(),
                     this.getWidth(), 
                     this.getHeight());
@@ -681,7 +669,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.getX() <= bossStop * getGameWidth()) {
+        if (bossChar.getX() <= bossStop * gameWidth) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -830,7 +818,7 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange * getGameWidth() + playerChar.getX() + playerChar.getWidth();
+    var farEnd = eatRange * gameWidth + playerChar.getX() + playerChar.getWidth();
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
@@ -878,7 +866,7 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange * getGameWidth() + playerChar.getX() + playerChar.getWidth(); 
+    var farEnd = skillRange * gameWidth + playerChar.getX() + playerChar.getWidth(); 
     // Damage all enemies within range. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].getX() < farEnd) {

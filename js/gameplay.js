@@ -110,7 +110,7 @@ refQuestions.once('value').then(function(data) {
     keysQuestions = Object.keys(questions);
 });
 
-// Placeholder variable for level data. 
+// The current level number. 
 var levelNumber = 1; 
 
 // Reference to level data. 
@@ -132,12 +132,18 @@ var dataLoaded = false;
 var gameStarted = false; 
 
 // Grab all data for this level, and then start the game. 
-refLevel.once('value').then(function(data) {
-    level = data.val();
-    dialogue = level["dialogue"];
-    dataLoaded = true; 
-    attemptStart();
-});
+function getLevelData(initialLoad) {
+    refLevel.once('value').then(function(data, initialLoad) {
+        level = data.val();
+        dialogue = level["dialogue"];
+        dataLoaded = true; 
+        if (initialLoad) 
+            attemptStart(); 
+        else 
+            restartLevel();
+    });
+}
+getLevelData(true);
 
 // Makes sure the page finishes loading before starting. 
 $(window).on('load', function(){
@@ -153,6 +159,13 @@ function attemptStart() {
         gameStarted = true; 
         startGame();
     }
+}
+
+// Loads the next level. 
+function nextLevel() {
+    levelNumber++; 
+    refLevel = database.ref("levels/level" + levelNumber);
+    getLevelData();
 }
 
 // AUTHETNICATION CODE CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -423,6 +436,7 @@ function restartLevel() {
     hideQuestion();
     toggleButtons(false);
     hideGameOver();
+    hideLevelComplete();
     
     // Reset the placeholder button text. 
     $("#divCombatButton2").html(
@@ -1223,5 +1237,8 @@ $("#divPauseButton").click(function(){
 $("#divPauseResume").click(function(){togglePause(false);});
 $("#divPauseRestart").click(function(){restartLevel()});
 
-// Set up game over. 
+// Set up game over buttons. 
 $("#divGameOverRestart").click(function(){restartLevel()});
+
+// Set up level complete buttons. 
+$("#divLevelCompleteNextLevel").click(function(){nextLevel()});

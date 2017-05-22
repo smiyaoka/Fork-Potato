@@ -571,12 +571,15 @@ function component(width, height, img, imgRate,
             }
         }
         if (this.type == "background") {
-            // If it's a background, draw the image again. 
-            ctx.drawImage(this.image, 
-                this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth, 
-                this.getY(),
-                this.getWidth(), 
-                this.getHeight());
+            // If it's a background, keep drawing to fill the screen. 
+            var backgroundCount = Math.ceil(getGameWidth() / this.getWidth());                         
+            for (var i = 1; i <= backgroundCount; i++) {
+                ctx.drawImage(this.image, 
+                    this.getX() + getGameHeight() / backgroundImageHeight * backgroundImageWidth * i, 
+                    this.getY(),
+                    this.getWidth(), 
+                    this.getHeight());
+            }
         }
     }
     // Cycles through the animation. 

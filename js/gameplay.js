@@ -9,18 +9,22 @@ var playerCharNumber = 0;
 // The player character images. 
 var playerImages = [];
 
+// The images for when the player collides when an enemy. 
+var playerHitImages = []; 
+
 // Loads the player images. 
 function loadPlayerImages() {
-    var playerCharPartialPath; 
+    var playerImageFolderPath; 
     switch(playerCharNumber) {
         case 0: 
-            playerCharPartialPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            playerImageFolderPath = "Char-Mom200x200/Char-Mom200x200n"; 
             break; 
         case 1: 
-            playerCharPartialPath = "Char-Bro220x220/Char-Bro220x220n"; 
+            playerImageFolderPath = "Char-Bro220x220/Char-Bro220x220n"; 
+            //playerImageFolderPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
             break; 
         case 2: 
-            playerCharPartialPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            playerImageFolderPath = "Char-Sis260x260/Char-Sis260x260n"; 
             break;
         default: 
            goHome();
@@ -28,7 +32,7 @@ function loadPlayerImages() {
     for (i = 0; i < 4; i++) {
         playerImages[i] = new Image();
         playerImages[i].src = 
-            "Image/Char/" + playerCharPartialPath 
+            "Image/Char/" + playerImageFolderPath 
                 + (i + 1) + ".png";
     }
     playerCharLoaded = true; 
@@ -653,6 +657,16 @@ function component(width, height, img, imgRate,
         if (this.imageCount >= this.imageArray.length)
             this.imageCount = 0; 
         this.image = this.imageArray[this.imageCount];
+    }
+    // Updates the image or image array to change animations. 
+    this.changeImage = function(newImage) {
+        this.imageCount = 0; 
+        if (newImage.constructor === Array) {
+            this.imageArray = newImage; 
+            this.image = this.imageArray[this.imageCount]; 
+        } else {
+            this.image = newImage; 
+        }
     }
     // Called to re-calculate the component's position. 
         this.newPos = function() {

@@ -87,7 +87,8 @@ td {
     display: block; 
     height: 50%;
     width: 100%;
-    float: left; 
+    float: left;
+    min-height: 10vh;
 }
 
 #btnBottom {
@@ -97,7 +98,7 @@ td {
 #menuNewGame {
     display: block;
     margin: 0 auto;
-    margin-top: 1vh;
+    margin-top: -2vh;
     max-width: 400px;
     background-color: #FFF950;
     border-bottom-color: #BA7500;
@@ -108,7 +109,7 @@ td {
     border-width: 3px;
     border-style: solid;
     font-family:"Arial Black";
-    font-size:3.5em;
+    font-size: 2.7em;
     -webkit-border-radius: 50px;
     -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
 }
@@ -133,7 +134,7 @@ td {
     margin-bottom: auto;
     display: block;
     margin: 0 auto;
-    margin-top: 1vh;
+    margin-top: -2vh;
     background-color: #7f92ff;
     border-bottom-color: #7f92aa;
     border-left-color: #7f92cc;
@@ -161,7 +162,7 @@ td {
     display: block;
     margin-left: auto;
     margin-right: 1vw;
-    margin-top: -7vw;
+    margin-top: -6vw;
     background-color: #FF3333;
     border-bottom-color: #BA3333;
     border-left-color: #DB3333;
@@ -231,7 +232,7 @@ td {
 }
 
 #loginScreen { 
-    height:430px;
+    height:auto;
     width:340px;
     margin:0 auto;
     position:relative;

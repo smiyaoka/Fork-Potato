@@ -165,10 +165,10 @@ function attemptStart() {
 function nextLevel() {
     levelNumber++; 
     refLevel = database.ref("levels/level" + levelNumber);
-    getLevelData();
+    getLevelData(false);
 }
 
-// AUTHETNICATION CODE CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// AUTHENTICATION CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Whether the easter egg has been activated. 
 var easterEgg = false; 

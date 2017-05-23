@@ -617,8 +617,14 @@ function component(width, height, img, imgRate,
                 ctx.fillText('♥',this.getX() + i*12, this.getY() + heightMod 
                     - Math.floor(i / 10) * 12);
             }
-        }
-        if (this.type == "background") {
+        } else if (this.type == "boss") {
+            // If it's a boss, draw giant hearts. 
+            for (var i = 0; i < this.hp; i++){
+                ctx.font="48px Georgia";
+                ctx.fillStyle = "#f14040";
+                ctx.fillText('♥',this.getX() + i*40, this.getY() + 5);
+            }
+        } else if (this.type == "background") {
             // If it's a background, keep drawing to fill the screen. 
             var backgroundCount = Math.ceil(gameWidth / this.getWidth());                         
             for (var i = 1; i <= backgroundCount; i++) {
@@ -825,11 +831,11 @@ function spawnEnemy() {
             if (easterEgg) {
                 bossChar = new component(0.3, 0, easterBossImages, 5, 
                                      1.0, 1.0 - yFromBottom - 0.27, 
-                                     "boss", enemySpeedX); 
+                                     "boss", enemySpeedX, 3); 
             } else {
                 bossChar = new component(0.4, 0, bossImages, 25, 
                                      1.0, 1.0 - yFromBottom - 0.4, 
-                                     "boss", enemySpeedX); 
+                                     "boss", enemySpeedX, 3); 
             }
         } else {
             // Otherwise, spawn a miniboss. 
@@ -1106,6 +1112,10 @@ function clickAnswer(number) {
         // Set the timer for the next question. 
         blockInput = true; 
         questionTimer = setTimeout(nextQuestion, nextQuestionDelay); 
+        // Damage the boss character. 
+        hurtEnemy(bossChar, 1); 
+        bossChar.update();
+        refresh();
     } else {
         // Otherwise, mark the answer as wrong and damage the player.
         eliminateButton(number);

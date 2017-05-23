@@ -610,10 +610,12 @@ function component(width, height, img, imgRate,
             this.getHeight()); 
         // If it's a combat character, draw an hp marker. 
         if (this.type == "combat") {
+            var heightMod = (this == playerChar) ? -24 : -12; 
             for (var i = 0; i < this.hp; i++){
                 ctx.font="20px Georgia";
                 ctx.fillStyle = "#f14040";
-                ctx.fillText('♥',this.getX() + i*12, this.getY() - 10);
+                ctx.fillText('♥',this.getX() + i*12, this.getY() + heightMod 
+                    - Math.floor(i / 10) * 12);
             }
         }
         if (this.type == "background") {
@@ -621,7 +623,8 @@ function component(width, height, img, imgRate,
             var backgroundCount = Math.ceil(gameWidth / this.getWidth());                         
             for (var i = 1; i <= backgroundCount; i++) {
                 ctx.drawImage(this.image, 
-                    this.getX() + gameHeight / backgroundImageHeight * backgroundImageWidth * i, 
+                    this.getX() + gameHeight / backgroundImageHeight 
+                              * backgroundImageWidth * i, 
                     this.getY(),
                     this.getWidth(), 
                     this.getHeight());

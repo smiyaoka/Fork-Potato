@@ -23,6 +23,12 @@ td {
     text-align: center;
 }
 
+#mainBody {
+    position: fixed; 
+    width: 100vw; 
+    height: 100vh;
+}
+
 #loginPageLogo {
     display: block;
     margin-left: auto;
@@ -42,178 +48,10 @@ td {
 
 #wholePageLink {
     position: absolute;
-    height: 100%;
+    height: 100vh;
     width: 100%;
 }
 
-#headerContainer {
-    position: fixed; 
-    height: 20vh; 
-    width: 100vw; 
-    top: 0; 
-}
-
-#bodyContainer {
-    position: fixed;
-    box-sizing: border-box; 
-    height: 80vh; 
-    width: 100vw;
-    margin-top: 20vh; 
-}
-
-#indexContainer p {
-    margin-top: 20vh;
-}
-
-#indexContainer img {
-    margin-top: 10vh;
-}
-
-#menuContainer {
-    position: fixed;
-    bottom: 0; 
-    width: 100%; 
-    height: 33vh; 
-}
-
-.menuBtn {
-
-    box-sizing: border-box; 
-    display: block; 
-    height: 50%;
-    width: 100%;
-    float: left;
-    min-height: 10vh;
-}
-
-#btnBottom {
-    width: 100vw;
-}
-
-#menuNewGame {
-    display: block;
-    margin: 0 auto;
-    margin-top: -2vh;
-    max-width: 400px;
-    background-color: #FFF950;
-    border-bottom-color: #BA7500;
-    border-left-color: #DB8A00;
-    border-right-color: #DB8A00;
-    border-top-color: #E89200;
-    color: #D1AD43;
-    border-width: 3px;
-    border-style: solid;
-    font-family:"Arial Black";
-    font-size: 2.7em;
-    -webkit-border-radius: 50px;
-    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
-}
-
-#menuNewGame:active {
-    color:#777;
-    background-color: #FFF986;
-	border:1px solid #999;
-	/*{Shadow}*/
-	box-shadow:inset 0 0 5px 0 #333;
-	-moz-box-shadow:inset 0 0 5px 0 #333;
-	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
-}
-
-#menuResume {
-    display: block;
-    margin: 0 auto;
-    margin-top: 1vh;
-}
-
-#menuAffilitrated {
-    margin-bottom: auto;
-    display: block;
-    margin: 0 auto;
-    margin-top: -2vh;
-    background-color: #7f92ff;
-    border-bottom-color: #7f92aa;
-    border-left-color: #7f92cc;
-    border-right-color: #7f92ee;
-    border-top-color: #7f9233;
-    color: #3388aa;
-    border-width: 3px;
-    border-style: solid;
-    font-family:"Arial Black";
-    font-size:3.2em;
-    -webkit-border-radius: 50px;
-    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
-}
-
-#menuAffilitrated:active {
-    background-color: #7faaff;
-    border-bottom-color: #7faaaa;
-    border-left-color: #7faacc;
-    border-right-color: #7faaee;
-    border-top-color: #7faa33;
-    color: #66aaaa;
-}
-
-#menuQuit {
-    display: block;
-    margin-left: auto;
-    margin-right: 1vw;
-    margin-top: -6vw;
-    background-color: #FF3333;
-    border-bottom-color: #BA3333;
-    border-left-color: #DB3333;
-    border-right-color: #DB3388;
-    border-top-color: #E83333;
-    color: #aa0000;
-    border-width: 3px;
-    border-style: solid;
-    font-family:"Arial Black";
-    font-size:2.2em;
-    -webkit-border-radius: 200px;
-    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
-    
-}
-
-#menuQuit:active {
-    color:#777;
-    background-color: #FF7777;
-	border:1px solid #999;
-	/*{Shadow}*/
-	box-shadow:inset 0 0 5px 0 #333;
-	-moz-box-shadow:inset 0 0 5px 0 #333;
-	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
-}
-
-
-#loginBtn {
-    display: block;
-    float: right;
-    margin: 10px;
-    background-color: #A4DB39;
-    border-bottom-color: #64DB39;
-    border-left-color: #A4DB39;
-    border-right-color: #A49B39;
-    border-top-color: #A4cB39;
-    color: #81aB39;
-    border-width: 3px;
-    border-style: solid;
-    font-family:"Arial Black";
-    font-size:3.2em;
-    -webkit-border-radius: 50px;
-    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
-}
-
-#loginBtn:active {
-    color:#777;
-    background-color: #bbDB99;
-	border:1px solid #999;
-	/*{Shadow}*/
-	box-shadow:inset 0 0 5px 0 #333;
-	-moz-box-shadow:inset 0 0 5px 0 #333;
-	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
-}
-.button { 
-    padding: 10px;   
-} 
 
 #cover {
     position:fixed;
@@ -250,6 +88,8 @@ td {
     border-right-color: #A49B39;
     border-top-color: #A4cB39;
     color: #81aB39;
+    margin-left: 10px;
+    margin-bottom: 3px;
     border-width: 3px;
     border-style: solid;
     font-family:"Arial Black";
@@ -274,6 +114,7 @@ td {
     padding: 30px; 
     width: 30vh;
     height: 1vh;
+    margin-left: 10px;
 }
 
 #passWord:focus, #account:focus {
@@ -285,24 +126,6 @@ background-color: lightblue;
     opacity:2;
 } 
 
-#accountScreen {
-    height:380px;
-    width:340px;
-    margin:0 auto;
-    position:relative;
-    z-index:10;
-    display:none;
-    background: url(login.png) no-repeat;
-    border:5px solid #cccccc;
-    border-radius:10px;
-    margin-top: 10px;
-    background-color: white;
-}
-
-#accountScreen:target, #accountScreen:target + #cover{ 
-    display:block;
-    opacity:2;
-} 
 
 .cancel { 
     display:block;

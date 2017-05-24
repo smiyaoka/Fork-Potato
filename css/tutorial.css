@@ -1,0 +1,45 @@
+#tutorialContainer1 {
+    height: 50vh;
+    width: 50vh;
+    background-color: antiquewhite;
+    display: inline-block;
+}
+
+#tutorialContainer2 {
+    height: 50vh;
+    width: 50vh;
+    background-color: red;
+    display: inline-block;
+}
+
+.tutorialNav {
+    height: 50vh;
+    width: 8vh;
+    display: inline-block;
+}
+
+.tutorialBtn {
+    height: 100%;
+    background-color: #FFF950;
+    border-bottom-color: #BA7500;
+    border-left-color: #DB8A00;
+    border-right-color: #DB8A00;
+    border-top-color: #E89200;
+    color: #D1AD43;
+    border-width: 3px;
+    border-style: solid;
+    font-family:"Arial Black";
+    font-size: 3.5vh;
+    -webkit-border-radius: 50px;
+    -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
+}
+
+#tutorialMain {
+    height: auto;
+    width: auto;
+}
+
+#tutorialBodyCont {
+    display: -webkit-flex;
+    display: flex;
+}

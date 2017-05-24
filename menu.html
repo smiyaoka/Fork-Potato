@@ -85,9 +85,10 @@
 					
 					 console.log(firebase.auth().currentUser.uid);
 					   firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-					   
 						easter: "0",
                         charNum: "0",
+					    levelNum: "0",
+                        levelsAvailable: "1",
 						email: firebase.auth().currentUser.email
 						
 					  });

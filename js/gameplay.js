@@ -9,26 +9,42 @@ var playerCharNumber = 0;
 // The player character images. 
 var playerImages = [];
 
+// The images for when the player collides when an enemy. 
+var playerHitImages = []; 
+
 // Loads the player images. 
 function loadPlayerImages() {
-    var playerCharPartialPath; 
+    // Partial file paths for the images. 
+    var playerRunningPath; 
+    var playerHitPath; 
     switch(playerCharNumber) {
         case 0: 
-            playerCharPartialPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            playerRunningPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            playerHitPath = "";
             break; 
         case 1: 
-            playerCharPartialPath = "Char-Bro220x220/Char-Bro220x220n"; 
+            playerRunningPath = "Char-Bro220x220/Char-Bro320x320n"; 
+            playerHitPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
             break; 
         case 2: 
-            playerCharPartialPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            playerRunningPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            playerHitPath = "";
             break;
         default: 
            goHome();
     }
+    // Set running animation images. 
     for (i = 0; i < 4; i++) {
         playerImages[i] = new Image();
         playerImages[i].src = 
-            "Image/Char/" + playerCharPartialPath 
+            "Image/Char/" + playerRunningPath 
+                + (i + 1) + ".png";
+    }
+    // Set auto attack animation images. 
+    for (i = 0; i < 7; i ++) {
+        playerHitImages[i] = new Image();
+        playerHitImages[i].src = 
+            "Image/Char/" + playerHitPath 
                 + (i + 1) + ".png";
     }
     playerCharLoaded = true; 
@@ -114,7 +130,7 @@ refQuestions.once('value').then(function(data) {
 var levelNumber = 1; 
 
 // Reference to level data. 
-var refLevel = database.ref("levels/level" + levelNumber);
+var refLevel;
 
 // The entire data for the level. 
 var level; 
@@ -133,6 +149,7 @@ var gameStarted = false;
 
 // Grab all data for this level, and then start the game. 
 function getLevelData(firstLoad) {
+    refLevel = database.ref("levels/level" + levelNumber);
     let initialLoad = firstLoad; 
     refLevel.once('value').then(function(data) {
         level = data.val();
@@ -442,13 +459,6 @@ function restartLevel() {
     if (questionTimer != null)
         clearTimeout(questionTimer);
     
-    // Clear all enemy auto attack. 
-    enemies.forEach(function(part, index, arr){
-        if (arr[index].autoAttackLoop != null) {
-            clearInterval(arr[index].autoAttackLoop);
-        }
-    });
-    
     // Reset the UI. 
     hideDialogue();
     hideQuestion();
@@ -489,8 +499,8 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(0.25, 0, playerImages, 5, 
-                               0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
+    playerChar = new component(0.35, 0, playerImages, 5, 
+                               -0.02, 1.0 - yFromBottom - 0.35, "combat", 0, playerMaxHP);
     background = new component(1.0, 1.0, backgroundImage, null, 
                                0, 0, "background");
     background.speedX = -0.002;
@@ -668,14 +678,45 @@ function component(width, height, img, imgRate,
         this.updateCount = 0; 
         // Update the image. 
         this.imageCount++; 
-        if (this.imageCount >= this.imageArray.length)
+        if (this.imageCount >= this.imageArray.length) {
             this.imageCount = 0; 
+            if (this.altAnim && this == playerChar) {
+                this.imageArray = playerImages; 
+                this.altAnim = false; 
+            }
+        }
         this.image = this.imageArray[this.imageCount];
     }
+    // Activates an alternate animation. 
+    this.newAnim = function() {
+        if (this != playerChar || this.imageArray == null) 
+            return; 
+        this.altAnim = true; 
+        this.updateCount = 0; 
+        this.imageCount = 0; 
+        this.imageArray = playerHitImages; 
+        this.image = this.imageArray[this.imageCount]; 
+    }
+    // Updates the image or image array to change animations. 
+    this.changeImage = function(newImage) {
+        this.imageCount = 0; 
+        if (newImage.constructor === Array) {
+            this.imageArray = newImage; 
+            this.image = this.imageArray[this.imageCount]; 
+        } else {
+            this.image = newImage; 
+        }
+    }
     // Called to re-calculate the component's position. 
-        this.newPos = function() {
+    this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
+        if (this.knockbackTo != null && this.type == "combat") {
+            if (this.x > this.knockbackTo) {
+                this.speedX = enemySpeedX; 
+                this.knockbackTo = null; 
+            }
+        }
      }
     // Returns whether this component has collided with another component. 
     // @param obj A component. 
@@ -700,28 +741,34 @@ function component(width, height, img, imgRate,
         var fractionToPlayerRight = playerChar.x + playerChar.getWidth() / gameWidth; 
         this.x = fractionToPlayerRight + fractionFromPlayer; 
     }
-    // Stores this enemy's auto attack loop. 
-    this.autoAttackLoop; 
+    // Whether the character is using an alternate animation. 
+    this.altAnim = false; 
+    // The position that an enemy is sliding back to. 
+    this.knockbackTo = null; 
 }
-
-// The interval between each auto attack, measured in milliseconds. 
-var autoAttackInterval = 800; 
 
 // The damage dealt during an auto attack. 
 var autoAttackDamage = 1; 
 
-// Repeatedly called as part of the auto attack mechanic. 
-// Each auto attack deals damage to both the player and the enemy. 
-// @param enemy The enemy to attack. 
-function autoAttackUpdate(enemy) {
-    if (freeze) 
-        return; 
-    hurtEnemy(enemy, autoAttackDamage); 
-    hurtPlayer(autoAttackDamage);
-}
+// Auto attack knockback, measured as a decimal of the enemy's walk distance. 
+var autoAttackKnockback = 0.25; 
 
-// The x position at which a boss or miniboss stops moving. 
-var bossStop = 0.55; 
+// The speed at which the an enemy is pushed back after an auto attack collision. 
+var autoAttackKnockbackSpeed = 0.04; 
+
+// The x position at which a boss or miniboss, 
+// measured as a decimal of the enemy's walk distance. 
+var bossStop = 0.50; 
+
+// Returns the scaled bossStop. 
+// @return bossStop as a decimal measured from the canvas's far left. 
+function getBossStop() {
+    var fractionToPlayerRight = playerChar.x 
+        + playerChar.getWidth() / gameWidth; 
+    var scaledBossStop = fractionToPlayerRight 
+        + (1 - fractionToPlayerRight) * bossStop; 
+    return scaledBossStop * gameWidth; 
+}
 
 // Updates the level. 
 function updateGameArea() {
@@ -736,16 +783,15 @@ function updateGameArea() {
         arr[index].newPos();
         // If the enemy collides with the player... 
         if (playerChar.collided(arr[index])) {
-            // and it's the first time... 
-            if (arr[index].autoAttackLoop == null) {
-                // Make the enemy stop moving. 
-                arr[index].speedX = 0; 
-                // Start the autoattack loop. 
-                autoAttackUpdate(arr[index]);
-                arr[index].autoAttackLoop = setInterval(function(){
-                    autoAttackUpdate(arr[index]);
-                }, autoAttackInterval); 
-            }
+            // Play the player hit animation. 
+            playerChar.newAnim();
+            // Start knocking back the enemy. 
+            arr[index].knockbackTo = arr[index].x 
+                + (1 - arr[index].x) * autoAttackKnockback; 
+            arr[index].speedX = autoAttackKnockbackSpeed; 
+            // Damage both the player and the enemy. 
+            hurtPlayer(autoAttackDamage);
+            hurtEnemy(arr[index], autoAttackDamage);
         }
     });
     // Remove defeated enemies from the level. 
@@ -754,7 +800,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.getX() <= bossStop * gameWidth) {
+        if (bossChar.getX() <= getBossStop()) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -769,10 +815,6 @@ function killEnemies() {
     enemies.forEach(function(part, index, arr){
         // If the enemy's health is fully depleted. 
         if (arr[index].hp <= 0) {
-            // Stop auto attacking if the enemy `already is. 
-            if (arr[index].autoAttackLoop != null) {
-                clearInterval(arr[index].autoAttackLoop); 
-            }
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
@@ -781,9 +823,6 @@ function killEnemies() {
             // changing index values makes the foreach loop skip 
             // an enemy. 
             while(arr[index] != null && arr[index].hp <= 0) {
-                if (arr[index].autoAttackLoop != null) {
-                    clearInterval(arr[index].autoAttackLoop); 
-                }
                 arr.splice(index, 1); 
                 spawnEnemy();
             }

@@ -1,3 +1,9 @@
+body {
+    background-image: url(../images/placeholder/1.png);
+    background-attachment: fixed;
+    background-size: 100% 110%;
+}
+
 #tutorialContainer1 {
     height: 50vh;
     width: 50vh;
@@ -20,6 +26,7 @@
 
 .tutorialBtn {
     height: 100%;
+    width: 8vh;
     background-color: #FFF950;
     border-bottom-color: #BA7500;
     border-left-color: #DB8A00;
@@ -40,6 +47,13 @@
 }
 
 #tutorialBodyCont {
+    width: auto;
+    height: 100%;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
     display: -webkit-flex;
     display: flex;
+    align-items: center;
+    justify-content: center;
 }

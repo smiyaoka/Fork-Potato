@@ -23,24 +23,27 @@ td {
     text-align: center;
 }
 
-#clickToStart {
-    color: #D17D43;
-    text-shadow: 2px 2px #ff0000;
+#loginPageLogo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20vh;
+    height: 40vh;
+    width: auto;
+}
+
+#clickAnywhereToStart {
+    font-size: 6vh;
     font-family: verdana;
-    font-size: 8vh;
+    text-align: center;
+    background-color: limegreen;
+    color: white;
 }
 
-#clickToStart:active {
-    color: #C17D43;
-    padding-top: 2px;
-    text-shadow: 2px 2px #000000;
-}
-
-#runningContainer {
-    position: fixed;
-    height: 47vh; 
-    width: 100vw;
-    margin-top: 20vh; 
+#wholePageLink {
+    position: absolute;
+    height: 100%;
+    width: 100%;
 }
 
 #headerContainer {
@@ -56,14 +59,6 @@ td {
     height: 80vh; 
     width: 100vw;
     margin-top: 20vh; 
-}
-
-#indexContainer {
-    position: fixed;
-    box-sizing: border-box; 
-    height: 100vh; 
-    width: 100vw; 
-    text-align: center;
 }
 
 #indexContainer p {

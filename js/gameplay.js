@@ -708,9 +708,15 @@ function component(width, height, img, imgRate,
         }
     }
     // Called to re-calculate the component's position. 
-        this.newPos = function() {
+    this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;
+        if (this.knockbackTo != null && this.type == "combat") {
+            if (this.x > this.knockbackTo) {
+                this.speedX = enemySpeedX; 
+                this.knockbackTo = null; 
+            }
+        }
      }
     // Returns whether this component has collided with another component. 
     // @param obj A component. 
@@ -737,6 +743,8 @@ function component(width, height, img, imgRate,
     }
     // Whether the character is using an alternate animation. 
     this.altAnim = false; 
+    // The position that an enemy is sliding back to. 
+    this.knockbackTo = null; 
 }
 
 // The damage dealt during an auto attack. 
@@ -745,8 +753,22 @@ var autoAttackDamage = 1;
 // Auto attack knockback, measured as a decimal of the enemy's walk distance. 
 var autoAttackKnockback = 0.25; 
 
-// The x position at which a boss or miniboss stops moving. 
-var bossStop = 0.55; 
+// The speed at which the an enemy is pushed back after an auto attack collision. 
+var autoAttackKnockbackSpeed = 0.08; 
+
+// The x position at which a boss or miniboss, 
+// measured as a decimal of the enemy's walk distance. 
+var bossStop = 0.50; 
+
+// Returns the scaled bossStop. 
+// @return bossStop as a decimal measured from the canvas's far left. 
+function getBossStop() {
+    var fractionToPlayerRight = playerChar.x 
+        + playerChar.getWidth() / gameWidth; 
+    var scaledBossStop = fractionToPlayerRight 
+        + (1 - fractionToPlayerRight) * bossStop; 
+    return scaledBossStop * gameWidth; 
+}
 
 // Updates the level. 
 function updateGameArea() {
@@ -761,35 +783,15 @@ function updateGameArea() {
         arr[index].newPos();
         // If the enemy collides with the player... 
         if (playerChar.collided(arr[index])) {
+            // Play the player hit animation. 
             playerChar.newAnim();
-            /*
-            // REQUIRES FURTHER INSEPECTION
-            var fractionToPlayerRight = playerChar.x 
-                + playerChar.getWidth() / gameWidth; 
-            var scaledKnockback = fractionToPlayerRight 
-                + (1 - fractionToPlayerRight) * autoAttackKnockback; 
-            console.log("Game Width: " + gameWidth 
-                       + "\nPlayer Width: " + playerChar.getWidth() 
-                       + "\nPlayer X: " + playerChar.getX() 
-                       + "\nEnemy X: " + arr[index].getX()
-                       + "\nScaled Knockback: " + scaledKnockback); 
-            arr[index].x += scaledKnockback; 
-            */
-
-            arr[index].x = arr[index].x + (1 - arr[index].x) * autoAttackKnockback; 
+            // Start knocking back the enemy. 
+            arr[index].knockbackTo = arr[index].x 
+                + (1 - arr[index].x) * autoAttackKnockback; 
+            arr[index].speedX = autoAttackKnockbackSpeed; 
+            // Damage both the player and the enemy. 
             hurtPlayer(autoAttackDamage);
             hurtEnemy(arr[index], autoAttackDamage);
-            
-            
-            /*
-            // Make the enemy stop moving. 
-            arr[index].speedX = 0; 
-            // Start the autoattack loop. 
-            autoAttackUpdate(arr[index]);
-            arr[index].autoAttackLoop = setInterval(function(){
-                autoAttackUpdate(arr[index]);
-            }, autoAttackInterval); 
-            */
         }
     });
     // Remove defeated enemies from the level. 
@@ -798,7 +800,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.getX() <= bossStop * gameWidth) {
+        if (bossChar.getX() <= getBossStop()) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 

@@ -55,6 +55,29 @@
 </div>
     
 <script>
+    
+    // The highest level the player has unlocked. 
+    var levelsAvailable; 
+    
+    firebase.auth().onAuthStateChanged(function(user) {
+        var user1 = firebase.auth().currentUser;
+        if(user1) {
+            firebase.database().ref('/users/' 
+                + firebase.auth().currentUser.uid).once('value').then(
+                    function(snapshot) {
+                        // Level code 
+                        levelsAvailable = snapshot.val().levelsAvailable; 
+                        
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+                            levelNum: "1"
+                        });
+                    });
+        } else {
+            goHome();
+        }
+    });
+    
+    
 	var database = firebase.database();
 	//var ref = database.ref('users');
 	var charSelected = 0;

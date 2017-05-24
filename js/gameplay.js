@@ -132,8 +132,9 @@ var dataLoaded = false;
 var gameStarted = false; 
 
 // Grab all data for this level, and then start the game. 
-function getLevelData(initialLoad) {
-    refLevel.once('value').then(function(data, initialLoad) {
+function getLevelData(firstLoad) {
+    let initialLoad = firstLoad; 
+    refLevel.once('value').then(function(data) {
         level = data.val();
         dialogue = level["dialogue"];
         dataLoaded = true; 
@@ -143,7 +144,6 @@ function getLevelData(initialLoad) {
             restartLevel();
     });
 }
-getLevelData(true);
 
 // Makes sure the page finishes loading before starting. 
 $(window).on('load', function(){
@@ -176,6 +176,9 @@ var easterEgg = false;
 // Whether the easter egg data has been checked. 
 var easterLoaded = false; 
 
+// The highest level the user has reached. 
+var levelsAvailable; 
+
 // Checks for easter egg data. 
 firebase.auth().onAuthStateChanged(function(user) {
     var user1 = firebase.auth().currentUser;
@@ -183,7 +186,15 @@ firebase.auth().onAuthStateChanged(function(user) {
         firebase.database().ref('/users/' 
             + firebase.auth().currentUser.uid).once('value').then(
                 function(snapshot) {
-                    // Player character selection code. 
+                    // Level code 
+                    levelNumber = snapshot.val().levelNum; 
+                    getLevelData(true);
+                    levelsAvailable = snapshot.val().levelsAvailable; 
+                    firebase.database().ref('users/' 
+                        + firebase.auth().
+                            currentUser.uid).update({ 
+                        levelNum: "-1" 
+                    });// Player character selection code. 
                     playerCharNumber = snapshot.val().charNum; 
                     firebase.database().ref('users/' 
                         + firebase.auth().
@@ -316,8 +327,15 @@ window.addEventListener("resize", function() {
 // Called when the level is successfully completed. 
 // This function is currently a placeholder. 
 function levelComplete() {
+    // Freeze the game. 
     blockInput = true; 
     freeze = true; 
+    // Update the player's progress. 
+    if (levelNumber >= levelsAvailable) {
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+            levelsAvailable: (parseInt(levelNumber) + 1).toString()
+        });
+    }
     showLevelComplete();
 }
 

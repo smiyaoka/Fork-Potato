@@ -154,27 +154,77 @@ td {
 	-webkit-box-shadow:inset 0 1px 2px 0 #333, 0 1px 1px 0 #fff;
 }
 
-#backBtn {
-    min-width: 35%;
-    min-height: 40%;
-    background-color: #FF3333;
-    border-bottom-color: #BA3333;
-    border-left-color: #DB3333;
-    border-right-color: #DB3388;
-    border-top-color: #E83333;
-    color: #aa0000;
+/* ============================================================================ */
+
+#bodyContainerLevel {
+    position:fixed;
+    margin-left: 40%;
+    box-sizing: border-box; 
+    height: 55vh;
+    max-width: 30vh;
+    margin-top: 20vh;
+    margin-right: 20vh;
+}
+
+#leftContainerLevel {
+    position:fixed;
+    float: right; 
+    box-sizing: border-box; 
+    height: 55vh; 
+    width: 10vw;
+    margin-top: 20vh;
+}
+
+#rightContainerLevel {
+    position:fixed;
+    float: left;
+    margin-left: 90vw; 
+    box-sizing: border-box; 
+    height: 55vh; 
+    width: 10vw;
+    margin-top: 20vh; 
+}
+
+#backBtnLevel {
+    display: block;
+    float: left;
+    margin: 10px;
+}
+
+.sideBtnLevel {
+    display: block;
+    margin-top: 24.5vh;
+}
+
+.buttonLevel { 
+    padding: 10px;   
+} 
+
+.mySlidesLevel {
+   float: right;
+
+}
+
+#leftButtonLevel, #rightButtonLevel {
+    height: 30vh;
+    width: 100%;
+    background-color: #FFF950;
+    border-bottom-color: #BA7500;
+    border-left-color: #DB8A00;
+    border-right-color: #DB8A00;
+    border-top-color: #E89200;
+    color: #D1AD43;
     border-width: 3px;
     border-style: solid;
     font-family:"Arial Black";
-    font-size:2.2em;
-    -webkit-border-radius: 200px;
+    font-size:3.5em;
+    -webkit-border-radius: 50px;
     -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
-    
 }
 
-#backBtn:active {
+#leftButtonLevel:active, #rightButtonLevel:active {
     color:#777;
-    background-color: #FF7777;
+    background-color: #FFF986;
 	border:1px solid #999;
 	/*{Shadow}*/
 	box-shadow:inset 0 0 5px 0 #333;

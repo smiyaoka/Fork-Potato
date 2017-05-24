@@ -30,9 +30,12 @@
 
 <body> 
     <div id="headerContainer">
-        <a href="menu.html"><button type="button" id="backBtn">Back</button></a>
+        <button type="button" id="backBtn" onclick="signOut()">Logout</button></a>
+        <a href="affiliatedApps.html"><button type="button" id="affilBtn">Affiliate Page</button></a>
     </div>
-    <div id="leftContainer"><button type="button" id="leftButton" class="sideBtn" onclick="plusDivs(-1),trackImg(-1)"><</button></div> 
+    <!-- Character select -------------------------->
+    <div id="charSelectCont1">
+    <div id="leftContainer"><button type="button" id="leftButton" class="sideBtn" onclick="plusDivs(-1),trackImg(-1)">&lt</button></div> 
         
     <div id="bodyContainer">
         
@@ -43,16 +46,18 @@
     </div>
     <div id="rightContainer"><button type="button" id="rightButton" class="sideBtn" onclick="plusDivs(1),trackImg(1) ">></button>
     </div>
-        
+    </div>
+    
+    <!-- Start game ---------------------------->
+    
         <div id="footerContainer">
         <div class="selectBtn" id="btnSelect">
-            <button type="button" id="selectBtn" onclick="clickedLevelButton(1)">Level 1</button>
+            <button type="button" id="rightLevelBtn" onclick="clickedLevelButton(1)">></button>
+            <button type="button" id="selectBtn">Level 1</button>
             <button type="button" id="selectBtn" onclick="update()">Start Game</button>
         </div>
         
     </div>
-        
-</div>
     
 <script>
     
@@ -75,7 +80,16 @@
             goHome();
         }
     });
-    
+
+	//signout
+			function signOut() {
+			firebase.auth().signOut().then(function() {
+			  //alert("You're not logged in!");
+			  window.location.href = "index.html";
+			}).catch(function(error) {
+			  // An error happened.
+			});
+			}
     
 	var database = firebase.database();
 	//var ref = database.ref('users');
@@ -128,6 +142,21 @@ function showDivs(n) {
   x[slideIndex-1].style.display = "block";  
 }
 
+//*******level select slides
+    
+function showDivsLevel(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlidesLevel");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+
+//*******end of level select slides
+
 function trackImg(num) {
 
 charSelected += num;
@@ -154,8 +183,8 @@ function update() {
 
 <script>
     // Level Select Code 
-    
-    // The currently selected level. 
+
+  // The currently selected level. 
     var selectedLevel = 1; 
     
     function clickedLevelButton(mod) {

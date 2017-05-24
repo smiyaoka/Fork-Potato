@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tutorial</title>
+    <link type="text/css" rel="stylesheet" href="css/tutorial.css"> 
+	<script src="js/jquery-3.2.1.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+
+
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB8EekPhs6qYLXCxCi0oyypG3f25MlBFFY",
+    authDomain: "project-fork-and-potato.firebaseapp.com",
+    databaseURL: "https://project-fork-and-potato.firebaseio.com",
+    projectId: "project-fork-and-potato",
+    storageBucket: "project-fork-and-potato.appspot.com",
+    messagingSenderId: "119574546255"
+  };
+  
+  firebase.initializeApp(config);
+</script>
+</head>
+    <body>
+    <div id="tutorialBodyCont">
+    <div class="tutorialNav" id="backTutorial">
+        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1),trackImg(1) ">B<br>a<br>c<br>k</button>
+        </div>
+        <div id="tutorialMain">
+    <div id="tutorialContainer1">
+        
+        <img class="tutorialSlides" id="tutorial1" src="images/placeholder/mom.gif" style="height:100%">
+        <img class="tutorialSlides" id="tutorialSlide2" src="images/placeholder/player.gif" style="height:100%">
+        <img class="tutorialSlides" id="tutorialSlide3" src="images/placeholder/sis.gif" style="height:100%">
+        
+    </div>
+        
+    <div id="tutorialContainer2">
+        
+        <img class="tutorialSlides" id="tutorialSlide1" src="images/placeholder/mom.gif" style="height:100%">
+        <img class="tutorialSlides" id="tutorialSlide2" src="images/placeholder/player.gif" style="height:100%">
+        <img class="tutorialSlides" id="tutorialSlide3" src="images/placeholder/sis.gif" style="height:100%">
+    
+    </div>
+            </div>
+    
+    <div class="tutorialNav" id="backTutorial">
+        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1),trackImg(1) ">N<br>e<br>x<br>t</button>
+        </div>
+        </div>
+<script>
+var tutorialSelected = 0;
+var slideIndex = 1;
+var tutorial0 = document.getElementById("tutorialSlide0");
+var tutorial1 = document.getElementById("tutorialSlide1");
+var tutorial2 = document.getElementById("tutorialSlide2");
+
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("tutorialSlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+
+function trackImg(num) {
+
+tutorialSelected += num;
+if(charSelected == 3){
+tutorialSelected = 0;
+}
+
+if(tutorialSelected == -1) {
+tutorialSelected = 2;
+}
+
+
+console.log(tutorialSelected);
+}
+        </script>
+    </body>
+</html>

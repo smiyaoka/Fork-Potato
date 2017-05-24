@@ -506,8 +506,8 @@ function startGame() {
     skillOnCooldown = false; 
     
     // Set up the player and background components. 
-    playerChar = new component(0.25, 0, playerImages, 5, 
-                               0.05, 1.0 - yFromBottom - 0.25, "combat", 0, playerMaxHP);
+    playerChar = new component(0.35, 0, playerImages, 5, 
+                               -0.05, 1.0 - yFromBottom - 0.35, "combat", 0, playerMaxHP);
     background = new component(1.0, 1.0, backgroundImage, null, 
                                0, 0, "background");
     background.speedX = -0.002;
@@ -754,6 +754,9 @@ var autoAttackInterval = 800;
 // The damage dealt during an auto attack. 
 var autoAttackDamage = 1; 
 
+// Auto attack knockback, measured as a decimal of the enemy's walk distance. 
+var autoAttackKnockback = 0.25; 
+
 // Repeatedly called as part of the auto attack mechanic. 
 // Each auto attack deals damage to both the player and the enemy. 
 // @param enemy The enemy to attack. 
@@ -784,7 +787,23 @@ function updateGameArea() {
             if (arr[index].autoAttackLoop == null) {
                 
                 playerChar.newAnim();
+                /*
+                // REQUIRES FURTHER INSEPECTION
+                var fractionToPlayerRight = playerChar.x 
+                    + playerChar.getWidth() / gameWidth; 
+                var scaledKnockback = fractionToPlayerRight 
+                    + (1 - fractionToPlayerRight) * autoAttackKnockback; 
+                console.log("Game Width: " + gameWidth 
+                           + "\nPlayer Width: " + playerChar.getWidth() 
+                           + "\nPlayer X: " + playerChar.getX() 
+                           + "\nEnemy X: " + arr[index].getX()
+                           + "\nScaled Knockback: " + scaledKnockback); 
+                arr[index].x += scaledKnockback; 
+                */
                 
+                arr[index].x = arr[index].x + (1 - arr[index].x) * autoAttackKnockback; 
+                
+                /*
                 // Make the enemy stop moving. 
                 arr[index].speedX = 0; 
                 // Start the autoattack loop. 
@@ -792,6 +811,7 @@ function updateGameArea() {
                 arr[index].autoAttackLoop = setInterval(function(){
                     autoAttackUpdate(arr[index]);
                 }, autoAttackInterval); 
+                */
             }
         }
     });

@@ -29,7 +29,8 @@
 		firebase.auth().onAuthStateChanged(function(user) {
 		  if (user) {
 			// User is signed in.
-			alert("Welcome to Fork&Potato");
+			//alert("Welcome to Fork&Potato");
+			 window.location.href = "charSelect.html";
 			// console.log(firebase.auth().currentUser.uid);
 		  } else {
 			//alert("You're not logged in!");

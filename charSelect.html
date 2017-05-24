@@ -46,8 +46,8 @@
         
         <div id="footerContainer">
         <div class="selectBtn" id="btnSelect">
-            <button type="button" id="selectBtn" onclick="update()">Select Character</button>
-            <a href="level.html"><button type="button" id="selectBtn">Start Game</button></a>
+            <button type="button" id="selectBtn" onclick="clickedLevelButton(1)">Level 1</button>
+            <button type="button" id="selectBtn" onclick="update()">Start Game</button>
         </div>
         
     </div>
@@ -55,6 +55,28 @@
 </div>
     
 <script>
+    
+    // The highest level the player has unlocked. 
+    var levelsAvailable; 
+    
+    firebase.auth().onAuthStateChanged(function(user) {
+        var user1 = firebase.auth().currentUser;
+        if(user1) {
+            firebase.database().ref('/users/' 
+                + firebase.auth().currentUser.uid).once('value').then(
+                    function(snapshot) {
+                        // Level code 
+                        levelsAvailable = snapshot.val().levelsAvailable; 
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+                            levelNum: "1"
+                        });
+                    });
+        } else {
+            goHome();
+        }
+    });
+    
+    
 	var database = firebase.database();
 	//var ref = database.ref('users');
 	var charSelected = 0;
@@ -122,12 +144,34 @@ console.log(charSelected);
 }
 
 function update() {
-
- firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ charNum: charSelected });
- 
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+        charNum: charSelected, 
+        levelNum: selectedLevel
+    });
+    window.location.href = "level.html";
 }
 </script>
+
+<script>
+    // Level Select Code 
     
+    // The currently selected level. 
+    var selectedLevel = 1; 
+    
+    function clickedLevelButton(mod) {
+        selectedLevel += mod; 
+        if (selectedLevel > levelsAvailable) {
+            selectedLevel = 1; 
+        } else if (selectedLevel < 1) {
+            selectedLevel = levelsAvailable; 
+        }
+        
+        $("#selectBtn").html("Level " + selectedLevel); 
+    }
+    
+    
+</script>
+
     
 </body>
 

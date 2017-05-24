@@ -114,7 +114,7 @@ refQuestions.once('value').then(function(data) {
 var levelNumber = 1; 
 
 // Reference to level data. 
-var refLevel = database.ref("levels/level" + levelNumber);
+var refLevel;
 
 // The entire data for the level. 
 var level; 
@@ -133,6 +133,7 @@ var gameStarted = false;
 
 // Grab all data for this level, and then start the game. 
 function getLevelData(firstLoad) {
+    refLevel = database.ref("levels/level" + levelNumber);
     let initialLoad = firstLoad; 
     refLevel.once('value').then(function(data) {
         level = data.val();

@@ -30,7 +30,7 @@
 
 <body> 
     <div id="headerContainer">
-        <a href="menu.html"><button type="button" id="backBtn">Logout</button></a>
+        <button type="button" id="backBtn" onclick="signOut()">Logout</button></a>
         <a href="affiliatedApps.html"><button type="button" id="affilBtn">Affiliate Page</button></a>
     </div>
     <!-- Character select -------------------------->
@@ -81,7 +81,16 @@
             goHome();
         }
     });
-    
+
+	//signout
+			function signOut() {
+			firebase.auth().signOut().then(function() {
+			  //alert("You're not logged in!");
+			  window.location.href = "index.html";
+			}).catch(function(error) {
+			  // An error happened.
+			});
+			}
     
 	var database = firebase.database();
 	//var ref = database.ref('users');

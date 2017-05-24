@@ -100,7 +100,7 @@ a {
 }
 
 #divCombatButton1{
-    background-image: url(../images/test1.png);
+    background-image: url(../images/eatButton.png);
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -109,14 +109,14 @@ a {
 }
 
 #divCombatButton1:active{
-    background-image: url(../images/test2.png);
+    background-image: url(../images/eatButtonActive.png);
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center; 
 }
 
 #divCombatButton2 {
-    background-image: url(../images/skill1.png);
+    background-image: url(../images/skillButton.png);
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -125,7 +125,7 @@ a {
 }
 
 #divCombatButton2:active {
-    background-image: url(../images/skill2.png);
+    background-image: url(../images/skillButtonActive.png);
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;

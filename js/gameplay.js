@@ -14,25 +14,37 @@ var playerHitImages = [];
 
 // Loads the player images. 
 function loadPlayerImages() {
-    var playerImageFolderPath; 
+    // Partial file paths for the images. 
+    var playerRunningPath; 
+    var playerHitPath; 
     switch(playerCharNumber) {
         case 0: 
-            playerImageFolderPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            playerRunningPath = "Char-Mom200x200/Char-Mom200x200n"; 
+            playerHitPath = "";
             break; 
         case 1: 
-            playerImageFolderPath = "Char-Bro220x220/Char-Bro220x220n"; 
-            //playerImageFolderPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
+            playerRunningPath = "Char-Bro220x220/Char-Bro320x320n"; 
+            playerHitPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
             break; 
         case 2: 
-            playerImageFolderPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            playerRunningPath = "Char-Sis260x260/Char-Sis260x260n"; 
+            playerHitPath = "";
             break;
         default: 
            goHome();
     }
+    // Set running animation images. 
     for (i = 0; i < 4; i++) {
         playerImages[i] = new Image();
         playerImages[i].src = 
-            "Image/Char/" + playerImageFolderPath 
+            "Image/Char/" + playerRunningPath 
+                + (i + 1) + ".png";
+    }
+    // Set auto attack animation images. 
+    for (i = 0; i < 7; i ++) {
+        playerHitImages[i] = new Image();
+        playerHitImages[i].src = 
+            "Image/Char/" + playerHitPath 
                 + (i + 1) + ".png";
     }
     playerCharLoaded = true; 
@@ -673,9 +685,24 @@ function component(width, height, img, imgRate,
         this.updateCount = 0; 
         // Update the image. 
         this.imageCount++; 
-        if (this.imageCount >= this.imageArray.length)
+        if (this.imageCount >= this.imageArray.length) {
             this.imageCount = 0; 
+            if (this.altAnim && this == playerChar) {
+                this.imageArray = playerImages; 
+                this.altAnim = false; 
+            }
+        }
         this.image = this.imageArray[this.imageCount];
+    }
+    // Activates an alternate animation. 
+    this.newAnim = function() {
+        if (this != playerChar || this.imageArray == null) 
+            return; 
+        this.altAnim = true; 
+        this.updateCount = 0; 
+        this.imageCount = 0; 
+        this.imageArray = playerHitImages; 
+        this.image = this.imageArray[this.imageCount]; 
     }
     // Updates the image or image array to change animations. 
     this.changeImage = function(newImage) {
@@ -717,6 +744,8 @@ function component(width, height, img, imgRate,
     }
     // Stores this enemy's auto attack loop. 
     this.autoAttackLoop; 
+    // Whether the character is using an alternate animation. 
+    this.altAnim = false; 
 }
 
 // The interval between each auto attack, measured in milliseconds. 
@@ -753,6 +782,9 @@ function updateGameArea() {
         if (playerChar.collided(arr[index])) {
             // and it's the first time... 
             if (arr[index].autoAttackLoop == null) {
+                
+                playerChar.newAnim();
+                
                 // Make the enemy stop moving. 
                 arr[index].speedX = 0; 
                 // Start the autoattack loop. 

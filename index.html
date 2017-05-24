@@ -244,30 +244,39 @@
 
 
 <body>
+    <div id="mainBody">
+       <a href="#loginScreen">
+           <div id="wholePageLink">
+           <img src="Image/LOGO.png" alt="fork and potato" id="loginPageLogo">
+           <p id="clickAnywhereToStart">Click anywhere to start</p>       
+           </div>
+        </a>
+    
     <div id="loginScreen">
 			<form >
-					  E-mail:<br>
+				      &nbsp;&nbsp;E-mail:<br>
 					  <input type="text" id="account" name="account" value="email@yolo.com">
 					  <br>
                         <br>
-					  Password:<br>
+					  &nbsp;&nbsp;Password:<br>
 					  <input type="text" id="passWord" name="passWord" value="password">
 					  <br><br>
 					  <input type="button" class="loginScreenButtons" value="Log In" onclick= "signIn('account', 'passWord');"> &nbsp;
 					  <input type="button" class="loginScreenButtons" value="Log out" onclick= "signOut();">
                       <br>
                       <br>
+                      
 				      <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
 					  <input type="button" class="loginScreenButtons" value="Google Login" onclick= "googleSignIn()">
 					  <input type="button" class="loginScreenButtons" value="GitHub Login" onclick= "githubSignIn()">
 					  <input type="button" class="loginScreenButtons" value="Twitter Login" onclick= "twitterSignIn()">
 				</form> 
-		<a href="#" class="cancel">&times;</a> </div> 
-       <a href="#loginScreen">
-           <div id="wholePageLink">
-           <img src="Image/LOGO.png" alt="fork and potato" id="loginPageLogo">
-           <p id="clickAnywhereToStart">Click anywhere to start</p></div>
-        </a>
+		<a href="#" class="cancel">&times;</a>
+    </div>
+    <div id="cover" > 	
+    </div>
+</div>
+    
 <script>
 function openNav() {
     document.getElementById("myNav").style.height = "100%";

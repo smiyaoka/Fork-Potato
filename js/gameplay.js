@@ -500,7 +500,7 @@ function startGame() {
     
     // Set up the player and background components. 
     playerChar = new component(0.35, 0, playerImages, 5, 
-                               -0.05, 1.0 - yFromBottom - 0.35, "combat", 0, playerMaxHP);
+                               -0.02, 1.0 - yFromBottom - 0.35, "combat", 0, playerMaxHP);
     background = new component(1.0, 1.0, backgroundImage, null, 
                                0, 0, "background");
     background.speedX = -0.002;
@@ -754,7 +754,7 @@ var autoAttackDamage = 1;
 var autoAttackKnockback = 0.25; 
 
 // The speed at which the an enemy is pushed back after an auto attack collision. 
-var autoAttackKnockbackSpeed = 0.08; 
+var autoAttackKnockbackSpeed = 0.04; 
 
 // The x position at which a boss or miniboss, 
 // measured as a decimal of the enemy's walk distance. 

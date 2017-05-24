@@ -459,13 +459,6 @@ function restartLevel() {
     if (questionTimer != null)
         clearTimeout(questionTimer);
     
-    // Clear all enemy auto attack. 
-    enemies.forEach(function(part, index, arr){
-        if (arr[index].autoAttackLoop != null) {
-            clearInterval(arr[index].autoAttackLoop);
-        }
-    });
-    
     // Reset the UI. 
     hideDialogue();
     hideQuestion();
@@ -742,30 +735,15 @@ function component(width, height, img, imgRate,
         var fractionToPlayerRight = playerChar.x + playerChar.getWidth() / gameWidth; 
         this.x = fractionToPlayerRight + fractionFromPlayer; 
     }
-    // Stores this enemy's auto attack loop. 
-    this.autoAttackLoop; 
     // Whether the character is using an alternate animation. 
     this.altAnim = false; 
 }
-
-// The interval between each auto attack, measured in milliseconds. 
-var autoAttackInterval = 800; 
 
 // The damage dealt during an auto attack. 
 var autoAttackDamage = 1; 
 
 // Auto attack knockback, measured as a decimal of the enemy's walk distance. 
 var autoAttackKnockback = 0.25; 
-
-// Repeatedly called as part of the auto attack mechanic. 
-// Each auto attack deals damage to both the player and the enemy. 
-// @param enemy The enemy to attack. 
-function autoAttackUpdate(enemy) {
-    if (freeze) 
-        return; 
-    hurtEnemy(enemy, autoAttackDamage); 
-    hurtPlayer(autoAttackDamage);
-}
 
 // The x position at which a boss or miniboss stops moving. 
 var bossStop = 0.55; 
@@ -783,36 +761,35 @@ function updateGameArea() {
         arr[index].newPos();
         // If the enemy collides with the player... 
         if (playerChar.collided(arr[index])) {
-            // and it's the first time... 
-            if (arr[index].autoAttackLoop == null) {
-                
-                playerChar.newAnim();
-                /*
-                // REQUIRES FURTHER INSEPECTION
-                var fractionToPlayerRight = playerChar.x 
-                    + playerChar.getWidth() / gameWidth; 
-                var scaledKnockback = fractionToPlayerRight 
-                    + (1 - fractionToPlayerRight) * autoAttackKnockback; 
-                console.log("Game Width: " + gameWidth 
-                           + "\nPlayer Width: " + playerChar.getWidth() 
-                           + "\nPlayer X: " + playerChar.getX() 
-                           + "\nEnemy X: " + arr[index].getX()
-                           + "\nScaled Knockback: " + scaledKnockback); 
-                arr[index].x += scaledKnockback; 
-                */
-                
-                arr[index].x = arr[index].x + (1 - arr[index].x) * autoAttackKnockback; 
-                
-                /*
-                // Make the enemy stop moving. 
-                arr[index].speedX = 0; 
-                // Start the autoattack loop. 
+            playerChar.newAnim();
+            /*
+            // REQUIRES FURTHER INSEPECTION
+            var fractionToPlayerRight = playerChar.x 
+                + playerChar.getWidth() / gameWidth; 
+            var scaledKnockback = fractionToPlayerRight 
+                + (1 - fractionToPlayerRight) * autoAttackKnockback; 
+            console.log("Game Width: " + gameWidth 
+                       + "\nPlayer Width: " + playerChar.getWidth() 
+                       + "\nPlayer X: " + playerChar.getX() 
+                       + "\nEnemy X: " + arr[index].getX()
+                       + "\nScaled Knockback: " + scaledKnockback); 
+            arr[index].x += scaledKnockback; 
+            */
+
+            arr[index].x = arr[index].x + (1 - arr[index].x) * autoAttackKnockback; 
+            hurtPlayer(autoAttackDamage);
+            hurtEnemy(arr[index], autoAttackDamage);
+            
+            
+            /*
+            // Make the enemy stop moving. 
+            arr[index].speedX = 0; 
+            // Start the autoattack loop. 
+            autoAttackUpdate(arr[index]);
+            arr[index].autoAttackLoop = setInterval(function(){
                 autoAttackUpdate(arr[index]);
-                arr[index].autoAttackLoop = setInterval(function(){
-                    autoAttackUpdate(arr[index]);
-                }, autoAttackInterval); 
-                */
-            }
+            }, autoAttackInterval); 
+            */
         }
     });
     // Remove defeated enemies from the level. 
@@ -836,10 +813,6 @@ function killEnemies() {
     enemies.forEach(function(part, index, arr){
         // If the enemy's health is fully depleted. 
         if (arr[index].hp <= 0) {
-            // Stop auto attacking if the enemy `already is. 
-            if (arr[index].autoAttackLoop != null) {
-                clearInterval(arr[index].autoAttackLoop); 
-            }
             // Remove the enemy from the array. 
             arr.splice(index, 1); 
             // Spawn a new enemy. 
@@ -848,9 +821,6 @@ function killEnemies() {
             // changing index values makes the foreach loop skip 
             // an enemy. 
             while(arr[index] != null && arr[index].hp <= 0) {
-                if (arr[index].autoAttackLoop != null) {
-                    clearInterval(arr[index].autoAttackLoop); 
-                }
                 arr.splice(index, 1); 
                 spawnEnemy();
             }

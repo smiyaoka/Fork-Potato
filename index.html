@@ -28,10 +28,13 @@
 		var ref = database.ref('users');
 		firebase.auth().onAuthStateChanged(function(user) {
 		  if (user) {
-			// User is signed in.
-			//alert("Welcome to Fork&Potato");
-			 window.location.href = "charSelect.html";
-			// console.log(firebase.auth().currentUser.uid);
+              // Check whether to load the tutorial.  
+              firebase.database().ref('/users/' 
+                + firebase.auth().currentUser.uid).once('value').then(
+                    function(snapshot) {
+                        window.location.href = (snapshot.val().levelsAvailable == 1) 
+                            ? "tutorial.html" : "select.html"; 
+                    });              
 		  } else {
 			//alert("You're not logged in!");
 		  }

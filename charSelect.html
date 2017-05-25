@@ -106,28 +106,6 @@
 	//var ref = database.ref('users');
 	var charSelected = 0;
 			   
-			(function() {
-	  var mouseTimer;
-	  function mouseDown() { 
-		  mouseUp();
-		  mouseTimer = window.setTimeout(execMouseDown,1000); //set timeout to fire in 2 seconds when the user presses mouse button down
-	  }
-	  function mouseUp() { 
-		  if (mouseTimer) window.clearTimeout(mouseTimer);  //cancel timer when mouse button is released
-		  
-		  console.log("Mouse out");
-	  }
-	  function execMouseDown() { 
-			
-				//console.log("works");
-				console.log(firebase.auth().currentUser.uid);
-				firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ easter: "1" });
-				
-	  }
-	  var div = document.getElementById("selectBtn");
-	  div.addEventListener("mousedown", mouseDown);
-	  document.body.addEventListener("mouseup", mouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
-	}());
 	
 
 

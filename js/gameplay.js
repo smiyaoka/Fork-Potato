@@ -384,7 +384,6 @@ window.addEventListener("resize", function() {
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Called when the level is successfully completed. 
-// This function is currently a placeholder. 
 function levelComplete() {
     // Freeze the game. 
     blockInput = true; 
@@ -399,7 +398,6 @@ function levelComplete() {
 }
 
 // Called when the player fails the level. 
-// This function is currently a placeholder. 
 function gameOver() {
     blockInput = true; 
     freeze = true; 

@@ -817,14 +817,16 @@ var autoAttackKnockbackSpeed = 0.04;
 // measured as a decimal of the enemy's walk distance. 
 var bossStop = 0.50; 
 
-// Returns the scaled bossStop. 
-// @return bossStop as a decimal measured from the canvas's far left. 
-function getBossStop() {
+// Converts a fraction of the distance between the player and the end of the canvas into 
+// a scaled distance measured from the start of the canvas. 
+// @param fraction A fraction of the distance between the player and the end of the canvas. 
+// @return The scaled distance measured from the end of the canvas. 
+function parseDistance(fraction) {
     var fractionToPlayerRight = playerChar.x 
         + playerChar.getWidth() / gameWidth; 
-    var scaledBossStop = fractionToPlayerRight 
-        + (1 - fractionToPlayerRight) * bossStop; 
-    return scaledBossStop * gameWidth; 
+    var scaledFraction = fractionToPlayerRight 
+        + (1 - fractionToPlayerRight) * fraction; 
+    return scaledFraction * gameWidth; 
 }
 
 // Updates the level. 
@@ -857,7 +859,7 @@ function updateGameArea() {
     if (bossChar != null) {
         bossChar.newPos();
         // And it reaches the stop point...
-        if (bossChar.getX() <= getBossStop()) {
+        if (bossChar.getX() <= parseDistance(bossStop)) {
             // Start the trivia gameplay. 
             startTrivia();
             freeze = true; 
@@ -1015,7 +1017,7 @@ function clickEat() {
     if (blockInput) 
         return;    
     // Calculate the range of the attack. 
-    var farEnd = eatRange * gameWidth + playerChar.getX() + playerChar.getWidth();
+    var farEnd = parseDistance(eatRange);
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
@@ -1036,7 +1038,7 @@ function clickEat() {
 // The range of the user's skill attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var skillRange = 0.8; 
+var skillRange = 1.0; 
 
 // The amount of damage done by the skill attack. 
 var skillDamage = 3; 
@@ -1063,7 +1065,7 @@ function clickSkill() {
     if (skillOnCooldown) 
         return; 
     // Calculate the skill's range. 
-    var farEnd = skillRange * gameWidth + playerChar.getX() + playerChar.getWidth(); 
+    var farEnd = parseDistance(skillRange);
     // Get all enemies within range. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].getX() < farEnd) {

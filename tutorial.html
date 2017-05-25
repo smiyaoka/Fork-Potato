@@ -26,7 +26,7 @@
     <body>
     <div id="tutorialBodyCont">
     <div class="tutorialNav" id="backTutorial">
-        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1),trackImg(1) ">B<br>a<br>c<br>k</button>
+        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(-1)">B<br>a<br>c<br>k</button>
         </div>
         <div id="tutorialMain">
     <div id="tutorialContainer1">
@@ -43,32 +43,30 @@
         
     <div id="tutorialContainer2">
         
-        <img class="tutorialSlides" id="tutorialSlide1" src="images/page1.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide2" src="images/page2.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide3" src="images/page3.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide4" src="images/page4.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide5" src="images/page5.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide6" src="images/page6.PNG" style="height:100%">
-        <img class="tutorialSlides" id="tutorialSlide7" src="images/page7.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide1" src="images/page1.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide2" src="images/page2.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide3" src="images/page3.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide4" src="images/page4.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide5" src="images/page5.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide6" src="images/page6.PNG" style="height:100%">
+        <img class="tutorialSlides2" id="tutorialSlide7" src="images/page7.PNG" style="height:100%">
     
     </div>
             </div>
     
     <div class="tutorialNav" id="backTutorial">
-        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1),trackImg(1) ">N<br>e<br>x<br>t</button>
+        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1) ">N<br>e<br>x<br>t</button>
         </div>
         </div>
 <script>
-var tutorialSelected = 0;
 var slideIndex = 1;
-var tutorial0 = document.getElementById("tutorialSlide0");
-var tutorial1 = document.getElementById("tutorialSlide1");
-var tutorial2 = document.getElementById("tutorialSlide2");
 
 showDivs(slideIndex);
-
+showDivs1(slideIndex);
+    
 function plusDivs(n) {
   showDivs(slideIndex += n);
+  showDivs1(slideIndex);
 }
 
 function showDivs(n) {
@@ -81,21 +79,19 @@ function showDivs(n) {
   }
   x[slideIndex-1].style.display = "block";  
 }
-
-function trackImg(num) {
-
-tutorialSelected += num;
-if(charSelected == 3){
-tutorialSelected = 0;
+    
+function showDivs1(n) {
+  var i;
+  var x = document.getElementsByClassName("tutorialSlides2");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
 }
 
-if(tutorialSelected == -1) {
-tutorialSelected = 2;
-}
 
-
-console.log(tutorialSelected);
-}
         </script>
     </body>
 </html>

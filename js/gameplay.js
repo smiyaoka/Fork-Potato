@@ -505,13 +505,7 @@ function restartLevel() {
     toggleButtons(false);
     hideGameOver();
     hideLevelComplete();
-    
-    // Reset the placeholder button text. 
-    $("#divCombatButton2").html(
-            "Skill<br>Does 3 damage to range.");
-    $("#divCombatButton3").html("");
-    $("#divCombatButton4").html("");
-    $("#divCombatButton5").html("");
+    $("#divCooldownOverlay").css("display", "none");
     
     // Reset the game area. 
     gameArea.stop();
@@ -1123,7 +1117,9 @@ function clickSkill() {
     // Start the skill's cooldown. 
     skillOnCooldown = true;     
     skillCooldownTime = skillCooldownInterval; 
-    skillTimer = setInterval(skillUpdate, 100);     
+    skillTimer = setInterval(skillUpdate, 100);
+    $("#divCooldownOverlay").css("width", "100%");
+    $("#divCooldownOverlay").css("display", "block");
 }
 
 // Spawns a skill effect component on the enemy component.
@@ -1141,13 +1137,13 @@ function skillUpdate() {
     skillCooldownTime -= 100;     
     if(skillCooldownTime <= 0) {
         /// If time's up, turn off cooldown. 
-        $("#divCombatButton2").html(
-            "Skill<br>Does 3 damage to range.");
+        $("#divCooldownOverlay").css("display", "none");
         skillOnCooldown = false; 
         clearInterval(skillTimer); 
     } else {
         // Otherwise, display the cooldown time in the button. 
-        $("#divCombatButton2").html(skillCooldownTime/1000);
+        $("#divCooldownOverlay").css("width", 
+            (skillCooldownTime / skillCooldownInterval * 100).toString() + "%"); 
     }
 }
 

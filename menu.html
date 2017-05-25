@@ -1,13 +1,18 @@
 <!doctype html>
 <html lang="en"> 
 <head>
+    <script src="js/screenlock.js"></script>
 	<meta charset="utf-8">
-	<title>Home Screen</title>
-    <link type="text/css" rel="stylesheet" href="css/base.css"> 
+    <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Main Menu</title>
+    <link type="text/css" rel="stylesheet" href="css/select.css"> 
+	 <script src="js/jquery-3.2.1.min.js"></script>
+    
+    
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
-
-
-<script>
+    
+    <script>
   // Initialize Firebase
   var config = {
     apiKey: "AIzaSyB8EekPhs6qYLXCxCi0oyypG3f25MlBFFY",
@@ -20,152 +25,178 @@
   
   firebase.initializeApp(config);
 </script>
+    
+    
 </head> 
 
-<script>
-		var database = firebase.database();
-		var ref = database.ref('users');
-		firebase.auth().onAuthStateChanged(function(user) {
-		  if (user) {
-			// User is signed in.
-			alert("Welcome to Fork&Potato");
-			// console.log(firebase.auth().currentUser.uid);
-		  } else {
-			//alert("You're not logged in!");
-		  }
-		});
-		function signIn(acc, pw) {
-		
-			 var email = document.getElementById('account').value;
-			 var password = document.getElementById('passWord').value;
-			 var checker = false;
-			// Sign in with email and password
-			firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-			
-				
-			  //error case
-			  var errorCode = error.code;
-			  var errorMessage = error.message;
-			  
-			  if (errorCode === 'auth/wrong-password') {
-				alert('Wrong password.');
-			  } else {
-				alert(errorMessage);
-			  }
-			  console.log(error);
-	  
-			});
-			
-		}
-						
-			function signUp(acc, pw) {
-				 var email = document.getElementById('account').value;
-				 var password = document.getElementById('passWord').value;
-				  
-					// signup with email and password
-				  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-					
-					// error case
-					var errorCode = error.code;
-					var errorMessage = error.message;
-					
-					if (errorCode == 'auth/weak-password') {
-					  alert('The password is too weak.');
-					} else {
-					  alert(errorMessage);
-					}
-					console.log(error);
-					 
-				  });
-				  
-				firebase.auth().onAuthStateChanged(function(user) {
-				  if (user) {
-					// declare and initialize data right after user sign up
-					
-					 console.log(firebase.auth().currentUser.uid);
-					   firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-					   
-						easter: "0",
-                        charNum: "0",
-						email: firebase.auth().currentUser.email
-						
-					  });
-					  
-					  					
-					
-					   
-				  } else {
-					
-				  }
-				  
-				});
-				
-			}
-		
-			function signOut() {
-			firebase.auth().signOut().then(function() {
-			  alert("You're not logged in!");
-			}).catch(function(error) {
-			  // An error happened.
-			});
-			}
-		
-		
-		
-</script>
 
 
 <body> 
     <div id="headerContainer">
-        <a href="#loginScreen"><button type="button" onclick="#loginScreen" id="loginBtn">Login</button></a>
-        
-        <div id="loginScreen">
-			<form >
-					  E-mail:<br>
-					  <input type="text" id="account" name="account" value="email@yolo.com">
-					  <br>
-                        <br>
-					  Password:<br>
-					  <input type="text" id="passWord" name="passWord" value="password">
-					  <br><br>
-					  <input type="button" class="loginScreenButtons" value="Log In" onclick= "signIn('account', 'passWord');"> &nbsp;
-					  <input type="button" class="loginScreenButtons" value="Log out" onclick= "signOut();">
-                        <br>
-                        <br>
-				        <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
-				</form> 
-		<a href="#" class="cancel">&times;</a> </div> 
-			<div id="cover" > 
-				
-			</div>
-        
-    <div id="runningContainer">
+        <button type="button" id="backBtn" onclick="signOut()">Logout</button></a>
+        <a href="affiliatedApps.html"><button type="button" id="affilBtn">Affiliate Page</button></a>
     </div>
+    <!-- Character select -------------------------->
+    <div id="charSelectCont1">
+    <div id="leftContainer"><button type="button" id="leftButton" class="sideBtn" onclick="plusDivs(-1),trackImg(-1)">&lt</button></div> 
         
+    <div id="bodyContainer">
         
-        <div id="menuContainer">
-        <div class="menuBtn" id="btnNewGame">
-            <a href="charSelect.html"><button type="button" id="menuNewGame">New Game</button></a>
-            
-        </div>
-        <div class="menuBtn" id="btnBottom">
-            <a href="affiliatedApps.html"><button type="button" id="menuAffilitrated">Links</button></a>
-            <button type="button" id="menuQuit">x</button>
-        </div>
+    <img class="mySlides" id="char0" src="images/placeholder/mom.gif" style="height:100%">
+    <img class="mySlides" id="char1" src="images/placeholder/player.gif" style="height:100%">
+    <img class="mySlides" id="char2" src="images/placeholder/sis.gif" style="height:100%">
+        
     </div>
+    <div id="rightContainer"><button type="button" id="rightButton" class="sideBtn" onclick="plusDivs(1),trackImg(1) ">></button>
+    </div>
+    </div>
+    
+    <!-- Start game ---------------------------->
+    
+        <div id="footerContainer">
+        <div class="selectBtn" id="btnSelect">
+            <button type="button" id="leftLevelBtn" onclick="clickedLevelButton(-1)"><</button>
+            <button type="button" id="rightLevelBtn" onclick="clickedLevelButton(1)">></button>
+            <button type="button" id="selectBtn" class="easterSelect">Level 1</button>
+            <button type="button" id="selectBtn" onclick="update()">Start Game</button>
+        </div>
         
-</div>
-       
-        
+    </div>
+    
 <script>
-function openNav() {
-    document.getElementById("myNav").style.height = "100%";
+    // The number of times the easter egg button has been clicked. 
+    var easterEggClicks = 0;
+    
+    // The number of clicks required to activate the easter egg. 
+    var easterEggClicksRequired = 5
+    
+    function clickEasterEgg() {
+        easterEggClicks++;    
+    }
+    $(".easterSelect").click(function(){clickEasterEgg();});
+    
+    // The highest level the player has unlocked. 
+    var levelsAvailable; 
+    
+    firebase.auth().onAuthStateChanged(function(user) {
+        var user1 = firebase.auth().currentUser;
+        if(user1) {
+            firebase.database().ref('/users/' 
+                + firebase.auth().currentUser.uid).once('value').then(
+                    function(snapshot) {
+                        // Level code 
+                        levelsAvailable = snapshot.val().levelsAvailable; 
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+                            levelNum: "1"
+                        });
+                    });
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+	//signout
+			function signOut() {
+			firebase.auth().signOut().then(function() {
+			  //alert("You're not logged in!");
+			  window.location.href = "index.html";
+			}).catch(function(error) {
+			  // An error happened.
+			});
+			}
+    
+	var database = firebase.database();
+	//var ref = database.ref('users');
+	var charSelected = 0;
+			   
+	
+
+
+var slideIndex = 1;
+var character0 = document.getElementById("char0");
+var character1 = document.getElementById("char1");
+var character2 = document.getElementById("char2");
+
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
 }
-function closeNav() {
-    document.getElementById("myNav").style.height = "0%";
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+
+//*******level select slides
+    
+function showDivsLevel(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlidesLevel");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+
+//*******end of level select slides
+
+function trackImg(num) {
+
+charSelected += num;
+if(charSelected == 3){
+charSelected = 0;
+}
+
+if(charSelected == -1) {
+charSelected = 2;
+}
+
+
+console.log(charSelected);
+}
+
+function update() {
+    var newEaster = (easterEggClicks < easterEggClicksRequired) ? 0 : 1; 
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
+        charNum: charSelected, 
+        levelNum: selectedLevel, 
+        easter: newEaster
+    });
+    window.location.href = "level.html";
 }
 </script>
+
+<script>
+    // Level Select Code 
+
+  // The currently selected level. 
+    var selectedLevel = 1; 
     
+    function clickedLevelButton(mod) {
+        selectedLevel += mod; 
+        if (selectedLevel > levelsAvailable) {
+            selectedLevel = 1; 
+            level = selectedLevel;
+        } else if (selectedLevel < 1) {
+            selectedLevel = levelsAvailable; 
+            level = selectedLevel;
+        } 
+        
+        $("#selectBtn").html("Level " + selectedLevel); 
+    }
+    
+    
+</script>
+
 </body>
 
 </html>

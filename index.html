@@ -33,7 +33,7 @@
                 + firebase.auth().currentUser.uid).once('value').then(
                     function(snapshot) {
                         window.location.href = (snapshot.val().levelsAvailable == 1) 
-                            ? "tutorial.html" : "select.html"; 
+                            ? "tutorial.html" : "menu.html"; 
                     });              
 		  } else {
 			//alert("You're not logged in!");
@@ -137,7 +137,7 @@
 							});
 						  }
 						});
-					  window.location.href = "charSelect.html";
+					  window.location.href = "menu.html";
 					  									   
 				  } else {
 					
@@ -181,7 +181,7 @@
 									});
 								  }
 								});
-							  window.location.href = "charSelect.html";
+							  window.location.href = "menu.html";
 																   
 						  } else {
 							
@@ -228,7 +228,7 @@
 								});
 							  }
 							});
-						  window.location.href = "charSelect.html";
+						  window.location.href = "menu.html";
 															   
 					  } else {
 						

@@ -280,7 +280,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 // Heads back to the website's index.html. 
 function goHome() {
-    window.location.href = "index.html";
+    window.location.href = "menu.html";
 }
 
 // UI FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -61,6 +61,16 @@
     </div>
     
 <script>
+    // The number of times the easter egg button has been clicked. 
+    var easterEggClicks = 0;
+    
+    // The number of clicks required to activate the easter egg. 
+    var easterEggClicksRequired = 5
+    
+    function clickEasterEgg() {
+        easterEggClicks++;    
+    }
+    $(".easterSelect").click(function(){clickEasterEgg();});
     
     // The highest level the player has unlocked. 
     var levelsAvailable; 
@@ -174,9 +184,11 @@ console.log(charSelected);
 }
 
 function update() {
+    var newEaster = (easterEggClicks < easterEggClicksRequired) ? 0 : 1; 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
         charNum: charSelected, 
-        levelNum: selectedLevel
+        levelNum: selectedLevel, 
+        easter: newEaster
     });
     window.location.href = "level.html";
 }
@@ -192,9 +204,10 @@ function update() {
         selectedLevel += mod; 
         if (selectedLevel > levelsAvailable) {
             selectedLevel = 1; 
+            level = selectedLevel;
         } else if (selectedLevel < 1) {
             selectedLevel = levelsAvailable; 
-            selectedLevel = level;
+            level = selectedLevel;
         } 
         
         $("#selectBtn").html("Level " + selectedLevel); 

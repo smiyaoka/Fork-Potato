@@ -94,7 +94,9 @@
 					   firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
 					   
 						easter: "0",
-                        charNum: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
 						email: firebase.auth().currentUser.email
 						
 					  });
@@ -134,9 +136,11 @@
 						ref.once('value', function(snapshot) {
 						  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 							firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-								easter: "0",
-								charNum: "0",
-								email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 							});
 						  }
 						});
@@ -178,9 +182,11 @@
 								ref.once('value', function(snapshot) {
 								  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 									firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-										easter: "0",
-										charNum: "0",
-										email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 									});
 								  }
 								});
@@ -225,9 +231,11 @@
 							ref.once('value', function(snapshot) {
 							  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 								firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-									easter: "0",
-									charNum: "0",
-									email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 								});
 							  }
 							});

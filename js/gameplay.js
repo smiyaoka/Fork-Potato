@@ -1,6 +1,6 @@
 // Redirect anonymous user. 
 if (!firebase.auth().currentUser.uid) 
-    goHome();
+    window.location.href = "index.html";
 
 // IMAGE SECTION -------------------------------------------
 

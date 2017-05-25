@@ -1,7 +1,3 @@
-// Redirect anonymous user. 
-if (!firebase.auth().currentUser.uid) 
-    window.location.href = "index.html";
-
 // IMAGE SECTION -------------------------------------------
 
 // Whether the player character has been loaded. 
@@ -278,7 +274,7 @@ firebase.auth().onAuthStateChanged(function(user) {
                     attemptStart();
                 });
     } else {
-        goHome();
+        window.location.href = "index.html";
     }
 });
 

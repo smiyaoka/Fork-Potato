@@ -54,41 +54,50 @@
     </div>
             </div>
     
-    <div class="tutorialNav" id="backTutorial">
-        <button type="button" id="backTutorialButton" class="tutorialBtn" onclick="plusDivs(1) ">N<br>e<br>x<br>t</button>
+    <div class="tutorialNav" id="nextTutorial">
+        <button type="button" id="nextTutorialButton" class="tutorialBtn" onclick="plusDivs(1) ">N<br>e<br>x<br>t</button>
         </div>
         </div>
 <script>
-var slideIndex = 1;
 
-showDivs(slideIndex);
-showDivs1(slideIndex);
+    var slides1 = document.getElementsByClassName("tutorialSlides");
+    var slides2 = document.getElementsByClassName("tutorialSlides2");
+    var slideIndex = 1;
+
+    showDivs(slideIndex);
+    showDivs1(slideIndex);
     
-function plusDivs(n) {
-  showDivs(slideIndex += n);
-  showDivs1(slideIndex);
-}
+    function plusDivs(n) {
+        slideIndex += n; 
+        if (slideIndex > slides1.length) {
+            window.location.href = "select.html";
+            return; 
+        } 
+        if (slideIndex < 1) {
+            slideIndex = 1; 
+        }
+        showDivs(slideIndex);
+        showDivs1(slideIndex);
+    }
 
 function showDivs(n) {
-  var i;
-  var x = document.getElementsByClassName("tutorialSlides");
-  if (n > x.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = x.length}
-  for (i = 0; i < x.length; i++) {
-     x[i].style.display = "none";  
+  if (n > slides1.length) {
+      
   }
-  x[slideIndex-1].style.display = "block";  
+  if (n < 1) {slideIndex = slides1.length}
+  for (var i = 0; i < slides1.length; i++) {
+     slides1[i].style.display = "none";  
+  }
+  slides1[slideIndex-1].style.display = "block";  
 }
     
 function showDivs1(n) {
-  var i;
-  var x = document.getElementsByClassName("tutorialSlides2");
-  if (n > x.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = x.length}
-  for (i = 0; i < x.length; i++) {
-     x[i].style.display = "none";  
+  if (n > slides2.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides2.length}
+  for (var i = 0; i < slides2.length; i++) {
+     slides2[i].style.display = "none";  
   }
-  x[slideIndex-1].style.display = "block";  
+  slides2[slideIndex-1].style.display = "block";  
 }
 
 

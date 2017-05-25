@@ -672,19 +672,20 @@ function component(width, height, img, imgRate,
         // If it's a combat character...  
         if (this.type == "combat") {
             // Draw an hp marker. 
-            var heightMod = (this == playerChar) ? -24 : -12; 
+            var widthMod = ((this == playerChar) ? 0.15 : 0) * gameHeight; 
+            var heightMod = ((this == playerChar) ? 0.01 : -0.02) * gameHeight; 
             for (var i = 0; i < this.hp; i++){
                 ctx.font="20px Georgia";
                 ctx.fillStyle = "#f14040";
-                ctx.fillText('♥',this.getX() + i*12, this.getY() + heightMod 
-                    - Math.floor(i / 10) * 12);
+                ctx.fillText('♥',this.getX() + i*12 + widthMod, 
+                    this.getY() + heightMod - Math.floor(i / 10) * 12);
             }
         } else if (this.type == "boss") {
             // If it's a boss, draw giant hearts. 
             for (var i = 0; i < this.hp; i++){
                 ctx.font="48px Georgia";
                 ctx.fillStyle = "#f14040";
-                ctx.fillText('♥',this.getX() + i*40, this.getY() + 5);
+                ctx.fillText('♥',this.getX() + i*40, this.getY() + 0.01 * gameHeight);
             }
         } else if (this.type == "background") {
             // If it's a background, keep drawing to fill the screen. 

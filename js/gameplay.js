@@ -1,3 +1,7 @@
+// Redirect anonymous user. 
+if (!firebase.auth().currentUser.uid) 
+    goHome();
+
 // IMAGE SECTION -------------------------------------------
 
 // Whether the player character has been loaded. 

@@ -19,16 +19,16 @@ function loadPlayerImages() {
     var playerHitPath; 
     switch(playerCharNumber) {
         case 0: 
-            playerRunningPath = "Char-Mom200x200/Char-Mom200x200n"; 
-            playerHitPath = "";
+            playerRunningPath = "Char-Mom200x200/Char-Mom320x320n"; 
+            playerHitPath = "Char-Mom200x200/Char-Mom-AutoAE320x320n";
             break; 
         case 1: 
             playerRunningPath = "Char-Bro220x220/Char-Bro320x320n"; 
             playerHitPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
             break; 
         case 2: 
-            playerRunningPath = "Char-Sis260x260/Char-Sis260x260n"; 
-            playerHitPath = "";
+            playerRunningPath = "Char-Sis260x260/Char-Sis320x320n"; 
+            playerHitPath = "Char-Sis260x260/Char-Sis-AutoAE320x320n";
             break;
         default: 
            goHome();

@@ -1263,6 +1263,10 @@ var correctAnswer;
 
 // Starts each trivia portion of the level. 
 function startTrivia() {
+    // Stop the player's eat effect. 
+    playerChar.effectArray = null; 
+    playerChar.update();
+    
     // Load the trivia windows and buttons. 
     toggleButtons(true);
     hideDialogue();

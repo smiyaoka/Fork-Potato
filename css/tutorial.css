@@ -7,15 +7,14 @@ body {
 #tutorialContainer1 {
     height: 50vh;
     width: 50vh;
-    background-color: antiquewhite;
     display: inline-block;
 }
 
 #tutorialContainer2 {
     height: 50vh;
     width: 50vh;
-    background-color: red;
     display: inline-block;
+opacity: 0.8;
 }
 
 .tutorialNav {

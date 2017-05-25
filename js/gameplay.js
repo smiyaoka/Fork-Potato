@@ -18,17 +18,29 @@ function loadPlayerImages() {
     var playerRunningPath; 
     var playerHitPath; 
     switch(playerCharNumber) {
-        case 0: 
+        case 0: // Mom
             playerRunningPath = "Char-Mom200x200/Char-Mom320x320n"; 
             playerHitPath = "Char-Mom200x200/Char-Mom-AutoAE320x320n";
+            eatX = 0.455; 
+            eatY = 0.28; 
+            eatWidth = 0.8; 
+            eatHeight = 0.8;
             break; 
-        case 1: 
+        case 1: // Brother
             playerRunningPath = "Char-Bro220x220/Char-Bro320x320n"; 
             playerHitPath = "Char-Bro220x220/Char-Bro-AutoAE320x320n";
+            eatX = 0.45; 
+            eatY = 0.28; 
+            eatWidth = 0.8; 
+            eatHeight = 0.8;
             break; 
-        case 2: 
+        case 2: // Sister
             playerRunningPath = "Char-Sis260x260/Char-Sis320x320n"; 
             playerHitPath = "Char-Sis260x260/Char-Sis-AutoAE320x320n";
+            eatX = 0.42; 
+            eatY = 0.28; 
+            eatWidth = 0.8; 
+            eatHeight = 0.8;
             break;
         default: 
            goHome();
@@ -113,6 +125,27 @@ for (i = 0; i < 6; i++) {
     skillEffectImages[i].src 
         = "Image/Effects/SkillAttact-Everyone260x260/SkillAttact-Everyone260x260n" 
             + (i + 2) + ".png";
+}
+
+// The x multiplier for this character's eat animation. 
+var eatX; 
+
+// The y multiplier for this character's eat animation. 
+var eatY; 
+
+// The width multiplier for this character's eat animation. 
+var eatWidth; 
+
+// The height multiplier for this character's eat animation. 
+var eatHeight
+
+// Load the eat effect images. 
+var eatEffectImages = []; 
+for (i = 0; i < 4; i++) {
+    eatEffectImages[i] = new Image();
+    eatEffectImages[i].src 
+        = "Image/Effects/EatingAttact-Everyone400x400/EatingAttact-Everyone400x400n" 
+            + (i + 1) + ".png";
 }
 
 // DATABASE SECTION ----------------------------------------
@@ -667,6 +700,12 @@ function component(width, height, img, imgRate,
                     this.getY() - this.getHeight() * 0.5,
                     this.getWidth() * 1.75, 
                     this.getHeight() * 1.75); 
+            } else if (this.effectArray == eatEffectImages) {
+                ctx.drawImage(this.effectImage, 
+                    this.getX() + this.getWidth() * eatX, 
+                    this.getY() + this.getHeight() * eatY,
+                    this.getWidth() * eatWidth, 
+                    this.getHeight() * eatHeight); 
             }
         }
         // If it's a combat character...  
@@ -754,6 +793,7 @@ function component(width, height, img, imgRate,
         this.imageIndex = 0; 
         this.imageArray = newArray; 
         this.image = this.imageArray[this.imageIndex]; 
+        this.effectArray = null;
     }
     // Activates a new effect animation. 
     // @param newArray An array of effect animation images. 
@@ -1006,7 +1046,7 @@ function hurtPlayer(damage) {
 // The range of the user's eat attack, specifically, the maximum 
 // distance between the player's right side and the enemy's 
 // left side. 
-var eatRange = 0.18;  
+var eatRange = 0.15;  
 
 // The amount of damage done by the eat attack. 
 var eatDamage = 1; 
@@ -1017,6 +1057,12 @@ var eatDamage = 1;
 function clickEat() {
     if (blockInput) 
         return;    
+    // You can't use this skill if you're being knocked back. 
+    if (playerChar.altAnim) {
+        return; 
+    }
+    // Trigger the eat animation. 
+    playerChar.newEffect(eatEffectImages, 5);
     // Calculate the range of the attack. 
     var farEnd = parseDistance(eatRange);
     // Determine the closest enemy within range 

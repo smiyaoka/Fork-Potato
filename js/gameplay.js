@@ -1066,7 +1066,7 @@ function clickEat() {
     // Determine the closest enemy within range 
     var target = null;
     enemies.forEach(function(part, index, arr){
-        if (arr[index].getX() < farEnd) {
+        if (arr[index].type == "combat" && arr[index].getX() < farEnd) {
             if (target == null) {
                 target = arr[index];
             } else if(arr[index].getX() < target.getX()) {
@@ -1113,7 +1113,7 @@ function clickSkill() {
     var farEnd = parseDistance(skillRange);
     // Get all enemies within range. 
     enemies.forEach(function(part, index, arr){
-        if (arr[index].getX() < farEnd) {
+        if (arr[index].type == "combat" && arr[index].getX() < farEnd) {
             // Hurt the enemy. 
             hurtEnemy(arr[index], skillDamage); 
             // Turn the enemy into a skill effect component.

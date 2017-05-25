@@ -4,6 +4,11 @@ body {
     background-size: 100% 110%;
 }
 
+img {
+    width: 100%;
+    height: auto;
+}
+
 #tutorialContainer1 {
     height: 50vh;
     width: 50vh;

@@ -106,6 +106,15 @@ for (i = 0; i < 12; i++) {
             + (i + 1) + ".png";
 }
 
+// Load the skill effect images. 
+var skillEffectImages = []; 
+for (i = 0; i < 6; i++) {
+    skillEffectImages[i] = new Image();
+    skillEffectImages[i].src 
+        = "Image/Effects/SkillAttact-Everyone260x260/SkillAttact-Everyone260x260n" 
+            + (i + 2) + ".png";
+}
+
 // DATABASE SECTION ----------------------------------------
 
 //connect to firebase.
@@ -568,18 +577,29 @@ function component(width, height, img, imgRate,
     // The image array for if the image is animated. 
     this.imageArray = null; 
     // The current index in the array. 
-    this.imageCount = 0; 
-    // Update the animation after this number of frames. 
+    this.imageIndex = 0; 
+    // Update the animation after this number of updates. 
     this.updatesPerAnim = imgRate; 
     // The number of updates since the last animation frame. 
     this.updateCount = 0; 
     // Set the image or image array. 
     if (img.constructor === Array) {
         this.imageArray = img; 
-        this.image = this.imageArray[this.imageCount]; 
+        this.image = this.imageArray[this.imageIndex]; 
     } else {
         this.image = img; 
     }
+    
+    // The currenty displayed effect image. 
+    this.effectImage; 
+    // The array of effect images. 
+    this.effectArray = null; 
+    // The current index in the effect array. 
+    this.effectIndex = 0; 
+    // Update the effect animation after this many updates. 
+    this.updatesPerEffectAnim; 
+    // The number of updates since the last animation. 
+    this.effectUpdateCount = 0; 
     
     // Set the width and height. 
     this.width = width;
@@ -630,14 +650,28 @@ function component(width, height, img, imgRate,
             }
         }
         ctx = gameArea.context;
-        // Draw the image. 
-        ctx.drawImage(this.image, 
-            this.getX(), 
-            this.getY(),
-            this.getWidth(), 
-            this.getHeight()); 
-        // If it's a combat character, draw an hp marker. 
+        // Draw the main image if the component is not an effect.
+        if (this.type != "effect") {
+            ctx.drawImage(this.image, 
+                this.getX(), 
+                this.getY(),
+                this.getWidth(), 
+                this.getHeight()); 
+        }
+        // Draw the effect animation if one exists.  
+        if (this.effectArray != null) {
+            // Determine the type of effect, then draw. 
+            if (this.effectArray == skillEffectImages) {
+                ctx.drawImage(this.effectImage, 
+                    this.getX() - this.getWidth() * 0.75, 
+                    this.getY() - this.getHeight() * 0.5,
+                    this.getWidth() * 1.75, 
+                    this.getHeight() * 1.75); 
+            }
+        }
+        // If it's a combat character...  
         if (this.type == "combat") {
+            // Draw an hp marker. 
             var heightMod = (this == playerChar) ? -24 : -12; 
             for (var i = 0; i < this.hp; i++){
                 ctx.font="20px Georgia";
@@ -672,40 +706,63 @@ function component(width, height, img, imgRate,
             return; 
         // Only update once per number of updates. 
         this.updateCount++; 
-        if (this.updateCount < this.updatesPerAnim) 
+        if (this.updateCount >= this.updatesPerAnim) {
+            // Reset the update count. 
+            this.updateCount = 0; 
+            // Update the image. 
+            this.imageIndex++; 
+            if (this.imageIndex >= this.imageArray.length) {
+                this.imageIndex = 0; 
+                // If this is the player character... 
+                if (this.altAnim && this == playerChar) {
+                    // Switch back to the normal animations. 
+                    this.imageArray = playerImages; 
+                    this.altAnim = false; 
+                }
+            }
+            this.image = this.imageArray[this.imageIndex];
+        }
+        
+        // Repeat this for special effect images. 
+        if (this.effectArray == null) 
             return; 
-        // Reset the update count. 
-        this.updateCount = 0; 
-        // Update the image. 
-        this.imageCount++; 
-        if (this.imageCount >= this.imageArray.length) {
-            this.imageCount = 0; 
-            if (this.altAnim && this == playerChar) {
-                this.imageArray = playerImages; 
-                this.altAnim = false; 
+        // Only update once per number of updates. 
+        this.effectUpdateCount++; 
+        if (this.effectUpdateCount >= this.updatesPerEffectAnim) {
+            // Reset the update count. 
+            this.effectUpdateCount = 0; 
+            // Update the image. 
+            this.effectIndex++; 
+            // If the effect animation is over. 
+            if (this.effectIndex >= this.effectArray.length) {
+                // Get rid of the special effect. 
+                this.effectArray = null; 
+            } else {
+                // Otherwise, set up the next image. 
+                this.effectImage = this.effectArray[this.effectIndex];
             }
         }
-        this.image = this.imageArray[this.imageCount];
     }
     // Activates an alternate animation. 
-    this.newAnim = function() {
-        if (this != playerChar || this.imageArray == null) 
+    // @param newArray An array of animation images. 
+    this.newAnim = function(newArray) {
+        if (this.imageArray == null) 
             return; 
         this.altAnim = true; 
         this.updateCount = 0; 
-        this.imageCount = 0; 
-        this.imageArray = playerHitImages; 
-        this.image = this.imageArray[this.imageCount]; 
+        this.imageIndex = 0; 
+        this.imageArray = newArray; 
+        this.image = this.imageArray[this.imageIndex]; 
     }
-    // Updates the image or image array to change animations. 
-    this.changeImage = function(newImage) {
-        this.imageCount = 0; 
-        if (newImage.constructor === Array) {
-            this.imageArray = newImage; 
-            this.image = this.imageArray[this.imageCount]; 
-        } else {
-            this.image = newImage; 
-        }
+    // Activates a new effect animation. 
+    // @param newArray An array of effect animation images. 
+    // @param effectRate The rate of the effect animation. 
+    this.newEffect = function(newArray, effectRate) {
+        this.effectUpdateCount = 0; 
+        this.effectIndex = 0; 
+        this.updatesPerEffectAnim = effectRate;
+        this.effectArray = newArray; 
+        this.effectImage = this.effectArray[this.effectIndex];
     }
     // Called to re-calculate the component's position. 
     this.newPos = function() {
@@ -722,8 +779,8 @@ function component(width, height, img, imgRate,
     // @param obj A component. 
     // @return true if the components collided, else false. 
     this.collided = function(obj) {
-        // Return false if the component is null. 
-        if (obj == null) {
+        // Return false if the component is null or an effect. 
+        if (obj == null || obj.type == "effect") {
             return false; 
         }
         // Returns whether the other component's left has passed this
@@ -784,7 +841,7 @@ function updateGameArea() {
         // If the enemy collides with the player... 
         if (playerChar.collided(arr[index])) {
             // Play the player hit animation. 
-            playerChar.newAnim();
+            playerChar.newAnim(playerHitImages);
             // Start knocking back the enemy. 
             arr[index].knockbackTo = arr[index].x 
                 + (1 - arr[index].x) * autoAttackKnockback; 
@@ -805,29 +862,43 @@ function updateGameArea() {
             startTrivia();
             freeze = true; 
         }
-    }    
+    }
+
     animate();
     refresh();
 }
 
 // Deletes enemies by removing them from the array. 
 function killEnemies() {
+    var markedForDeletion = []; 
     enemies.forEach(function(part, index, arr){
         // If the enemy's health is fully depleted. 
         if (arr[index].hp <= 0) {
-            // Remove the enemy from the array. 
-            arr.splice(index, 1); 
-            // Spawn a new enemy. 
-            spawnEnemy();
-            // Repeat the previous code. This helps when the 
-            // changing index values makes the foreach loop skip 
-            // an enemy. 
-            while(arr[index] != null && arr[index].hp <= 0) {
-                arr.splice(index, 1); 
-                spawnEnemy();
+            // Check the enemy type. 
+            if (arr[index].type == "combat") {
+                // If an effect is not playing 
+                if (arr[index].effectArray == null) {
+                    spawnEnemy();
+                    markedForDeletion.push(arr[index]);
+                } else {
+                    // Otherwise, mark as an effect and spawn. 
+                    arr[index].type = "effect"; 
+                    spawnEnemy();
+                }
+            } else if (arr[index].type == "effect") {
+                // If the effect animation is over
+                if (arr[index].effectArray == null) {
+                    // Mark for deletion. 
+                    markedForDeletion.push(arr[index]);
+                }
             }
         }
     });
+    // Delete all enemies marked for deletion. 
+    markedForDeletion.forEach(function(part, index, arr){
+        enemies.splice(enemies.indexOf(arr[index]), 1);
+    });
+    markedForDeletion = null; 
 }
 
 // Refreshes the level canvas. 
@@ -836,8 +907,6 @@ function refresh() {
     gameArea.clear();
     background.update();
     
-    // Draw the player character. 
-    playerChar.update();    
     // Draw the enemy characters. 
     enemies.forEach(function(part, index, arr){
         arr[index].update();        
@@ -846,10 +915,14 @@ function refresh() {
     if (bossChar != null) {
         bossChar.update();
     }
+    
+    // Draw the player character. 
+    playerChar.update();
+
 }
 
 // Progresses the animations. 
-function animate() {    
+function animate() {
     playerChar.animate();
     enemies.forEach(function(part, index, arr){
         arr[index].animate();
@@ -991,16 +1064,25 @@ function clickSkill() {
         return; 
     // Calculate the skill's range. 
     var farEnd = skillRange * gameWidth + playerChar.getX() + playerChar.getWidth(); 
-    // Damage all enemies within range. 
+    // Get all enemies within range. 
     enemies.forEach(function(part, index, arr){
         if (arr[index].getX() < farEnd) {
+            // Hurt the enemy. 
             hurtEnemy(arr[index], skillDamage); 
+            // Turn the enemy into a skill effect component.
+            spawnSkillEffect(arr[index]);            
         }
     });    
     // Start the skill's cooldown. 
     skillOnCooldown = true;     
     skillCooldownTime = skillCooldownInterval; 
     skillTimer = setInterval(skillUpdate, 100);     
+}
+
+// Spawns a skill effect component on the enemy component.
+// @param enemy The enemy component. 
+function spawnSkillEffect(enemy) {
+    enemy.newEffect(skillEffectImages, 10);
 }
 
 // The function used along with setInterval to implement the 

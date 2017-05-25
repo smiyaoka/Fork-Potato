@@ -54,13 +54,22 @@
         <div class="selectBtn" id="btnSelect">
             <button type="button" id="leftLevelBtn" onclick="clickedLevelButton(-1)"><</button>
             <button type="button" id="rightLevelBtn" onclick="clickedLevelButton(1)">></button>
-            <button type="button" id="selectBtn" class="easterSelect">Level 1</button>
+            <button type="button" id="selectBtn" onclick="clickEasterEgg()">Level 1</button>
             <button type="button" id="selectBtn" onclick="update()">Start Game</button>
         </div>
         
     </div>
     
 <script>
+    
+    // Easter Egg Code 
+    
+    // The number of times the easter egg button has been pressed. 
+    var easterEggClicks = 0; 
+    
+    function clickEasterEgg() {
+        easterEggClicks++; 
+    }
     
     // The highest level the player has unlocked. 
     var levelsAvailable; 
@@ -174,9 +183,11 @@ console.log(charSelected);
 }
 
 function update() {
+    var newEasterEgg = (easterEggClicks >= 5) ? 1 : 0; 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
         charNum: charSelected, 
-        levelNum: selectedLevel
+        levelNum: selectedLevel,
+        easter: newEasterEgg
     });
     window.location.href = "level.html";
 }

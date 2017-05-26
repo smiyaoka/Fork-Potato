@@ -181,17 +181,17 @@ function update() {
   // The currently selected level. 
     var selectedLevel = 1; 
     
+    // The number of levels in the game so far. 
+    var maxLevels = 4; 
+    
     function clickedLevelButton(mod) {
         selectedLevel += mod; 
-        if (selectedLevel > levelsAvailable) {
+        if (selectedLevel > levelsAvailable || selectedLevel > maxLevels) {
             selectedLevel = 1; 
-            level = selectedLevel;
         } else if (selectedLevel < 1) {
-            selectedLevel = levelsAvailable; 
-            level = selectedLevel;
+            selectedLevel = (levelsAvailable > maxLevels) ? maxLevels : levelsAvailable; 
         } 
-        
-        $("#selectBtn").html("Level " + selectedLevel); 
+        $("#selectBtn1").html("Level " + selectedLevel); 
     }
     
     

@@ -402,6 +402,9 @@ window.addEventListener("resize", function() {
 
 // GAME FLOW FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Highest possible level. 
+var maxLevel = 4; 
+
 // Called when the level is successfully completed. 
 function levelComplete() {
     // Freeze the game. 
@@ -412,6 +415,9 @@ function levelComplete() {
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({ 
             levelsAvailable: (parseInt(levelNumber) + 1).toString()
         });
+    }
+    if (levelNumber >= maxLevel) {
+        $("#divLevelCompleteNextLevel").css("display", "none");
     }
     showLevelComplete();
 }
@@ -731,7 +737,7 @@ function component(width, height, img, imgRate,
                 ctx.font="20px Georgia";
                 ctx.fillStyle = "#f14040";
                 ctx.fillText('♥',this.getX() + i*12 + widthMod, 
-                    this.getY() + heightMod - Math.floor(i / 10) * 12);
+                    this.getY() + heightMod);
             }
         } else if (this.type == "boss") {
             // If it's a boss, draw giant hearts. 

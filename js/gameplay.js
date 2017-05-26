@@ -1441,10 +1441,10 @@ function resetAnswerButtons() {
 // SETUP CODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Set events for the combat buttons. 
-$("#divCombatButton1").click(function(){clickEat();});
-$("#divCombatButton2").click(function(){clickSkill();});
+$("#divCombatButton1").mousedown(function(){clickEat();});
+$("#divCombatButton2").mousedown(function(){clickSkill();});
 for(let i = 3; i <= 5; i++) {
-    $("#divCombatButton" + i).click(function(){clickItem(i - 2);});
+    $("#divCombatButton" + i).mousedown(function(){clickItem(i - 2);});
 }
 
 // Set events for the trivia buttons. 

@@ -148,6 +148,18 @@ for (i = 0; i < 4; i++) {
             + (i + 1) + ".png";
 }
 
+
+// An array of item images used for pre-loading. 
+var itemImages = []; 
+for (i = 0; i < 4; i++) {
+    itemImages[i] = new Image();
+}
+itemImages[0].src = "Image/Item/Item-Container260x260/Item-Container260x260.gif";
+itemImages[1].src = "Image/Item/Item-Jar260x260/Item-Jar260x260.gif";
+itemImages[2].src = "Image/Item/Item-Water260x260/Item-Water260x260.gif";
+itemImages[3].src = "Image/Item/Item-ZiplockBag260x260/Item-ZiplockBag260x260.gif";
+
+
 // DATABASE SECTION ----------------------------------------
 
 //connect to firebase.
@@ -347,7 +359,7 @@ var previousBlockInput;
 // @param pause true if pausing, false if unpausing. 
 function togglePause(pause) {
     if (pause) {
-        if (playerChar.hp <= 0 || remainingBosses <= 0)
+        if (playerChar.hp <= 0 || $("#divLevelComplete").css("display") != "none")
             return; 
         previousFreeze = freeze; 
         previousBlockInput = blockInput; 
@@ -367,6 +379,11 @@ window.addEventListener("resize", function() {
     setScreenSize(); 
     gameArea.canvas.width = gameWidth; 
     gameArea.canvas.height = gameHeight; 
+    
+    // Rescale the item images. 
+    for (i = 1; i <= 3; i++) {
+        setItemDimensions(i);
+    }
     
     // Rescale enemy positions. 
     enemies.forEach(function(part, index, arr){
@@ -508,6 +525,9 @@ function restartLevel() {
     hideGameOver();
     hideLevelComplete();
     $("#divCooldownOverlay").css("display", "none");
+    for(i = 1; i <= 3; i++) {
+        $("#imgItem" + i).css("display", "none");
+    }
     
     // Reset the game area. 
     gameArea.stop();
@@ -1166,28 +1186,33 @@ function clickItem(number) {
     if (playerChar.hp > playerMaxHP) 
         playerChar.hp = playerMaxHP; 
     // Remove the item from that slot. 
-    items[number] = null; 
-    $("#divCombatButton" + number).empty();
+    items[number] = false; 
+    $("#imgItem" + number).css("display", "none");
 }
-
-//hide item
-$("#hiding").hide();
 
 // Adds an item to the nearest empty item slot. 
 // If there is no room, no item is added. 
-// @param The name of the item. 
-function addItem(item) {
+function addItem() {
     var searching = true; 
-   // Item slots are combat buttons 3-5. 
-    for (var i = 3; i <= 5 && searching; i++) {
+    for (var i = 1; i <= 3 && searching; i++) {
         if (!items[i]) {
-			
-            items[i] = item; 
-            //show item
-			$("#hiding").show();
+            items[i] = true; 
+            $("#imgItem" + i).css("display", "block");
+            $("#imgItem" + i).css("content", "url(" + itemImages[d4() - 1].src + ")")
+            setItemDimensions(i);
             searching = false; 
-			
         }
+    }
+}
+
+function setItemDimensions(itemNumber) {
+    //if ($("#divCombatButton3").width() > $("#divCombatButton3").height()) {
+    if($(window).width() * 0.33 > $(window).height() * 0.33 * 0.5) {
+        $("#imgItem" + itemNumber).css("height", "100%");
+        $("#imgItem" + itemNumber).css("width", "");
+    } else {
+        $("#imgItem" + itemNumber).css("height", "");
+        $("#imgItem" + itemNumber).css("width", "100%");
     }
 }
 
@@ -1366,7 +1391,7 @@ function nextQuestion() {
         // Otherwise... 
         // If it was just a miniboss...
         // Give the player an item. 
-        addItem("PLACEHOLDER ITEM<br>Heals up to 3 hp");
+        addItem();
         // Delete the boss character. 
         bossChar = null; 
         // Return to combat gameplay. 
@@ -1419,7 +1444,7 @@ function resetAnswerButtons() {
 $("#divCombatButton1").click(function(){clickEat();});
 $("#divCombatButton2").click(function(){clickSkill();});
 for(let i = 3; i <= 5; i++) {
-    $("#divCombatButton" + i).click(function(){clickItem(i);});
+    $("#divCombatButton" + i).click(function(){clickItem(i - 2);});
 }
 
 // Set events for the trivia buttons. 

@@ -133,7 +133,6 @@ a {
 
 #divCombatButton3{
     width: 33%;
-    background-image: url("../images/container.gif");
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -142,7 +141,6 @@ a {
 
 #divCombatButton5 {
     width: 33%;
-    background-image: url("../images/zip.gif");
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -151,7 +149,6 @@ a {
 
 #divCombatButton4 {
     width: 34%;
-    background-image: url("../images/jar.gif");
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -195,7 +192,6 @@ a {
     position:absolute;
     z-index:10;
     display:none;
-    background: url(login.png) no-repeat;
     border:5px solid #cccccc;
     border-radius:10px;
     background-color: white;
@@ -229,4 +225,10 @@ a {
     float: left; 
     background-color: black; 
     opacity: 0.7; 
+}
+
+.classItem {
+    display: none; 
+    padding: 0; 
+    margin: auto; 
 }

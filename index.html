@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en"> 
 <head>
+    <script src="js/screenlock.js"></script>
 	<meta charset="utf-8">
+    <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<title>Home Screen</title>
     <link type="text/css" rel="stylesheet" href="css/base.css"> 
 	<script src="js/jquery-3.2.1.min.js"></script>
@@ -28,10 +31,13 @@
 		var ref = database.ref('users');
 		firebase.auth().onAuthStateChanged(function(user) {
 		  if (user) {
-			// User is signed in.
-			//alert("Welcome to Fork&Potato");
-			 window.location.href = "charSelect.html";
-			// console.log(firebase.auth().currentUser.uid);
+              // Check whether to load the tutorial.  
+              firebase.database().ref('/users/' 
+                + firebase.auth().currentUser.uid).once('value').then(
+                    function(snapshot) {
+                        window.location.href = (snapshot.val().levelsAvailable == 1) 
+                            ? "tutorial.html" : "menu.html"; 
+                    });              
 		  } else {
 			//alert("You're not logged in!");
 		  }
@@ -88,7 +94,9 @@
 					   firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
 					   
 						easter: "0",
-                        charNum: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
 						email: firebase.auth().currentUser.email
 						
 					  });
@@ -128,12 +136,15 @@
 						ref.once('value', function(snapshot) {
 						  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 							firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-								easter: "0",
-								charNum: "0",
-								email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 							});
 						  }
 						});
+					  window.location.href = "menu.html";
 					  									   
 				  } else {
 					
@@ -171,12 +182,15 @@
 								ref.once('value', function(snapshot) {
 								  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 									firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-										easter: "0",
-										charNum: "0",
-										email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 									});
 								  }
 								});
+							  window.location.href = "menu.html";
 																   
 						  } else {
 							
@@ -217,12 +231,15 @@
 							ref.once('value', function(snapshot) {
 							  if (!(snapshot.hasChild(firebase.auth().currentUser.uid))) {
 								firebase.database().ref('users/' + firebase.auth().currentUser.uid).set({
-									easter: "0",
-									charNum: "0",
-									email: firebase.auth().currentUser.email
+						easter: "0",
+                       				charNum: "-1",
+						levelNum: "0",
+						levelsAvailable: "1",
+						email: firebase.auth().currentUser.email
 								});
 							  }
 							});
+						  window.location.href = "menu.html";
 															   
 					  } else {
 						
@@ -256,11 +273,11 @@
     <div id="loginScreen">
 			<form >
 				      &nbsp;&nbsp;E-mail:<br>
-					  <input type="text" id="account" name="account" value="email@yolo.com">
+					  <input type="text" id="account" name="account">
 					  <br>
                         <br>
 					  &nbsp;&nbsp;Password:<br>
-					  <input type="text" id="passWord" name="passWord" value="password">
+					  <input type="password" id="passWord" name="passWord">
 					  <br><br>
 					  <input type="button" class="loginScreenButtons" value="Log In" onclick= "signIn('account', 'passWord');"> &nbsp;
 					  <input type="button" class="loginScreenButtons" value="Register" onclick= "signUp('account2', 'passWord2');">
@@ -286,7 +303,7 @@ function closeNav() {
     document.getElementById("myNav").style.height = "0%";
 }
 </script>
-    
+        
 </body>
 
 </html>

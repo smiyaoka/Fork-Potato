@@ -44,6 +44,7 @@ td {
 }
 
 #leftContainer {
+    z-index: 2; 
     position:fixed;
     float: right; 
     box-sizing: border-box; 

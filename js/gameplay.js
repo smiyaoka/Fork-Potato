@@ -359,7 +359,7 @@ var previousBlockInput;
 // @param pause true if pausing, false if unpausing. 
 function togglePause(pause) {
     if (pause) {
-        if (playerChar.hp <= 0 || remainingBosses <= 0)
+        if (playerChar.hp <= 0 || $("#divLevelComplete").css("display") != "none")
             return; 
         previousFreeze = freeze; 
         previousBlockInput = blockInput; 

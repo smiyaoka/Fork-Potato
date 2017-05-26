@@ -34,7 +34,7 @@
 <body> 
     <div id="headerContainer">
         <button type="button" id="backBtn" onclick="signOut()">Logout</button></a>
-        <a href="affiliatedApps.html"><button type="button" id="affilBtn">Affiliate Page</button></a>
+        <a href="affiliatedApps.html"><button type="button" id="affilBtn">Affiliates</button></a>
     </div>
     <!-- Character select -------------------------->
     <div id="charSelectCont1">
@@ -55,10 +55,10 @@
     
         <div id="footerContainer">
         <div class="selectBtn" id="btnSelect">
-            <button type="button" id="leftLevelBtn" onclick="clickedLevelButton(-1)"><</button>
+            <button type="button" id="leftLevelBtn" onclick="clickedLevelButton(-1)">&lt;</button>
             <button type="button" id="rightLevelBtn" onclick="clickedLevelButton(1)">></button>
-            <button type="button" id="selectBtn" class="easterSelect">Level 1</button>
-            <button type="button" id="selectBtn" onclick="update()">Start Game</button>
+            <button type="button" id="selectBtn1" class="easterSelect">Level 1</button>
+            <button type="button" id="selectBtn2" onclick="update()">Start Game</button>
         </div>
         
     </div>
@@ -181,17 +181,17 @@ function update() {
   // The currently selected level. 
     var selectedLevel = 1; 
     
+    // The number of levels in the game so far. 
+    var maxLevels = 4; 
+    
     function clickedLevelButton(mod) {
         selectedLevel += mod; 
-        if (selectedLevel > levelsAvailable) {
+        if (selectedLevel > levelsAvailable || selectedLevel > maxLevels) {
             selectedLevel = 1; 
-            level = selectedLevel;
         } else if (selectedLevel < 1) {
-            selectedLevel = levelsAvailable; 
-            level = selectedLevel;
+            selectedLevel = (levelsAvailable > maxLevels) ? maxLevels : levelsAvailable; 
         } 
-        
-        $("#selectBtn").html("Level " + selectedLevel); 
+        $("#selectBtn1").html("Level " + selectedLevel); 
     }
     
     

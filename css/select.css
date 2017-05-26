@@ -10,7 +10,7 @@ body {
     margin: 0; 
     width: 100vw; 
     height: 100vh;
-    background-image: url(../images/1.png);
+    background-image: url(../images/10.png);
     background-repeat: no-repeat;
     background-size: 120% auto;
     background-position: center;
@@ -73,13 +73,12 @@ td {
     background-color: #655533;
     box-sizing: border-box; 
     display: block; 
-    height: 25vh;
+    height: 100%;
     width: 100%;
     float: left;
-    min-height: 40%;
 }
 
-#selectBtn {
+#selectBtn1, #selectBtn2 {
     display: block;
     margin: 0 auto;
     margin-top: 1vh;
@@ -98,7 +97,7 @@ td {
     -webkit-box-shadow: inset 0 0 5px 0 rgba(255,255,255,0.5);
 }
 
-#selectBtn:active {
+#selectBtn1:active, #selectBtn2:active {
     color:#777;
     background-color: #bbDB99;
 	border:1px solid #999;
